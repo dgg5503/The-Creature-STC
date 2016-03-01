@@ -37,6 +37,8 @@ public abstract class Character : MonoBehaviour
     // States n' Actions
     protected bool isAlive;
 
+    public List<BodyPart> BodyParts { get { return bodyParts; } }
+
     // actions go here...
 
     /*
@@ -124,12 +126,12 @@ public abstract class Character : MonoBehaviour
         // apply velocity changes to this character
         if (acceleration != Vector3.zero)
         {
-            // TODO: When on slope, apply velocity based on norm of slope?
+            // TODO: When on slope, apply velocity parallel to slope with slope max.?
             velocity += acceleration * Time.deltaTime;
 
             // lerp directional velocity from this objects forward to the accel norm
-            // creates rotation effect expected in a human.
-            // looks smooth when not performing a 180
+            // creates rotation effect purely from velocity
+            // TODO: looks smooth when not performing a 180
             velocity = Vector3.LerpUnclamped(transform.forward, acceleration.normalized, Time.deltaTime * rotationAccelFactor) * velocity.magnitude;
 
             Debug.Log(string.Format("{0}, {1} : {2}", transform.forward, acceleration.normalized, Time.deltaTime * rotationAccelFactor));
@@ -164,8 +166,7 @@ public abstract class Character : MonoBehaviour
         // clamp to this characters max velocity.
         velocity = Vector3.ClampMagnitude(velocity, maxVelocity);
 
-        // turn the character based on veloctiy
-        // dont turn when velocity is zero so we face the last direction
+        // makes character face velocity.
         if (velocity != Vector3.zero)
         {
             transform.forward = velocity.normalized;
@@ -186,6 +187,12 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     abstract protected void ProcessMovement();
 
+    /// <summary>
+    /// Attaches a provided body part to its appropriate area if the parts
+    /// parent exists on the character.
+    /// </summary>
+    /// <param name="bodyPartToAttach">Body part to attach.</param>
+    /// <returns>True if the body part was attached. False if the parent part was not found.</returns>
     protected bool Attach(BodyPart bodyPartToAttach)
     {
         // place body part in first available location
@@ -197,6 +204,11 @@ public abstract class Character : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Detaches a body part based on its index within the list of body parts.
+    /// </summary>
+    /// <param name="bodyPart">Index location of the body part to detach.</param>
+    /// <returns>Reference to body part detached if it exists.</returns>
     protected BodyPart Detach(int bodyPart)
     {
         // see if part exists

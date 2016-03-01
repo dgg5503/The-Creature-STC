@@ -52,6 +52,10 @@ public class Player : Character {
         base.Update();
     }
 
+    /// <summary>
+    /// Processes movement for the player specifically. Called before applying
+    /// changes in acceleration.
+    /// </summary>
     protected override void ProcessMovement()
     {
         // Get camera forward
@@ -133,7 +137,10 @@ public class Player : Character {
         #endregion
     }
 
-    // debug function for reattaching body parts.
+    /// <summary>
+    /// Function that handles clicking on and reattaching body parts in the scene.
+    /// </summary>
+    /// <returns>True if clicked on bodypart was reattached, false if not.</returns>
     bool CheckForAndAttachBodyPart()
     {
         // cast ray from camera to where mouse position is

@@ -41,6 +41,10 @@ public class BodyPart : Item
     //private BodyPartType bodyPartType;
     //private BodyPartType expectedParentType;
     private string expectedParentType; // store expected parent type that should be there in order to reattach
+    private int health;
+
+    // Properties
+    public int Health { get { return health; } }
 
     // Required parts?
     //int importance;
@@ -71,6 +75,9 @@ public class BodyPart : Item
             
             Physics.IgnoreCollision(collider, transform.parent.GetComponent<Collider>());
         }
+
+        // health
+        health = 100;
     }
 
     // Use this for initialization
