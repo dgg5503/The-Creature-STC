@@ -3,12 +3,17 @@
     ------------------------
     AUTHS Douglas Gliner
     TO-DO
+        - GRAB PARTS FROM DEAD GUY
+        - CUT COLLIDER IN HALF WHEN NO LEGS
+        - IGNORE CAPSULE COLLIDER WHEN DETACHING
+        - PICK UP AND CARRY B PARTS
     NOTES
         - Attach this script to the root of the character meaning its children
           contain body parts.
 */
 
 using UnityEngine;
+using System.Linq;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -16,7 +21,8 @@ using System.Collections.Generic;
 public abstract class Character : MonoBehaviour
 {
     // Body stuff
-    protected List<BodyPart> bodyParts;
+    //protected List<BodyPart> bodyParts;
+    protected Dictionary<string, BodyPart> bodyParts;
     protected List<RegularItem> regularItems;
     protected Dictionary<string, Vector3> bodyPartOrigins; // name_of_part : position
 
@@ -37,7 +43,7 @@ public abstract class Character : MonoBehaviour
     // States n' Actions
     protected bool isAlive;
 
-    public List<BodyPart> BodyParts { get { return bodyParts; } }
+    public Dictionary<string, BodyPart> BodyParts { get { return bodyParts; } }
 
     // actions go here...
 
@@ -49,7 +55,9 @@ public abstract class Character : MonoBehaviour
     {
         // Grab all children with BodyPart scripts and store them for reference
         // Q: Is the head/torso a body part with inf health?
-        bodyParts = new List<BodyPart>(transform.GetComponentsInChildren<BodyPart>());
+
+        //bodyParts = new List<BodyPart>(transform.GetComponentsInChildren<BodyPart>());
+        bodyParts = transform.GetComponentsInChildren<BodyPart>().ToDictionary(x => x.name, x => x.GetComponent<BodyPart>());
 
         // remove root from list for now
         //bodyParts.Remove(GetComponent<BodyPart>());
@@ -60,7 +68,7 @@ public abstract class Character : MonoBehaviour
         // save all INITIAL body part locallocations
 
         bodyPartOrigins = new Dictionary<string, Vector3>();
-        foreach(BodyPart bodyPart in bodyParts)
+        foreach(BodyPart bodyPart in bodyParts.Values)
             bodyPartOrigins.Add(bodyPart.name, bodyPart.transform.localPosition);
 
         // init this characters inventory
@@ -193,10 +201,10 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     /// <param name="bodyPartToAttach">Body part to attach.</param>
     /// <returns>True if the body part was attached. False if the parent part was not found.</returns>
-    protected bool Attach(BodyPart bodyPartToAttach)
+    public bool Attach(BodyPart bodyPartToAttach)
     {
         // place body part in first available location
-        foreach (BodyPart bp in bodyParts)
+        foreach (BodyPart bp in bodyParts.Values)
         {
             if (bodyPartToAttach.SetStatic(bp, bodyPartOrigins[bodyPartToAttach.name], Quaternion.identity))
                 return true;
@@ -209,16 +217,16 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     /// <param name="bodyPart">Index location of the body part to detach.</param>
     /// <returns>Reference to body part detached if it exists.</returns>
-    protected BodyPart Detach(int bodyPart)
+    public BodyPart Detach(string bodyPartName)
     {
         // see if part exists
-        if (bodyPart >= bodyParts.Count)
+        if (!bodyParts.ContainsKey(bodyPartName))
             return null;
 
         // cannot detach root until all other parts are gone.
 
         // store in a variable
-        BodyPart tmpPart = bodyParts[bodyPart];
+        BodyPart tmpPart = bodyParts[bodyPartName];
 
         // dont remove root (this).
         if (tmpPart == GetComponent<BodyPart>())
@@ -242,7 +250,9 @@ public abstract class Character : MonoBehaviour
         // of the tree!
         // remove the body part from this characters bodypart list
         // VVV VERY SLOW VVV
-        bodyParts = new List<BodyPart>(transform.GetComponentsInChildren<BodyPart>());
+        //bodyParts = new List<BodyPart>(transform.GetComponentsInChildren<BodyPart>());
+        bodyParts = transform.GetComponentsInChildren<BodyPart>().ToDictionary(x => x.name, x => x.GetComponent<BodyPart>());
+
 
         // remove root again since we're getting the same list again.
         //bodyParts.Remove(GetComponent<BodyPart>());

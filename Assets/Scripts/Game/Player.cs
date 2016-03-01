@@ -41,12 +41,12 @@ public class Player : Character {
     // Update is called once per frame
     int i;
     protected override void Update () {
-        
-
         if (Input.GetMouseButtonDown(0))
         {
             if (!CheckForAndAttachBodyPart())
-                for (i = 0; i < bodyParts.Count && Detach(i) == null; i++) ;
+                foreach (string s in bodyParts.Keys)
+                    if (Detach(s) != null)
+                        break;
         }
 
         base.Update();
