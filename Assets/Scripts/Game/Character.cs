@@ -4,8 +4,8 @@
     AUTHS Douglas Gliner
     TO-DO
         - GRAB PARTS FROM DEAD GUY
-        - CUT COLLIDER IN HALF WHEN NO LEGS
-        - IGNORE CAPSULE COLLIDER WHEN DETACHING
+        * CUT COLLIDER IN HALF WHEN NO LEGS (currently working on)
+        + IGNORE CAPSULE COLLIDER WHEN DETACHING, kinda
         - PICK UP AND CARRY B PARTS
     NOTES
         - Attach this script to the root of the character meaning its children
@@ -17,6 +17,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CapsuleCollider))]
 [RequireComponent(typeof(Inventory))]
 public abstract class Character : MonoBehaviour
 {
@@ -39,6 +40,7 @@ public abstract class Character : MonoBehaviour
     protected Vector3 acceleration;
     private Vector3 velocity;
     protected new Rigidbody rigidbody;
+    protected CapsuleCollider capsuleCollider;
 
     // States n' Actions
     protected bool isAlive;
@@ -85,6 +87,10 @@ public abstract class Character : MonoBehaviour
         velocity = Vector3.zero;
         rigidbody = GetComponent<Rigidbody>();
         rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+
+        // get the overall capsule collider
+        // should be 2nd in array of capsule colliders.
+        capsuleCollider = GetComponents<CapsuleCollider>()[1]; // VERY UNSAFEEEEEEEE
 
         // always start alive
         isAlive = true;
@@ -183,7 +189,8 @@ public abstract class Character : MonoBehaviour
 
 
         // move the character based on velocity
-        transform.position += (velocity * Time.deltaTime);
+        //transform.position += (velocity * Time.deltaTime);
+        rigidbody.velocity = velocity;
 
         // set accel to 0
         acceleration = Vector3.zero;
@@ -253,6 +260,14 @@ public abstract class Character : MonoBehaviour
         //bodyParts = new List<BodyPart>(transform.GetComponentsInChildren<BodyPart>());
         bodyParts = transform.GetComponentsInChildren<BodyPart>().ToDictionary(x => x.name, x => x.GetComponent<BodyPart>());
 
+        // check to see if both legs are now detached
+        // TODO: make this not terrible... more dynamic
+        // TODO: FINISH
+        // perhaps a rule class or struct with events?
+        if (!bodyParts.ContainsKey("l_leg") && !bodyParts.ContainsKey("r_leg"))
+            capsuleCollider.height = 166.75f;
+        else
+            capsuleCollider.height = 333.5f;
 
         // remove root again since we're getting the same list again.
         //bodyParts.Remove(GetComponent<BodyPart>());

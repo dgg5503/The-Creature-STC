@@ -160,7 +160,8 @@ public class BodyPart : Item
 
         // apply collision to bparts again.
         // body part is now part of the environment (layer 8 is environment)
-        gameObject.layer = 8;
+        // TODO: FIND A WAY SO THAT BPART IGNORES MAIN CAPSULE COLLIDERS BUT INTERACTS WITH OTHER PARTS?
+        //gameObject.layer = 8;
 
         // unconnect hinge
         Destroy(GetComponent<HingeJoint>());
