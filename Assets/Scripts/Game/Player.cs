@@ -9,6 +9,7 @@
 
 using UnityEngine;
 using System.Collections;
+using System;
 
 public class Player : Character {
     // Camera used by this player
@@ -27,7 +28,9 @@ public class Player : Character {
         // ??? ASSUMING MAIN CAMERA IS THE CHARACTERS CAMERA
         //playerCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
         playerCamera = Camera.main;
-        accelerationScalar = 5.0f;
+        accelerationScalar = 10f;
+        rotationAccelFactor = 10f;
+        maxVelocity = 5.0f;
     }
 
     // Use this for initialization
@@ -38,54 +41,7 @@ public class Player : Character {
     // Update is called once per frame
     int i;
     protected override void Update () {
-        // zero out accel
-        acceleration = Vector3.zero;
-
-        // Get camera forward
-        Vector3 cameraForward = playerCamera.transform.forward;
-        Vector3 cameraRight = playerCamera.transform.right;
-
-        #region movement
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            acceleration += cameraForward * accelerationScalar;
-        }
-
-        if(Input.GetKeyUp(KeyCode.W))
-        {
-            acceleration -= cameraForward * accelerationScalar;
-        }
-
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            acceleration += cameraRight * accelerationScalar * -1;
-        }
-
-        if (Input.GetKeyUp(KeyCode.A))
-        {
-            acceleration -= cameraRight * accelerationScalar * -1;
-        }
-
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            acceleration += cameraForward * accelerationScalar * -1;
-        }
-
-        if (Input.GetKeyUp(KeyCode.S))
-        {
-            acceleration -= cameraForward * accelerationScalar * -1;
-        }
-
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            acceleration += cameraRight * accelerationScalar;
-        }
-
-        if (Input.GetKeyUp(KeyCode.D))
-        {
-            acceleration -= cameraRight * accelerationScalar;
-        }
-        #endregion
+        
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -94,6 +50,87 @@ public class Player : Character {
         }
 
         base.Update();
+    }
+
+    protected override void ProcessMovement()
+    {
+        // Get camera forward
+        // OPTIMIZATION: CHARACTER CREATING NEW VEC3 EVERY FRAME?
+        Vector3 cameraForward = playerCamera.transform.forward;
+        Vector3 cameraRight = playerCamera.transform.right;
+
+        #region movement
+        // get direction relative to camera
+        if (Input.GetKey(KeyCode.W))
+        {
+            //acceleration += cameraForward * -1;
+
+            acceleration.x += cameraForward.x;
+            acceleration.z += cameraForward.z;
+        }
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            //acceleration += cameraRight * -1;
+
+            acceleration.x += cameraRight.x * -1;
+            acceleration.z += cameraRight.z * -1;
+        }
+
+        if (Input.GetKey(KeyCode.S))
+        {
+            //acceleration += cameraForward * -1;
+
+            acceleration.x += cameraForward.x * -1;
+            acceleration.z += cameraForward.z * -1;
+        }
+
+        if (Input.GetKey(KeyCode.D))
+        {
+            //acceleration += cameraRight;
+
+            acceleration.x += cameraRight.x;
+            acceleration.z += cameraRight.z;
+        }
+
+        // apply accel scalar AFTER getting direction
+        // this is so we dont add two times the accel scalar 
+        // when holding down two direction at the same time.
+        acceleration *= accelerationScalar;
+
+        // key up
+        /*
+        if (Input.GetKeyUp(KeyCode.W))
+        {
+            acceleration.x -= cameraForward.x * accelerationScalar;
+            acceleration.z -= cameraForward.z * accelerationScalar;
+        }
+
+        if (Input.GetKeyUp(KeyCode.A))
+        {
+            //acceleration += cameraRight * -1;
+
+            acceleration.x -= cameraRight.x * -1;
+            acceleration.z -= cameraRight.z * -1;
+        }
+
+        if (Input.GetKeyUp(KeyCode.S))
+        {
+            //acceleration += cameraForward * -1;
+
+            acceleration.x -= cameraForward.x * -1;
+            acceleration.z -= cameraForward.z * -1;
+        }
+
+        if (Input.GetKeyUp(KeyCode.D))
+        {
+            //acceleration += cameraRight;
+
+            acceleration.x -= cameraRight.x;
+            acceleration.z -= cameraRight.z;
+        }
+        */
+        #endregion
     }
 
     // debug function for reattaching body parts.

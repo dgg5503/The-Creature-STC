@@ -28,9 +28,10 @@ public abstract class Character : MonoBehaviour
 
     // Movement n' Physics
     protected float accelerationScalar;
+    protected float rotationAccelFactor;
     protected float maxVelocity;
     protected Vector3 acceleration;
-    protected Vector3 velocity;
+    private Vector3 velocity;
     protected new Rigidbody rigidbody;
 
     // States n' Actions
@@ -68,10 +69,12 @@ public abstract class Character : MonoBehaviour
 
         // init physics defaults
         accelerationScalar = 1.25f;
+        rotationAccelFactor = .01f;
         maxVelocity = 2.0f;
         acceleration = Vector3.zero;
         velocity = Vector3.zero;
         rigidbody = GetComponent<Rigidbody>();
+        rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
 
         // always start alive
         isAlive = true;
@@ -83,18 +86,105 @@ public abstract class Character : MonoBehaviour
 	    
 	}
 
+    /*
+    protected virtual void Update()
+    {
+        ProcessMovement();
+
+        // apply velocity changes to this character
+        if (acceleration != Vector3.zero)
+            velocity += acceleration * Time.deltaTime;
+
+        // local space velocity
+        Vector3 localVelNorm = transform.InverseTransformDirection(velocity.normalized);
+
+        // determine amount to turn
+        float turnAmount = Mathf.Atan2(localVelNorm.x, localVelNorm.z);
+
+        // turn based on z position (which is forward)
+        float turnSpeed = Mathf.Lerp(180, 360, localVelNorm.z);
+        transform.Rotate(0, turnAmount * turnSpeed * Time.deltaTime, 0);
+
+        // apply velocity to local coord
+        //transform.localPosition.z += (velocity.z * Time.deltaTime);
+
+        // set accel to 0
+        acceleration = Vector3.zero;
+
+
+    }*/
+
     // Update is called once per frame
+    
     protected virtual void Update ()
     {
-        //bodyParts[2].Help();
-        velocity += acceleration;
-        Vector3.ClampMagnitude(velocity, maxVelocity);
-        //transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+        // calculate movement
+        ProcessMovement();
+
+        // apply velocity changes to this character
+        if (acceleration != Vector3.zero)
+        {
+            // TODO: When on slope, apply velocity based on norm of slope?
+            velocity += acceleration * Time.deltaTime;
+
+            // lerp directional velocity from this objects forward to the accel norm
+            // creates rotation effect expected in a human.
+            // looks smooth when not performing a 180
+            velocity = Vector3.LerpUnclamped(transform.forward, acceleration.normalized, Time.deltaTime * rotationAccelFactor) * velocity.magnitude;
+
+            Debug.Log(string.Format("{0}, {1} : {2}", transform.forward, acceleration.normalized, Time.deltaTime * rotationAccelFactor));
+            //Debug.Log(velocity);
+        }
+        else
+        {
+            // not sure if this is accurate???
+            velocity = Vector3.LerpUnclamped(velocity, Vector3.zero, Time.deltaTime * accelerationScalar);
+
+            // decrease veloctiy if no acceleration
+            // TODO: base this on friction of surface?
+            // deaccel until velocity is oppposite dir of forward
+            // opposite dir of stopping forward.
+            /*
+            if (velocity.magnitude > .00001)
+            {
+                //Debug.Log(velocity.magnitude);
+                //Debug.DrawLine(transform.position, transform.position + velocity.normalized * 10, Color.black);
+                //Debug.DrawLine(transform.position, transform.position + transform.forward * 10, Color.blue);
+                velocity *= (1 / accelerationScalar) * Time.deltaTime;
+                //velocity += transform.forward * -accelerationScalar * Time.deltaTime;
+            }
+            else
+            {
+                
+                velocity = Vector3.zero;
+            }
+            // */
+        }
+        
+        // clamp to this characters max velocity.
+        velocity = Vector3.ClampMagnitude(velocity, maxVelocity);
+
+        // turn the character based on veloctiy
+        // dont turn when velocity is zero so we face the last direction
+        if (velocity != Vector3.zero)
+        {
+            transform.forward = velocity.normalized;
+            //transform.forward = Vector3.LerpUnclamped(transform.forward, velocity.normalized, Time.deltaTime * (accelerationScalar * 2));
+        }
+
+
+        // move the character based on velocity
         transform.position += (velocity * Time.deltaTime);
-        //rigidbody.AddForce(acceleration, ForceMode.VelocityChange);
 
-
+        // set accel to 0
+        acceleration = Vector3.zero;
     }
+
+    /// <summary>
+    /// Use this function for character specific movement.
+    /// i.e. player is controlled via input but AI will move based on rules.
+    /// </summary>
+    abstract protected void ProcessMovement();
 
     protected bool Attach(BodyPart bodyPartToAttach)
     {
