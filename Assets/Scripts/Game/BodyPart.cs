@@ -73,13 +73,10 @@ public class BodyPart : Item
         if (name == "root")
             rigidbody.isKinematic = true;
 
-        // ignore collision with parent to prevent spazzing of merged bparts
+        // if parent exists, set desired name
         if (transform.parent != null)
-        {
             expectedParentType = transform.parent.name;
-            Physics.IgnoreCollision(collider, transform.parent.GetComponent<Collider>());
-        }
-        
+
         // health
         health = 100;
     }
@@ -91,10 +88,14 @@ public class BodyPart : Item
         // doing this here since rigidbodies are created at awake.
         if (transform.parent != null)
         {
-            
             BodyPart parentBodyPart = transform.parent.GetComponent<BodyPart>();
+
             if (parentBodyPart != null)
             {
+                // ignore collision with parent to prevent spazzing of merged bparts
+                Physics.IgnoreCollision(collider, parentBodyPart.GetComponent<Collider>());
+
+                // create hinge
                 hinge = gameObject.AddComponent<HingeJoint>();
                 hinge.connectedBody = parentBodyPart.rigidbody;
                 hinge.anchor = transform.position;

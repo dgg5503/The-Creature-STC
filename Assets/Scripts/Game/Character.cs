@@ -68,6 +68,7 @@ public abstract class Character : MonoBehaviour
     */
     protected virtual void Awake()
     {
+        Debug.Log(transform.rotation);
         // Grab all children with BodyPart scripts and store them for reference
         // Q: Is the head/torso a body part with inf health?
 
@@ -103,7 +104,7 @@ public abstract class Character : MonoBehaviour
         
         // get the overall capsule collider
         collider = GetComponent<BoxCollider>();
-
+        
         // calc bounds for the character
         RecalculateCollisionBounds();
 
@@ -112,6 +113,7 @@ public abstract class Character : MonoBehaviour
 
         // set layer of character colliders to 10
         gameObject.layer = 10;
+        Debug.Log(transform.rotation);
     }
 
 	// Use this for initialization
@@ -312,19 +314,19 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     private void RecalculateCollisionBounds()
     {
-
         Quaternion currentRotation = transform.rotation;
         transform.rotation = Quaternion.Euler(0f, 0f, 0f);
 
         // RECURSIVELY GO THROUGH ALL CHILDREN AND ENCAPSULATE
-        Bounds initialBounds = bodyParts["root"].GetComponent<Renderer>().bounds;
+        Bounds initialBounds = bodyParts["root"].GetComponent<MeshFilter>().mesh.bounds;
+        initialBounds.center = transform.position;
         RecalculateCollisionBounds(ref initialBounds, bodyParts["root"].gameObject);
 
 
-        initialBounds.center = initialBounds.center - transform.position;
+        //initialBounds.center = initialBounds.center - transform.position;
         Debug.Log("The local bounds of this model is " + initialBounds);
         ((BoxCollider)collider).center = initialBounds.center;
-        ((BoxCollider)collider).size = initialBounds.size * 100;
+        ((BoxCollider)collider).size = initialBounds.size;
         transform.rotation = currentRotation;
 
         /*
@@ -354,27 +356,38 @@ public abstract class Character : MonoBehaviour
 
     private void RecalculateCollisionBounds(ref Bounds currentBounds, GameObject currentBodyPart)
     {
-        /*
-        foreach (Transform child in currentBodyPart.transform)
-        {
-            currentBounds.Encapsulate(child.GetComponent<Renderer>().bounds.min);
-            currentBounds.Encapsulate(child.GetComponent<Renderer>().bounds.max);
-            Debug.Log(string.Format("{0} : {1}", child.name, currentBounds.center + transform.position));
-        }
-        return currentBounds;
-        */
-
-        currentBounds.Encapsulate(currentBodyPart.GetComponent<Renderer>().bounds);
-        Debug.Log(string.Format("{0} : {1}", currentBodyPart.name, currentBounds));
-        Debug.Log(currentBounds.GetHashCode());
+        //Debug.Log(currentBounds.GetHashCode());
         if (currentBodyPart.transform.childCount != 0)
         {
-            foreach (Transform child in currentBodyPart.transform)
+            foreach (Transform child in currentBodyPart.transform) 
                 RecalculateCollisionBounds(ref currentBounds, child.gameObject);
+
+            /*
+            foreach (Transform child in currentBodyPart.transform)
+            {
+                //currentBodyPart.GetComponent<Renderer>().bounds.Encapsulate(child.gameObject.GetComponent<Renderer>().bounds);
+                Debug.Log(string.Format("{0} --> {1}", currentBodyPart.name, child.name));
+                currentBounds.Encapsulate(child.gameObject.GetComponent<Renderer>().bounds);
+            }
+            */
+            
         }
 
-        
-        
+        //Debug.Log(string.Format("root --> {0}", currentBodyPart.name));
+        //currentBounds.Encapsulate(currentBodyPart.GetComponent<Renderer>().bounds.extents);
+        Bounds newBounds = currentBodyPart.GetComponent<MeshFilter>().mesh.bounds;
+
+        //Debug.Log(newBounds.center);
+        // GET CENTER OF MESH
+        // DIV BY LOCAL SCALE TO MOVE CENTER TO APPROPRIATE POSITION...
+        // !!!!!! THIS IS WHY EVERYTHING SHOULD IMPORT AT 1 1 1 SCALE !!!!!!!
+        // RENDERER CENTER BOUNDS ARE LOCAL
+        newBounds.center = (currentBodyPart.GetComponent<Renderer>().bounds.center - transform.position) / transform.localScale.x;
+
+        //Debug.Log(newBounds.center);
+        currentBounds.Encapsulate(newBounds);
+        //Debug.Log(string.Format("{0} : {1} w {2}", currentBodyPart.name, currentBounds, currentBodyPart.transform.childCount));
         //return currentBounds;
     }
+
 }
