@@ -5,7 +5,7 @@
     TO-DO
         - GRAB PARTS FROM DEAD GUY
         * CUT COLLIDER IN HALF WHEN NO LEGS (currently working on)
-        + IGNORE CAPSULE COLLIDER WHEN DETACHING, kinda
+        + IGNORE CAPSULE COLLIDER WHEN DETACHING
         - PICK UP AND CARRY B PARTS
     NOTES
         - Attach this script to the root of the character meaning its children
@@ -17,7 +17,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(CapsuleCollider))]
+[RequireComponent(typeof(Collider))]
 [RequireComponent(typeof(Inventory))]
 public abstract class Character : MonoBehaviour
 {
@@ -36,16 +36,29 @@ public abstract class Character : MonoBehaviour
     // Movement n' Physics
     protected float accelerationScalar;
     protected float rotationAccelFactor;
-    protected float maxVelocity;
+    protected float maxSpeed;
     protected Vector3 acceleration;
     private Vector3 velocity;
     protected new Rigidbody rigidbody;
-    protected CapsuleCollider capsuleCollider;
+    protected new Collider collider;
 
     // States n' Actions
     protected bool isAlive;
 
+    /// <summary>
+    /// Get the dictionary of body parts for this character.
+    /// </summary>
     public Dictionary<string, BodyPart> BodyParts { get { return bodyParts; } }
+
+    /// <summary>
+    /// Get the inventory of this character.
+    /// </summary>
+    public Inventory Inventory { get { return inventory; } }
+
+    public bool IsGrounded
+    {
+        get; set;
+    }
 
     // actions go here...
 
@@ -82,18 +95,23 @@ public abstract class Character : MonoBehaviour
         // init physics defaults
         accelerationScalar = 1.25f;
         rotationAccelFactor = .01f;
-        maxVelocity = 2.0f;
+        maxSpeed = 2.0f;
         acceleration = Vector3.zero;
         velocity = Vector3.zero;
         rigidbody = GetComponent<Rigidbody>();
         rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-
+        
         // get the overall capsule collider
-        // should be 2nd in array of capsule colliders.
-        capsuleCollider = GetComponents<CapsuleCollider>()[1]; // VERY UNSAFEEEEEEEE
+        collider = GetComponent<BoxCollider>();
+
+        // calc bounds for the character
+        RecalculateCollisionBounds();
 
         // always start alive
         isAlive = true;
+
+        // set layer of character colliders to 10
+        gameObject.layer = 10;
     }
 
 	// Use this for initialization
@@ -142,14 +160,27 @@ public abstract class Character : MonoBehaviour
         {
             // TODO: When on slope, apply velocity parallel to slope with slope max.?
             velocity += acceleration * Time.deltaTime;
-
+            
             // lerp directional velocity from this objects forward to the accel norm
             // creates rotation effect purely from velocity
             // TODO: looks smooth when not performing a 180
+            //float forwardAngle = Mathf.Atan2(transform.forward.x, transform.forward.z);
+            //float accelAngle = Mathf.Atan2(acceleration.normalized.x, acceleration.normalized.z);
+            //float angleBetween = Vector3.Angle(transform.forward, acceleration.normalized) * Mathf.Deg2Rad;
+            //Vector3 facingDir = transform.forward;
+            //Vector3 desiredDir = acceleration.normalized;
+            
+            //rotate velocity based on turnspeed uniformly
+            //float speed = 10 * Time.deltaTime;
+            //velocity = Vector3.RotateTowards(transform.forward, acceleration.normalized, rotationAccelFactor * (angleBetween / Mathf.PI) * Time.deltaTime, 0) * velocity.magnitude;
+
             velocity = Vector3.LerpUnclamped(transform.forward, acceleration.normalized, Time.deltaTime * rotationAccelFactor) * velocity.magnitude;
 
-            Debug.Log(string.Format("{0}, {1} : {2}", transform.forward, acceleration.normalized, Time.deltaTime * rotationAccelFactor));
-            //Debug.Log(velocity);
+            //Debug.Log(string.Format("{0}, {1} : {2}", transform.forward, acceleration.normalized, Time.deltaTime * rotationAccelFactor));
+
+            //Debug.Log(string.Format("FWD: {0} ACC: {1}", forwardAngle, accelAngle));
+
+            //Debug.DrawLine(transform.position, transform.position + (transform.forward + acceleration.normalized) * 10.0f, Color.black);
         }
         else
         {
@@ -178,7 +209,7 @@ public abstract class Character : MonoBehaviour
         }
         
         // clamp to this characters max velocity.
-        velocity = Vector3.ClampMagnitude(velocity, maxVelocity);
+        velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
 
         // makes character face velocity.
         if (velocity != Vector3.zero)
@@ -190,7 +221,11 @@ public abstract class Character : MonoBehaviour
 
         // move the character based on velocity
         //transform.position += (velocity * Time.deltaTime);
-        rigidbody.velocity = velocity;
+
+        // TODO: perhaps use addforce to rid of this check?
+        // or just use the RB velocity overall.
+        if(velocity != Vector3.zero)
+            rigidbody.velocity = velocity;
 
         // set accel to 0
         acceleration = Vector3.zero;
@@ -236,7 +271,9 @@ public abstract class Character : MonoBehaviour
         BodyPart tmpPart = bodyParts[bodyPartName];
 
         // dont remove root (this).
-        if (tmpPart == GetComponent<BodyPart>())
+        //if (tmpPart == GetComponent<BodyPart>())
+        //    return null;
+        if (tmpPart.name == "root")
             return null;
 
         // can only remove parts where part has no children
@@ -262,16 +299,82 @@ public abstract class Character : MonoBehaviour
 
         // check to see if both legs are now detached
         // TODO: make this not terrible... more dynamic
-        // TODO: FINISH
         // perhaps a rule class or struct with events?
-        if (!bodyParts.ContainsKey("l_leg") && !bodyParts.ContainsKey("r_leg"))
-            capsuleCollider.height = 166.75f;
-        else
-            capsuleCollider.height = 333.5f;
-
-        // remove root again since we're getting the same list again.
-        //bodyParts.Remove(GetComponent<BodyPart>());
+        // adjust capsule collider pivot to new center and height
+        //RecalculateCollisionBounds();
+        
 
         return tmpPart;
+    }
+
+    /// <summary>
+    /// Recalculates the capsule colliders bounds.
+    /// </summary>
+    private void RecalculateCollisionBounds()
+    {
+
+        Quaternion currentRotation = transform.rotation;
+        transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+
+        // RECURSIVELY GO THROUGH ALL CHILDREN AND ENCAPSULATE
+        Bounds initialBounds = bodyParts["root"].GetComponent<Renderer>().bounds;
+        RecalculateCollisionBounds(ref initialBounds, bodyParts["root"].gameObject);
+
+
+        initialBounds.center = initialBounds.center - transform.position;
+        Debug.Log("The local bounds of this model is " + initialBounds);
+        ((BoxCollider)collider).center = initialBounds.center;
+        ((BoxCollider)collider).size = initialBounds.size * 100;
+        transform.rotation = currentRotation;
+
+        /*
+        Bounds newBounds = new Bounds(transform.position)
+        Bounds newBounds = bodyParts["l_arm"].GetComponent<Renderer>().bounds;
+        
+        foreach (BodyPart bodyPart in bodyParts.Values)
+        {
+
+                Debug.Log(string.Format("RECALC: {0} adding {1}", bodyPart.name, bodyPart.GetComponent<Renderer>().bounds));
+                newBounds.Encapsulate(bodyPart.GetComponent<Renderer>().bounds);
+
+        }
+        
+        //collider.center = newBounds.center;
+        //collider.radius = Mathf.Max(newBounds.size.x, newBounds.size.z);
+        //collider.height = (newBounds.size.y * 2);
+       
+        ((BoxCollider)collider).center = newBounds.center;
+        ((BoxCollider)collider).size = newBounds.size * 100;
+        
+        Debug.DrawLine(transform.position, transform.position + newBounds.size, Color.black);
+
+        Debug.Log(string.Format("-NEW BOUNDS: {0}-", newBounds.size));
+        */
+    }
+
+    private void RecalculateCollisionBounds(ref Bounds currentBounds, GameObject currentBodyPart)
+    {
+        /*
+        foreach (Transform child in currentBodyPart.transform)
+        {
+            currentBounds.Encapsulate(child.GetComponent<Renderer>().bounds.min);
+            currentBounds.Encapsulate(child.GetComponent<Renderer>().bounds.max);
+            Debug.Log(string.Format("{0} : {1}", child.name, currentBounds.center + transform.position));
+        }
+        return currentBounds;
+        */
+
+        currentBounds.Encapsulate(currentBodyPart.GetComponent<Renderer>().bounds);
+        Debug.Log(string.Format("{0} : {1}", currentBodyPart.name, currentBounds));
+        Debug.Log(currentBounds.GetHashCode());
+        if (currentBodyPart.transform.childCount != 0)
+        {
+            foreach (Transform child in currentBodyPart.transform)
+                RecalculateCollisionBounds(ref currentBounds, child.gameObject);
+        }
+
+        
+        
+        //return currentBounds;
     }
 }

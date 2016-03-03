@@ -3,12 +3,14 @@
     ------------------------
     AUTHS Douglas Gliner
     TO-DO
-        - Detach()
-        - Attach(Character c)
+        
+    DONE
+        + Detach(string nameOfBpart)
+        + Attach(BodyPart bodyPart)
 
     NOTES
-        - Attach this script to the root of the character meaning its children
-          contain body parts.
+        - Attach this script to an empty game object that has the characters
+          root body as a child. This is to simplify layer collision.
 */
 
 using UnityEngine;
@@ -46,7 +48,6 @@ public class BodyPart : Item
     // Properties
     public int Health { get { return health; } }
 
-    // Required parts?
     //int importance;
 
     /*
@@ -55,27 +56,30 @@ public class BodyPart : Item
     */
     protected override void Awake()
     {
-        //Debug.Log("CALLED");
         base.Awake();
         collider = GetComponent<Collider>();
         rigidbody = GetComponent<Rigidbody>();
         expectedParentType = "";
         hinge = null;
 
-        // if not already tagged, tag as BodyPart
-        if (tag == "Untagged")
+        // if not already tagged as bodypart, force tag as BodyPart
+        if (tag != "BodyPart")
             tag = "BodyPart";
 
-        // OLD: Collision is now ignored between ALL ITEMS
-        // (all items on the items layer ignore items on the items layer)
-        // ignore collision with parent to prevent flying when detached
+        // if this body part is "root," set to kinematic
+        // else set to false ?
+        // TODO: should setting to kinematic be done in CHARACTER since 
+        // we could have a ragdoll on the ground with no collider?
+        if (name == "root")
+            rigidbody.isKinematic = true;
+
+        // ignore collision with parent to prevent spazzing of merged bparts
         if (transform.parent != null)
         {
             expectedParentType = transform.parent.name;
-            
             Physics.IgnoreCollision(collider, transform.parent.GetComponent<Collider>());
         }
-
+        
         // health
         health = 100;
     }
@@ -109,18 +113,32 @@ public class BodyPart : Item
     }
 
     /// <summary>
+    /// TODO REMOVE THIS MAYBE?
+    /// QUICK AND DIRTY REMOVAL OF COLLISION BETWEEN ALL BPARTS AT ALL TIMES.
+    /// POSSIBLY BETTER TO DO THIS AT AWAKE AND DURING LOADS???
+    /// </summary>
+    /// <param name="collision"></param>
+    /*
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "BodyPart")
+        {
+            Debug.Log(collision.gameObject.name);
+            Physics.IgnoreCollision(collision.collider, collider);
+        }
+    }
+    */
+
+    /// <summary>
     /// This will set the body part to connected.
     /// </summary>
     public bool SetStatic(BodyPart parent, Vector3 position, Quaternion rotation)
     {
-        //Debug.Log(string.Format("{0} = {1}?", parent.name, expectedParentType));
+        //Debug.Log(string.Format("{0} expecting {1} and got {2}", name, expectedParentType, parent.name));
         if (transform.parent != null || parent.name != expectedParentType)
             return false;
 
-        Debug.Log(string.Format("{0} attached to {1}", name, parent.name));
-
-        // place on layer 9 since its an item
-        gameObject.layer = 9;
+        //Debug.Log(string.Format("{0} attached to {1}", name, parent.name));
 
         // set our parent, localposition, rotation.
         transform.parent = parent.transform;
@@ -137,10 +155,7 @@ public class BodyPart : Item
         if (name == "head")
             HeadCheck(hinge);
 
-        // turn on kinematics
-        //rigidbody.isKinematic = true;
-
-        // ignore parent collision
+        // re-ignore parent collision
         if (transform.parent != null)
             Physics.IgnoreCollision(collider, transform.parent.GetComponent<Collider>());
         return true;
@@ -151,17 +166,9 @@ public class BodyPart : Item
     /// </summary>
     public void SetActive()
     {
-        // reapply collision
+        // reapply collision detection to parent
         if (transform.parent != null)
             Physics.IgnoreCollision(collider, transform.parent.GetComponent<Collider>(), false);
-
-        // turn off kinematics so its physicsy
-        //rigidbody.isKinematic = false;
-
-        // apply collision to bparts again.
-        // body part is now part of the environment (layer 8 is environment)
-        // TODO: FIND A WAY SO THAT BPART IGNORES MAIN CAPSULE COLLIDERS BUT INTERACTS WITH OTHER PARTS?
-        //gameObject.layer = 8;
 
         // unconnect hinge
         Destroy(GetComponent<HingeJoint>());

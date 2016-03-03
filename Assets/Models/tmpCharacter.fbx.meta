@@ -1,50 +1,50 @@
 fileFormatVersion: 2
-guid: 7837824712bb53c408b5f9a6026a6a48
-timeCreated: 1456432408
+guid: 2a07ca0609559f24b9936c55fe7c5d21
+timeCreated: 1456884300
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
-    100000: //RootNode
-    100002: head
-    100004: l_arm
-    100006: l_foot
-    100008: l_hand
-    100010: l_leg
-    100012: r_arm
-    100014: r_foot
-    100016: r_hand
-    100018: r_leg
-    400000: //RootNode
-    400002: head
-    400004: l_arm
-    400006: l_foot
-    400008: l_hand
-    400010: l_leg
-    400012: r_arm
-    400014: r_foot
-    400016: r_hand
-    400018: r_leg
-    2300000: //RootNode
-    2300002: head
-    2300004: l_arm
-    2300006: l_foot
-    2300008: l_hand
-    2300010: l_leg
-    2300012: r_arm
-    2300014: r_foot
-    2300016: r_hand
-    2300018: r_leg
-    3300000: //RootNode
-    3300002: head
-    3300004: l_arm
-    3300006: l_foot
-    3300008: l_hand
-    3300010: l_leg
-    3300012: r_arm
-    3300014: r_foot
-    3300016: r_hand
-    3300018: r_leg
+    100000: head
+    100002: l_arm
+    100004: l_foot
+    100006: l_hand
+    100008: l_leg
+    100010: r_arm
+    100012: r_foot
+    100014: r_hand
+    100016: r_leg
+    100018: //RootNode
+    400000: head
+    400002: l_arm
+    400004: l_foot
+    400006: l_hand
+    400008: l_leg
+    400010: r_arm
+    400012: r_foot
+    400014: r_hand
+    400016: r_leg
+    400018: //RootNode
+    2300000: head
+    2300002: l_arm
+    2300004: l_foot
+    2300006: l_hand
+    2300008: l_leg
+    2300010: r_arm
+    2300012: r_foot
+    2300014: r_hand
+    2300016: r_leg
+    2300018: //RootNode
+    3300000: head
+    3300002: l_arm
+    3300004: l_foot
+    3300006: l_hand
+    3300008: l_leg
+    3300010: r_arm
+    3300012: r_foot
+    3300014: r_hand
+    3300016: r_leg
+    3300018: //RootNode
     4300000: torso
     4300002: l_arm
     4300004: l_hand

@@ -29,8 +29,8 @@ public class Player : Character {
         //playerCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
         playerCamera = Camera.main;
         accelerationScalar = 10f;
-        rotationAccelFactor = 10f;
-        maxVelocity = 5.0f;
+        rotationAccelFactor = 5f;
+        maxSpeed = 5.0f;
     }
 
     // Use this for initialization
@@ -156,7 +156,6 @@ public class Player : Character {
             {
                 // found first body part, attach and return
                 Attach(obj.collider.GetComponent<BodyPart>());
-                Debug.Log("YAAS");
                 return true;
             }
         }

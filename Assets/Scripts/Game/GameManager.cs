@@ -5,8 +5,8 @@ public class GameManager : MonoBehaviour {
 
     void Awake()
     {
-        // items ignore collision with anything on the ITEM LAYER
-        Physics.IgnoreLayerCollision(9, 9);
+        // Have bparts ignore character colliders
+        Physics.IgnoreLayerCollision(9, 10);
     }
 
 	// Use this for initialization
