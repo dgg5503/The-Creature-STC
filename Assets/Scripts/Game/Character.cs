@@ -328,30 +328,6 @@ public abstract class Character : MonoBehaviour
         ((BoxCollider)collider).center = initialBounds.center;
         ((BoxCollider)collider).size = initialBounds.size;
         transform.rotation = currentRotation;
-
-        /*
-        Bounds newBounds = new Bounds(transform.position)
-        Bounds newBounds = bodyParts["l_arm"].GetComponent<Renderer>().bounds;
-        
-        foreach (BodyPart bodyPart in bodyParts.Values)
-        {
-
-                Debug.Log(string.Format("RECALC: {0} adding {1}", bodyPart.name, bodyPart.GetComponent<Renderer>().bounds));
-                newBounds.Encapsulate(bodyPart.GetComponent<Renderer>().bounds);
-
-        }
-        
-        //collider.center = newBounds.center;
-        //collider.radius = Mathf.Max(newBounds.size.x, newBounds.size.z);
-        //collider.height = (newBounds.size.y * 2);
-       
-        ((BoxCollider)collider).center = newBounds.center;
-        ((BoxCollider)collider).size = newBounds.size * 100;
-        
-        Debug.DrawLine(transform.position, transform.position + newBounds.size, Color.black);
-
-        Debug.Log(string.Format("-NEW BOUNDS: {0}-", newBounds.size));
-        */
     }
 
     private void RecalculateCollisionBounds(ref Bounds currentBounds, GameObject currentBodyPart)
@@ -361,17 +337,7 @@ public abstract class Character : MonoBehaviour
         {
             foreach (Transform child in currentBodyPart.transform) 
                 RecalculateCollisionBounds(ref currentBounds, child.gameObject);
-
-            /*
-            foreach (Transform child in currentBodyPart.transform)
-            {
-                //currentBodyPart.GetComponent<Renderer>().bounds.Encapsulate(child.gameObject.GetComponent<Renderer>().bounds);
-                Debug.Log(string.Format("{0} --> {1}", currentBodyPart.name, child.name));
-                currentBounds.Encapsulate(child.gameObject.GetComponent<Renderer>().bounds);
-            }
-            */
-            
-        }
+        }       
 
         //Debug.Log(string.Format("root --> {0}", currentBodyPart.name));
         //currentBounds.Encapsulate(currentBodyPart.GetComponent<Renderer>().bounds.extents);
@@ -387,7 +353,6 @@ public abstract class Character : MonoBehaviour
         //Debug.Log(newBounds.center);
         currentBounds.Encapsulate(newBounds);
         //Debug.Log(string.Format("{0} : {1} w {2}", currentBodyPart.name, currentBounds, currentBodyPart.transform.childCount));
-        //return currentBounds;
     }
 
 }
