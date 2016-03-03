@@ -4,7 +4,7 @@
     AUTHS Douglas Gliner
     TO-DO
         - GRAB PARTS FROM DEAD GUY
-        * CUT COLLIDER IN HALF WHEN NO LEGS (currently working on)
+        + CUT COLLIDER IN HALF WHEN NO LEGS
         + IGNORE CAPSULE COLLIDER WHEN DETACHING
         - PICK UP AND CARRY B PARTS
     NOTES
@@ -40,7 +40,7 @@ public abstract class Character : MonoBehaviour
     protected Vector3 acceleration;
     private Vector3 velocity;
     protected new Rigidbody rigidbody;
-    protected new Collider collider;
+    protected new CapsuleCollider collider;
 
     // States n' Actions
     protected bool isAlive;
@@ -103,7 +103,7 @@ public abstract class Character : MonoBehaviour
         rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
         
         // get the overall capsule collider
-        collider = GetComponent<BoxCollider>();
+        collider = GetComponent<CapsuleCollider>();
         
         // calc bounds for the character
         RecalculateCollisionBounds();
@@ -251,7 +251,12 @@ public abstract class Character : MonoBehaviour
         foreach (BodyPart bp in bodyParts.Values)
         {
             if (bodyPartToAttach.SetStatic(bp, bodyPartOrigins[bodyPartToAttach.name], Quaternion.identity))
+            {
+                // VVV VERY SLOW VVV
+                bodyParts = transform.GetComponentsInChildren<BodyPart>().ToDictionary(x => x.name, x => x.GetComponent<BodyPart>());
+                RecalculateCollisionBounds();
                 return true;
+            }
         }
         return false;
     }
@@ -267,14 +272,10 @@ public abstract class Character : MonoBehaviour
         if (!bodyParts.ContainsKey(bodyPartName))
             return null;
 
-        // cannot detach root until all other parts are gone.
-
         // store in a variable
         BodyPart tmpPart = bodyParts[bodyPartName];
 
         // dont remove root (this).
-        //if (tmpPart == GetComponent<BodyPart>())
-        //    return null;
         if (tmpPart.name == "root")
             return null;
 
@@ -287,25 +288,20 @@ public abstract class Character : MonoBehaviour
         // set as active in the world.
         tmpPart.SetActive();
 
-        // unparent
-        tmpPart.transform.parent = null;
-
         // update body part list
         // TO-DO: this body parts should instead be a tree or linked list or something so
         // we dont have to keep asking for children. instead, we can just remove the root
         // of the tree!
         // remove the body part from this characters bodypart list
         // VVV VERY SLOW VVV
-        //bodyParts = new List<BodyPart>(transform.GetComponentsInChildren<BodyPart>());
         bodyParts = transform.GetComponentsInChildren<BodyPart>().ToDictionary(x => x.name, x => x.GetComponent<BodyPart>());
 
         // check to see if both legs are now detached
         // TODO: make this not terrible... more dynamic
         // perhaps a rule class or struct with events?
         // adjust capsule collider pivot to new center and height
-        //RecalculateCollisionBounds();
+        RecalculateCollisionBounds();
         
-
         return tmpPart;
     }
 
@@ -314,45 +310,87 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     private void RecalculateCollisionBounds()
     {
-        Quaternion currentRotation = transform.rotation;
+        // preserve rotation, rotate to 0 and then put back.
+        Quaternion currWorldRot = transform.rotation;
+        Quaternion currLocalRot = transform.localRotation;
+        
         transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+        transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
 
         // RECURSIVELY GO THROUGH ALL CHILDREN AND ENCAPSULATE
+        // TODO: make this function better
         Bounds initialBounds = bodyParts["root"].GetComponent<MeshFilter>().mesh.bounds;
-        initialBounds.center = transform.position;
+        //initialBounds.center = transform.position;
         RecalculateCollisionBounds(ref initialBounds, bodyParts["root"].gameObject);
 
+        //Debug.Log("The local bounds of this model is " + initialBounds);
+        collider.center = initialBounds.center;
+        collider.radius = Mathf.Max(initialBounds.size.x / 2, initialBounds.size.z / 2);
+        collider.height = initialBounds.size.y + collider.radius;
 
-        //initialBounds.center = initialBounds.center - transform.position;
-        Debug.Log("The local bounds of this model is " + initialBounds);
-        ((BoxCollider)collider).center = initialBounds.center;
-        ((BoxCollider)collider).size = initialBounds.size;
-        transform.rotation = currentRotation;
+        // put back rotation
+        transform.rotation = currWorldRot;
+        transform.localRotation = currLocalRot;
     }
 
     private void RecalculateCollisionBounds(ref Bounds currentBounds, GameObject currentBodyPart)
     {
+        Quaternion currLocalRot = currentBodyPart.transform.localRotation;
+        Quaternion currWorldRot = currentBodyPart.transform.rotation;
+        Vector3 localPos = currentBodyPart.transform.localPosition;
+
+        currentBodyPart.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+        currentBodyPart.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+        currentBodyPart.transform.localPosition = bodyPartOrigins[currentBodyPart.name];
+
         //Debug.Log(currentBounds.GetHashCode());
         if (currentBodyPart.transform.childCount != 0)
-        {
             foreach (Transform child in currentBodyPart.transform) 
                 RecalculateCollisionBounds(ref currentBounds, child.gameObject);
-        }       
 
         //Debug.Log(string.Format("root --> {0}", currentBodyPart.name));
         //currentBounds.Encapsulate(currentBodyPart.GetComponent<Renderer>().bounds.extents);
         Bounds newBounds = currentBodyPart.GetComponent<MeshFilter>().mesh.bounds;
 
+        // preserve rotation, rotate to 0 and then put back
+        //Debug.Log(string.Format("{4}: P: {0}, R: {1}, LP: {2}, LR: {3}", currentBodyPart.transform.position, currentBodyPart.transform.rotation, currentBodyPart.transform.localPosition, currentBodyPart.transform.localRotation, currentBodyPart.name));
+
+        
+        //Debug.Log(string.Format("B{0} : {1}", currentBodyPart.name, currentBodyPart.GetComponent<Renderer>().bounds.center));
+        //Debug.Log(string.Format("B{0} : {1}", currentBodyPart.name, currentBodyPart.transform.TransformPoint(currentBodyPart.GetComponent<MeshFilter>().mesh.bounds.center)));
+
+
+        //currentBodyPart.transform.localPosition = Vector3.zero;
+        //currentBodyPart.transform.position = Vector3.zero;
         //Debug.Log(newBounds.center);
         // GET CENTER OF MESH
         // DIV BY LOCAL SCALE TO MOVE CENTER TO APPROPRIATE POSITION...
         // !!!!!! THIS IS WHY EVERYTHING SHOULD IMPORT AT 1 1 1 SCALE !!!!!!!
         // RENDERER CENTER BOUNDS ARE LOCAL
-        newBounds.center = (currentBodyPart.GetComponent<Renderer>().bounds.center - transform.position) / transform.localScale.x;
+        // FIND A WAY TO GET TRUE CENTER ANOTHER WAY (this is because it is in world space and NOT local.
+        //newBounds.center = (currentBodyPart.GetComponent<Renderer>().bounds.center - transform.position) / transform.localScale.x;
+        //newBounds.center = (transform.GetChild(0).InverseTransformVector(currentBodyPart.GetComponent<Renderer>().bounds.center - transform.GetChild(0).position));
+        //newBounds.center = (currentBodyPart.transform.TransformPoint(currentBodyPart.GetComponent<MeshFilter>().mesh.bounds.center) - transform.position) / transform.localScale.x;
+        newBounds.center = transform.InverseTransformPoint(currentBodyPart.transform.TransformPoint(newBounds.center));
+
+        //Debug.Log(newBounds.center);
+        //Debug.Log(string.Format("A{0} : {1}", currentBodyPart.name, transform.InverseTransformPoint(currentBodyPart.transform.TransformPoint(currentBodyPart.GetComponent<MeshFilter>().mesh.bounds.center))));
+        //Debug.Log(string.Format("A{0} : {1}", currentBodyPart.name, newBounds.center));
+        
+        // Debug.Log(string.Format("{0} : {1}", currentBodyPart.name, transform.GetChild(0).TransformPoint(newBounds.center)));
+        
 
         //Debug.Log(newBounds.center);
         currentBounds.Encapsulate(newBounds);
         //Debug.Log(string.Format("{0} : {1} w {2}", currentBodyPart.name, currentBounds, currentBodyPart.transform.childCount));
+
+        // put back rotation after all have been processed?
+        currentBodyPart.transform.localRotation = currLocalRot;
+        currentBodyPart.transform.rotation = currWorldRot;
+        currentBodyPart.transform.localPosition = localPos;
+        //currentBodyPart.transform.position = worldPos;
+
+
     }
 
 }

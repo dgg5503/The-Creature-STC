@@ -173,6 +173,9 @@ public class BodyPart : Item
 
         // unconnect hinge
         Destroy(GetComponent<HingeJoint>());
+
+        // unparent
+        transform.parent = null;
     }
 
     // apply limits to the head :)
