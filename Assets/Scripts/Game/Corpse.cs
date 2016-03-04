@@ -28,6 +28,9 @@ public class Corpse : Character
         rotationAccelFactor = 0;
         maxSpeed = 0;
         isAlive = false;
+
+        // tag as corpse for easy mouse detection
+        tag = "Corpse";
     }
 
     // Use this for initialization
@@ -38,8 +41,8 @@ public class Corpse : Character
 
     // Update is called once per frame
     protected override void Update()
-    {
-
+    { 
+        base.Update();
     }
 
     /// <summary>

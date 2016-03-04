@@ -3,10 +3,15 @@
     ------------------------
     AUTHS Douglas Gliner
     TO-DO
-        - GRAB PARTS FROM DEAD GUY
         + CUT COLLIDER IN HALF WHEN NO LEGS
         + IGNORE CAPSULE COLLIDER WHEN DETACHING
-        - PICK UP AND CARRY B PARTS
+        + MAKE DEAD GUY KINEMATIC
+
+        + PICK UP AND CARRY B PARTS (HIT E)
+        + CLICK ON BODY PART TO DETACH (FOR PLAYER)
+        + CLICK ON BODY PART OF DEAD TO DETACH (when close)
+
+        - is grounded
     NOTES
         - Attach this script to the root of the character meaning its children
           contain body parts.
@@ -55,10 +60,15 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     public Inventory Inventory { get { return inventory; } }
 
+    /*
     public bool IsGrounded
     {
-        get; set;
+        get
+        {
+            return Physics.Raycast(transform.position, Vector3.down, collider.bounds.extents.y);
+        }
     }
+    */
 
     // actions go here...
 
@@ -82,10 +92,11 @@ public abstract class Character : MonoBehaviour
         regularItems = new List<RegularItem>();
 
         // save all INITIAL body part locallocations
-
         bodyPartOrigins = new Dictionary<string, Vector3>();
-        foreach(BodyPart bodyPart in bodyParts.Values)
+        foreach (BodyPart bodyPart in bodyParts.Values)
+        {
             bodyPartOrigins.Add(bodyPart.name, bodyPart.transform.localPosition);
+        }
 
         // init this characters inventory
         inventory = GetComponent<Inventory>();
@@ -247,6 +258,9 @@ public abstract class Character : MonoBehaviour
     /// <returns>True if the body part was attached. False if the parent part was not found.</returns>
     public bool Attach(BodyPart bodyPartToAttach)
     {
+        if (bodyPartToAttach == null || bodyParts.ContainsKey(bodyPartToAttach.name))
+            return false;
+
         // place body part in first available location
         foreach (BodyPart bp in bodyParts.Values)
         {
@@ -306,6 +320,21 @@ public abstract class Character : MonoBehaviour
     }
 
     /// <summary>
+    /// Detaches a body part based on its index within the list of body parts.
+    /// </summary>
+    /// <param name="bodyPart">Index location of the body part to detach.</param>
+    /// <returns>Reference to body part detached if it exists.</returns>
+    public BodyPart Detach(BodyPart bodyPart)
+    {
+        // see if part exists
+        if (!bodyParts.ContainsValue(bodyPart))
+            return null;
+
+        // TODO MAKE LESS HACKY!!
+        return Detach(bodyPart.name);
+    }
+
+    /// <summary>
     /// Recalculates the capsule colliders bounds.
     /// </summary>
     private void RecalculateCollisionBounds()
@@ -333,6 +362,10 @@ public abstract class Character : MonoBehaviour
         transform.localRotation = currLocalRot;
     }
 
+
+    // still broken....
+    // TODO, FIX STRANGE ANOMLY WHERE BODY PARTS SLOWLY MOVE AWAY FROM ORIGIN LOCATIONS.
+    // TODO, ALERRRRRRRT MAKE SURE TO PUT IN CHECKS FOR WHEN RESIZING UP/DOWN, DONT WANNA GO OOB :)))
     private void RecalculateCollisionBounds(ref Bounds currentBounds, GameObject currentBodyPart)
     {
         Quaternion currLocalRot = currentBodyPart.transform.localRotation;
