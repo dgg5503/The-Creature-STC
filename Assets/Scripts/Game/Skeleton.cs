@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 
 public class Skeleton : MonoBehaviour {
+    // Holds initial valid names of body parts
+
     // List of body parts
     protected List<BodyPart> bodyParts;
+
+
 
     /*
         Use this function as the "constructor" since it occurs at the same time
@@ -43,6 +47,6 @@ public class Skeleton : MonoBehaviour {
         bodyPart.transform.parent = null;
 
         // turn off kinematics
-        bodyPart.SetActive();
+        bodyPart.Detach();
     }
 }

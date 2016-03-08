@@ -16,6 +16,9 @@ public abstract class Item : MonoBehaviour {
     {
         // set layer of items to layer 9
         gameObject.layer = 9;
+
+        // tag as item
+        tag = "Item";
     }
 
 	// Use this for initialization

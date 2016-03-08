@@ -54,7 +54,6 @@ public class Player : Character {
 	}
 
     // Update is called once per frame
-    int i;
     protected override void Update () {
 
         // pick up items
@@ -151,46 +150,19 @@ public class Player : Character {
             // Get first body part
             foreach (RaycastHit obj in hit)
             {
-                if (obj.collider.tag == "BodyPart")
+                // MAKE SURE NEAR BY
+                Character otherGuyRoot = GetRoot(obj.collider.gameObject).GetComponent<Character>();
+                if (otherGuyRoot != null)
                 {
-                    // make sure the PLAYER 
-                    // TODO: GET RID OF BAD DETECTION
-                    if (Detach(obj.collider.GetComponent<BodyPart>()) == null)
-                        Attach(obj.collider.GetComponent<BodyPart>()); // else attach it!
-
-                    // MAKE SURE NEAR BY
-                    Character otherGuyRoot = GetRoot(obj.collider.gameObject).GetComponent<Character>();
-                    if (otherGuyRoot != null && Vector3.Distance(transform.position, obj.transform.position) <= minRaidus)
+                    Debug.Log(otherGuyRoot.name);
+                    if (otherGuyRoot.name != "Player")
                     {
-                        
-                        if (otherGuyRoot.name != "Player")
-                        {
-                            // DETACH / ATTACH
-                            Attach(otherGuyRoot.Detach(obj.collider.gameObject.GetComponent<BodyPart>()));
-                        }
-                        // DETACH AND ATTACH
+                        // DETACH / ATTACH
+                        Attach(otherGuyRoot.Detach(obj.collider.gameObject.GetComponent<BodyPart>()));
                     }
-                    /*
-                    if (obj.collider.tag == "Corpse")
-                    {
-                        // make sure NEAR BY
-                        if (Vector3.Distance(transform.position, obj.transform.position) <= minRaidus)
-                        {
-                            // DETACH 
-                        }
-                    }
-                    */
+                    // DETACH AND ATTACH
                 }
             }
-
-
-            // DETACH
-            /*
-            if (!CheckForAndAttachBodyPart())
-                foreach (string s in bodyParts.Keys)
-                    if (Detach(s) != null)
-                        break;
-                        */
         }
 
         // TMP INVENTORY

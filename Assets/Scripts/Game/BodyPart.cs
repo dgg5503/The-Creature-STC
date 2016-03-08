@@ -14,16 +14,7 @@
 */
 
 using UnityEngine;
-using System.Collections;
-
-enum BodyPartType
-{
-    LEG,
-    ARM,
-    HAND,
-    HEAD,
-    TORSO
-}
+using System.Collections.Generic;
 
 // for physics and collision
 [RequireComponent(typeof(Rigidbody))]
@@ -33,22 +24,72 @@ enum BodyPartType
 
 public class BodyPart : Item
 {
+    // Static
+    private static Dictionary<int, string> bodyPartTypeDictionary = new Dictionary<int, string>();
+
     // Physics components
     // hidding base memebers since these properties are depricated
     private new Rigidbody rigidbody;
     private new Collider collider;
     private HingeJoint hinge;
 
-    // Part specific 
-    //private BodyPartType bodyPartType;
-    //private BodyPartType expectedParentType;
-    private string expectedParentType; // store expected parent type that should be there in order to reattach
-    private int health;
+    // Part specific
+    private PosRot initialLocalTransform; // holds inital rotation and position relative to parent
+    private PosRot lastLocalTransform; // holds last local transform when attached to a parent
+    private int bodyPartType; // body part type of this body part. (treated as an "enum")
+    private int expectedParentType; // this should only be set once. (treated as an "enum")
+
+    //private string expectedParentType; // store expected parent type that should be there in order to reattach
+
+    // Stats
+    private int currHealth;
+    private int minHealth;
+    private int maxHealth;
 
     // Properties
-    public int Health { get { return health; } }
+    /// <summary>
+    /// Get or set the amount of health this body part has.
+    /// If health is less than minHealth, it will detach.
+    /// </summary>
+    public int Health
+    {
+        get
+        {
+            return currHealth;
+        }
 
-    //int importance;
+        set
+        {
+            // TODO CHECK TO SEE IF SHOULD DETACH.
+
+            currHealth = value;
+        }
+    }
+
+    public int MinHealth
+    {
+        get
+        {
+            return minHealth;
+        }
+
+        set
+        {
+            // TODO CHECK TO SEE IF SHOULD DETACH.
+            minHealth = value;
+        }
+    }
+
+    /// <summary>
+    /// Gets the body part type of this body part as a string.
+    /// </summary>
+    public string BodyPartType
+    {
+        get
+        {
+            return bodyPartTypeDictionary[bodyPartType];
+        }
+    }
 
     /*
         Use this function as the "constructor" since it occurs at the same time
@@ -57,14 +98,20 @@ public class BodyPart : Item
     protected override void Awake()
     {
         base.Awake();
+
+        // add this body part type to our list of bpart types
+        Initialize();
+
+        // setup physics sutff
         collider = GetComponent<Collider>();
         rigidbody = GetComponent<Rigidbody>();
-        expectedParentType = "";
         hinge = null;
 
-        // if not already tagged as bodypart, force tag as BodyPart
-        if (tag != "BodyPart")
-            tag = "BodyPart";
+        // Initial local position and rotation relative to initial parent.
+        initialLocalTransform = new PosRot(transform.localPosition, transform.localRotation);
+
+        // zero out last local
+        lastLocalTransform = new PosRot(Vector3.zero, Quaternion.identity);
 
         // if this body part is "root," set to kinematic
         // else set to false ?
@@ -73,25 +120,26 @@ public class BodyPart : Item
         if (name == "root")
             rigidbody.isKinematic = true;
 
-        // if parent exists, set desired name
-        if (transform.parent != null)
-            expectedParentType = transform.parent.name;
-
         // health
-        health = 100;
+        // TODO, DETERMINE WHEN TO SET THESE?
+        maxHealth = 100;
+        minHealth = 30;
+        currHealth = maxHealth;
     }
 
     // Use this for initialization
     void Start ()
     {
         // create hinge to parent
-        // doing this here since rigidbodies are created at awake.
+        // doing this here since rigidbodies are created on parents at awake.
         if (transform.parent != null)
         {
             BodyPart parentBodyPart = transform.parent.GetComponent<BodyPart>();
-
             if (parentBodyPart != null)
             {
+                // this can only be set in START because AWAKE is where we finalize body part types.
+                expectedParentType = parentBodyPart.bodyPartType;
+
                 // ignore collision with parent to prevent spazzing of merged bparts
                 Physics.IgnoreCollision(collider, parentBodyPart.GetComponent<Collider>());
 
@@ -100,7 +148,7 @@ public class BodyPart : Item
                 hinge.connectedBody = parentBodyPart.rigidbody;
                 hinge.anchor = transform.position;
 
-                // QUICK NASTY HEAD CHECK
+                // TODO REMOVE QUICK NASTY HEAD CHECK
                 if (name == "head")
                     HeadCheck(hinge);
             }
@@ -113,38 +161,29 @@ public class BodyPart : Item
         //Debug.Log(string.Format("{0}", expectedParentType));
     }
 
-    /// <summary>
-    /// TODO REMOVE THIS MAYBE?
-    /// QUICK AND DIRTY REMOVAL OF COLLISION BETWEEN ALL BPARTS AT ALL TIMES.
-    /// POSSIBLY BETTER TO DO THIS AT AWAKE AND DURING LOADS???
-    /// </summary>
-    /// <param name="collision"></param>
     /*
-    void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.tag == "BodyPart")
-        {
-            Debug.Log(collision.gameObject.name);
-            Physics.IgnoreCollision(collision.collider, collider);
-        }
-    }
+        Pass a skeleton and search for desired body part
+            If the part has no children WHICH ARE ALSO BPARTS, then attach
     */
-
     /// <summary>
-    /// This will set the body part to connected.
+    /// Attaches this bodypart to a given parent body part.
     /// </summary>
-    public bool SetStatic(BodyPart parent, Vector3 position, Quaternion rotation)
+    /// <param name="parent">Parent body part to attach to.</param>
+    /// <returns>True - If attached successfully False- If failed to attach</returns>
+    public bool AttachTo(BodyPart parent)
     {
         //Debug.Log(string.Format("{0} expecting {1} and got {2}", name, expectedParentType, parent.name));
-        if (transform.parent != null || parent.name != expectedParentType)
+        // Make sure we're not already attached to anything
+        // Also make sure that parent is the expected type
+        if (transform.parent != null || parent.bodyPartType != expectedParentType)
             return false;
 
         //Debug.Log(string.Format("{0} attached to {1}", name, parent.name));
 
         // set our parent, localposition, rotation.
         transform.parent = parent.transform;
-        transform.localPosition = position;
-        transform.localRotation = rotation;
+        transform.localPosition = initialLocalTransform.position;
+        transform.localRotation = initialLocalTransform.rotation;
 
         // reattach hinge
         hinge = gameObject.AddComponent<HingeJoint>();
@@ -152,20 +191,21 @@ public class BodyPart : Item
         hinge.anchor = transform.position;
         hinge.axis = Vector3.right;
 
-        // QUICK NASTY HEAD CHECK
+        // TODO REMOVE QUICK NASTY HEAD CHECK
         if (name == "head")
             HeadCheck(hinge);
 
         // re-ignore parent collision
         if (transform.parent != null)
             Physics.IgnoreCollision(collider, transform.parent.GetComponent<Collider>());
+
         return true;
     }
 
     /// <summary>
-    /// Set this body part to active, this means it is in the environment.
+    /// Detaches this body part from whatever parent it's connected to.
     /// </summary>
-    public void SetActive()
+    public void Detach()
     {
         // reapply collision detection to parent
         if (transform.parent != null)
@@ -187,5 +227,26 @@ public class BodyPart : Item
         hinge.limits = limits;
         hinge.axis = new Vector3(1, 1, 1);
         hinge.useLimits = true;
+    }
+
+    /// <summary>
+    /// Sets body part type and grabs expected parent body part type.
+    /// Currently uses NAME of game object to define names of bodyparts.
+    /// </summary>
+    private void Initialize()
+    { 
+        // search dictionary for our name and set the int to bodyPartType
+        foreach (KeyValuePair<int, string> kvp in bodyPartTypeDictionary)
+        {
+            if (kvp.Value == name)
+            {
+                bodyPartType = kvp.Key;
+                return;
+            }
+        }
+
+        // if we got here, means we didnt find our name in the dictionary, lets add it!
+        bodyPartType = bodyPartTypeDictionary.Count;
+        bodyPartTypeDictionary.Add(bodyPartTypeDictionary.Count, name);
     }
 }

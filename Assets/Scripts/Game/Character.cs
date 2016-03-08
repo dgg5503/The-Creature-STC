@@ -30,7 +30,6 @@ public abstract class Character : MonoBehaviour
     //protected List<BodyPart> bodyParts;
     protected Dictionary<string, BodyPart> bodyParts;
     protected List<RegularItem> regularItems;
-    protected Dictionary<string, Vector3> bodyPartOrigins; // name_of_part : position
 
     // Inventory
     protected Inventory inventory;
@@ -78,7 +77,6 @@ public abstract class Character : MonoBehaviour
     */
     protected virtual void Awake()
     {
-        Debug.Log(transform.rotation);
         // Grab all children with BodyPart scripts and store them for reference
         // Q: Is the head/torso a body part with inf health?
 
@@ -90,13 +88,6 @@ public abstract class Character : MonoBehaviour
 
         // init items in hand
         regularItems = new List<RegularItem>();
-
-        // save all INITIAL body part locallocations
-        bodyPartOrigins = new Dictionary<string, Vector3>();
-        foreach (BodyPart bodyPart in bodyParts.Values)
-        {
-            bodyPartOrigins.Add(bodyPart.name, bodyPart.transform.localPosition);
-        }
 
         // init this characters inventory
         inventory = GetComponent<Inventory>();
@@ -162,7 +153,12 @@ public abstract class Character : MonoBehaviour
     }*/
 
     // Update is called once per frame
-    
+
+    void FixedUpdate()
+    {
+
+    }
+
     protected virtual void Update ()
     {
         // calculate movement
@@ -264,7 +260,7 @@ public abstract class Character : MonoBehaviour
         // place body part in first available location
         foreach (BodyPart bp in bodyParts.Values)
         {
-            if (bodyPartToAttach.SetStatic(bp, bodyPartOrigins[bodyPartToAttach.name], Quaternion.identity))
+            if (bodyPartToAttach.AttachTo(bp))
             {
                 // VVV VERY SLOW VVV
                 bodyParts = transform.GetComponentsInChildren<BodyPart>().ToDictionary(x => x.name, x => x.GetComponent<BodyPart>());
@@ -297,10 +293,8 @@ public abstract class Character : MonoBehaviour
         //if (tmpPart.transform.childCount != 0)
         //   return null;
 
-        bodyPartOrigins[tmpPart.name] = tmpPart.transform.localPosition;
-
         // set as active in the world.
-        tmpPart.SetActive();
+        tmpPart.Detach();
 
         // update body part list
         // TO-DO: this body parts should instead be a tree or linked list or something so
@@ -315,7 +309,7 @@ public abstract class Character : MonoBehaviour
         // perhaps a rule class or struct with events?
         // adjust capsule collider pivot to new center and height
         RecalculateCollisionBounds();
-        
+
         return tmpPart;
     }
 
@@ -328,8 +322,10 @@ public abstract class Character : MonoBehaviour
     {
         // see if part exists
         if (!bodyParts.ContainsValue(bodyPart))
+        {
+            Debug.Log(bodyParts.Keys);
             return null;
-
+        }
         // TODO MAKE LESS HACKY!!
         return Detach(bodyPart.name);
     }
@@ -340,17 +336,20 @@ public abstract class Character : MonoBehaviour
     private void RecalculateCollisionBounds()
     {
         // preserve rotation, rotate to 0 and then put back.
-        Quaternion currWorldRot = transform.rotation;
-        Quaternion currLocalRot = transform.localRotation;
+        //Quaternion currWorldRot = transform.rotation;
+        //Quaternion currLocalRot = transform.localRotation;
         
-        transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-        transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+        //transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+        //transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
 
         // RECURSIVELY GO THROUGH ALL CHILDREN AND ENCAPSULATE
         // TODO: make this function better
-        Bounds initialBounds = bodyParts["root"].GetComponent<MeshFilter>().mesh.bounds;
-        //initialBounds.center = transform.position;
-        RecalculateCollisionBounds(ref initialBounds, bodyParts["root"].gameObject);
+
+        // Get first body part (doesnt matter which one...)
+        BodyPart initialBodyPart = bodyParts.Values.First();
+        Bounds initialBounds = initialBodyPart.GetComponent<MeshFilter>().mesh.bounds;
+
+        RecalculateCollisionBounds(ref initialBounds, gameObject);
 
         //Debug.Log("The local bounds of this model is " + initialBounds);
         collider.center = initialBounds.center;
@@ -358,72 +357,50 @@ public abstract class Character : MonoBehaviour
         collider.height = initialBounds.size.y + collider.radius;
 
         // put back rotation
-        transform.rotation = currWorldRot;
-        transform.localRotation = currLocalRot;
+        //transform.rotation = currWorldRot;
+        //transform.localRotation = currLocalRot;
     }
-
 
     // still broken....
     // TODO, FIX STRANGE ANOMLY WHERE BODY PARTS SLOWLY MOVE AWAY FROM ORIGIN LOCATIONS.
+    // TODO, MAKE SURE THIS IS CALLED IN FIXED UPDATE (BEFORE PHYSICS ARE CALCd)
+            // PERHAPS VELOCITY JUST NEEDS TO BE IN FIXED UPDATE?
+            // REIMPLEMENT ROTATION TO IDENTITY (OR DEFAULT POSE)
+            // YIELD FIXED UPDATE?
     // TODO, ALERRRRRRRT MAKE SURE TO PUT IN CHECKS FOR WHEN RESIZING UP/DOWN, DONT WANNA GO OOB :)))
     private void RecalculateCollisionBounds(ref Bounds currentBounds, GameObject currentBodyPart)
     {
-        Quaternion currLocalRot = currentBodyPart.transform.localRotation;
-        Quaternion currWorldRot = currentBodyPart.transform.rotation;
-        Vector3 localPos = currentBodyPart.transform.localPosition;
+        //Quaternion currLocalRot = currentBodyPart.transform.localRotation;
+        //Quaternion currWorldRot = currentBodyPart.transform.rotation;
+        //Vector3 localPos = currentBodyPart.transform.localPosition;
 
-        currentBodyPart.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-        currentBodyPart.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-        currentBodyPart.transform.localPosition = bodyPartOrigins[currentBodyPart.name];
+        //currentBodyPart.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+        //currentBodyPart.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+        // ^ shouldnt need above if implemented in fixed update... ^
 
-        //Debug.Log(currentBounds.GetHashCode());
         if (currentBodyPart.transform.childCount != 0)
             foreach (Transform child in currentBodyPart.transform) 
                 RecalculateCollisionBounds(ref currentBounds, child.gameObject);
 
-        //Debug.Log(string.Format("root --> {0}", currentBodyPart.name));
-        //currentBounds.Encapsulate(currentBodyPart.GetComponent<Renderer>().bounds.extents);
+        // attempt to get MeshFilter
+        // TODO OR ASK FOR MESHFILTER IN FUNCTION AS WE CAN DO MESHFILTER.TRANSFORM
+        MeshFilter tmpMeshFilter = currentBodyPart.GetComponent<MeshFilter>();
+        if (tmpMeshFilter == null)
+            return;
+
         Bounds newBounds = currentBodyPart.GetComponent<MeshFilter>().mesh.bounds;
 
-        // preserve rotation, rotate to 0 and then put back
-        //Debug.Log(string.Format("{4}: P: {0}, R: {1}, LP: {2}, LR: {3}", currentBodyPart.transform.position, currentBodyPart.transform.rotation, currentBodyPart.transform.localPosition, currentBodyPart.transform.localRotation, currentBodyPart.name));
-
-        
-        //Debug.Log(string.Format("B{0} : {1}", currentBodyPart.name, currentBodyPart.GetComponent<Renderer>().bounds.center));
-        //Debug.Log(string.Format("B{0} : {1}", currentBodyPart.name, currentBodyPart.transform.TransformPoint(currentBodyPart.GetComponent<MeshFilter>().mesh.bounds.center)));
-
-
-        //currentBodyPart.transform.localPosition = Vector3.zero;
-        //currentBodyPart.transform.position = Vector3.zero;
-        //Debug.Log(newBounds.center);
         // GET CENTER OF MESH
         // DIV BY LOCAL SCALE TO MOVE CENTER TO APPROPRIATE POSITION...
         // !!!!!! THIS IS WHY EVERYTHING SHOULD IMPORT AT 1 1 1 SCALE !!!!!!!
         // RENDERER CENTER BOUNDS ARE LOCAL
         // FIND A WAY TO GET TRUE CENTER ANOTHER WAY (this is because it is in world space and NOT local.
-        //newBounds.center = (currentBodyPart.GetComponent<Renderer>().bounds.center - transform.position) / transform.localScale.x;
-        //newBounds.center = (transform.GetChild(0).InverseTransformVector(currentBodyPart.GetComponent<Renderer>().bounds.center - transform.GetChild(0).position));
-        //newBounds.center = (currentBodyPart.transform.TransformPoint(currentBodyPart.GetComponent<MeshFilter>().mesh.bounds.center) - transform.position) / transform.localScale.x;
         newBounds.center = transform.InverseTransformPoint(currentBodyPart.transform.TransformPoint(newBounds.center));
-
-        //Debug.Log(newBounds.center);
-        //Debug.Log(string.Format("A{0} : {1}", currentBodyPart.name, transform.InverseTransformPoint(currentBodyPart.transform.TransformPoint(currentBodyPart.GetComponent<MeshFilter>().mesh.bounds.center))));
-        //Debug.Log(string.Format("A{0} : {1}", currentBodyPart.name, newBounds.center));
-        
-        // Debug.Log(string.Format("{0} : {1}", currentBodyPart.name, transform.GetChild(0).TransformPoint(newBounds.center)));
-        
-
-        //Debug.Log(newBounds.center);
         currentBounds.Encapsulate(newBounds);
-        //Debug.Log(string.Format("{0} : {1} w {2}", currentBodyPart.name, currentBounds, currentBodyPart.transform.childCount));
-
+       
         // put back rotation after all have been processed?
-        currentBodyPart.transform.localRotation = currLocalRot;
-        currentBodyPart.transform.rotation = currWorldRot;
-        currentBodyPart.transform.localPosition = localPos;
-        //currentBodyPart.transform.position = worldPos;
-
-
+        //currentBodyPart.transform.rotation = currWorldRot;
+        //currentBodyPart.transform.localPosition = localPos;
     }
 
 }
