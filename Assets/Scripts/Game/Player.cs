@@ -24,7 +24,6 @@ public class Player : Character {
     private BodyPart holdingBPart;
     private BodyPart handInUse;
 
-
     /*
         Use this function as the "constructor" since it occurs at the same time
         as instantiation.
