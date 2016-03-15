@@ -28,7 +28,7 @@ public abstract class Character : MonoBehaviour
 {
     // Body stuff
     //protected List<BodyPart> bodyParts;
-    protected Dictionary<string, BodyPart> bodyParts;
+    protected Dictionary<int, SubJoint> joints;
     protected List<RegularItem> regularItems;
 
     // Inventory
@@ -52,7 +52,7 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// Get the dictionary of body parts for this character.
     /// </summary>
-    public Dictionary<string, BodyPart> BodyParts { get { return bodyParts; } }
+    //public Dictionary<string, BodyPart> BodyParts { get { return bodyParts; } }
 
     /// <summary>
     /// Get the inventory of this character.
@@ -80,11 +80,13 @@ public abstract class Character : MonoBehaviour
         // Grab all children with BodyPart scripts and store them for reference
         // Q: Is the head/torso a body part with inf health?
 
-        //bodyParts = new List<BodyPart>(transform.GetComponentsInChildren<BodyPart>());
-        bodyParts = transform.GetComponentsInChildren<BodyPart>().ToDictionary(x => x.name, x => x.GetComponent<BodyPart>());
+        foreach(Joint joint in transform.GetComponentsInChildren<Joint>())
+        {
+            Debug.Log(string.Format("{0}: {1}", joint.JointType, joint.name));
+        }
 
-        // remove root from list for now
-        //bodyParts.Remove(GetComponent<BodyPart>());
+        //bodyParts = new List<BodyPart>(transform.GetComponentsInChildren<BodyPart>());
+        joints = transform.GetComponentsInChildren<Joint>().ToDictionary(x => x.JointType, x => x.GetComponent<SubJoint>());
 
         // init items in hand
         regularItems = new List<RegularItem>();
@@ -254,21 +256,13 @@ public abstract class Character : MonoBehaviour
     /// <returns>True if the body part was attached. False if the parent part was not found.</returns>
     public bool Attach(BodyPart bodyPartToAttach)
     {
-        if (bodyPartToAttach == null || bodyParts.ContainsKey(bodyPartToAttach.name))
+        if (bodyPartToAttach == null || !joints.ContainsKey(bodyPartToAttach.BodyPartType))
             return false;
 
-        // place body part in first available location
-        foreach (BodyPart bp in bodyParts.Values)
-        {
-            if (bodyPartToAttach.AttachTo(bp))
-            {
-                // VVV VERY SLOW VVV
-                bodyParts = transform.GetComponentsInChildren<BodyPart>().ToDictionary(x => x.name, x => x.GetComponent<BodyPart>());
-                RecalculateCollisionBounds();
-                return true;
-            }
-        }
-        return false;
+        //bodyParts = transform.GetComponentsInChildren<BodyPart>().ToDictionary(x => x.name, x => x.GetComponent<BodyPart>());
+        bodyPartToAttach.AttachTo(joints[bodyPartToAttach.BodyPartType].Joint);
+        RecalculateCollisionBounds();
+        return true;
     }
 
     /// <summary>
@@ -276,18 +270,18 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     /// <param name="bodyPart">Index location of the body part to detach.</param>
     /// <returns>Reference to body part detached if it exists.</returns>
-    public BodyPart Detach(string bodyPartName)
+    public BodyPart Detach(int bodyPartID)
     {
         // see if part exists
-        if (!bodyParts.ContainsKey(bodyPartName))
+        if (!joints.ContainsKey(bodyPartID))
             return null;
 
         // store in a variable
-        BodyPart tmpPart = bodyParts[bodyPartName];
+        BodyPart tmpPart = joints[bodyPartID].BodyPart;
 
         // dont remove root (this).
-        if (tmpPart.name == "root")
-            return null;
+        //if (tmpPart.name == "root")
+        //    return null;
 
         // can only remove parts where part has no children
         //if (tmpPart.transform.childCount != 0)
@@ -302,7 +296,7 @@ public abstract class Character : MonoBehaviour
         // of the tree!
         // remove the body part from this characters bodypart list
         // VVV VERY SLOW VVV
-        bodyParts = transform.GetComponentsInChildren<BodyPart>().ToDictionary(x => x.name, x => x.GetComponent<BodyPart>());
+        //bodyParts = transform.GetComponentsInChildren<BodyPart>().ToDictionary(x => x.name, x => x.GetComponent<BodyPart>());
 
         // check to see if both legs are now detached
         // TODO: make this not terrible... more dynamic
@@ -321,13 +315,11 @@ public abstract class Character : MonoBehaviour
     public BodyPart Detach(BodyPart bodyPart)
     {
         // see if part exists
-        if (!bodyParts.ContainsValue(bodyPart))
-        {
-            Debug.Log(bodyParts.Keys);
+        if (!joints.ContainsKey(bodyPart.BodyPartType))
             return null;
-        }
+
         // TODO MAKE LESS HACKY!!
-        return Detach(bodyPart.name);
+        return Detach(bodyPart.BodyPartType);
     }
 
     /// <summary>
@@ -346,7 +338,7 @@ public abstract class Character : MonoBehaviour
         // TODO: make this function better
 
         // Get first body part (doesnt matter which one...)
-        BodyPart initialBodyPart = bodyParts.Values.First();
+        BodyPart initialBodyPart = joints.Values.First().BodyPart;
         Bounds initialBounds = initialBodyPart.GetComponent<MeshFilter>().mesh.bounds;
 
         RecalculateCollisionBounds(ref initialBounds, gameObject);
@@ -354,7 +346,7 @@ public abstract class Character : MonoBehaviour
         //Debug.Log("The local bounds of this model is " + initialBounds);
         collider.center = initialBounds.center;
         collider.radius = Mathf.Max(initialBounds.size.x / 2, initialBounds.size.z / 2);
-        collider.height = initialBounds.size.y + collider.radius;
+        collider.height = initialBounds.size.y;
 
         // put back rotation
         //transform.rotation = currWorldRot;

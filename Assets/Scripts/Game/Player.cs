@@ -57,6 +57,7 @@ public class Player : Character {
     protected override void Update () {
 
         // pick up items
+        /*
         if(Input.GetKeyDown(KeyCode.E))
         {
             // TODO: ALERT, CAN DROP BPARTS EVEN AFTER DETACHING HAND REQUIRED!!!!!!!!!!!!!!!!
@@ -137,9 +138,11 @@ public class Player : Character {
                 }
             }
         }
-
+        */
         if (Input.GetMouseButtonDown(0))
         {
+            Detach(joints.Values.First().BodyPart.BodyPartType);
+
             // RAY CAST
             // cast ray from camera to where mouse position is
             Ray ray = playerCamera.ScreenPointToRay(Input.mousePosition);
@@ -154,13 +157,7 @@ public class Player : Character {
                 Character otherGuyRoot = GetRoot(obj.collider.gameObject).GetComponent<Character>();
                 if (otherGuyRoot != null)
                 {
-                    Debug.Log(otherGuyRoot.name);
-                    if (otherGuyRoot.name != "Player")
-                    {
-                        // DETACH / ATTACH
-                        Attach(otherGuyRoot.Detach(obj.collider.gameObject.GetComponent<BodyPart>()));
-                    }
-                    // DETACH AND ATTACH
+
                 }
             }
         }
@@ -264,6 +261,7 @@ public class Player : Character {
     /// Function that handles clicking on and reattaching body parts in the scene.
     /// </summary>
     /// <returns>True if clicked on bodypart was reattached, false if not.</returns>
+    /*
     bool CheckForAndAttachBodyPart()
     {
         // cast ray from camera to where mouse position is
@@ -285,7 +283,7 @@ public class Player : Character {
 
         return false;
     }
-
+    */
 
     // TODO REMOVE THIS FUNCTION AND ADD ACTUAL TREE DATA STRUCTURE
     private GameObject GetRoot(GameObject bodyPart)

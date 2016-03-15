@@ -8,7 +8,7 @@ using System.Text;
 /// <summary>
 /// Holds position and rotation values.
 /// </summary>
-struct PosRot
+public struct PosRot
 {
     public Vector3 position;
     public Quaternion rotation;
