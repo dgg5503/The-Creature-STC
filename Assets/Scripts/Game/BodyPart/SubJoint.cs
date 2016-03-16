@@ -79,7 +79,7 @@ public class SubJoint : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         // Set offset proportion at start 
-        offsetProportion = GameManager.LocalPosRotDictonary[bodyPart.name].position.magnitude;
+       // offsetProportion = GameManager.LocalPosRotDictonary[bodyPart.name].position.magnitude;
         //Debug.Log(offsetProportion);
     }
 	

@@ -1,33 +1,63 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Linq;
+using System.IO;
 using System.Collections.Generic;
 
+/*
+    TODO:
+    - Add more checks for adding specific new characters
+    - Perhaps make a copy character first then create links
+    - Load in skeleton info with unity (shouldnt serialize do this???)
+*/
+
 class GenerateBodyPartPrefabs : EditorWindow {
+    private static Dictionary<int, string> jointTypeDict;
+    private Dictionary<string, GameObject> createdPrefabs;
 
     [MenuItem("Body Parts/Rebuild Body Part Prefabs")]
     static void Init()
     {
-        GenerateBodyPartPrefabs window =
-            (GenerateBodyPartPrefabs)EditorWindow.GetWindow(typeof(GenerateBodyPartPrefabs), false, "Body Part Prefab Generator");
+        if (jointTypeDict == null)
+        {
+            jointTypeDict = new Dictionary<int, string>();
+
+            // load data into dictionary when null
+            TextAsset textAsset = Resources.Load<TextAsset>("joints");
+
+            if (textAsset != null)
+            {
+                // split at \n and \t
+                string[] lines = textAsset.text.Split('\n');
+                for (int i = 0; i < lines.Length; ++i)
+                {
+                    if (lines[i] != "")
+                    {
+                        string[] data = lines[i].Split('\t');
+
+                        jointTypeDict[int.Parse(data[0])] = data[1];
+                    }
+                }
+            }
+        }
+
+        EditorWindow window = GetWindow(typeof(GenerateBodyPartPrefabs), false, "Body Part Prefab Generator");
     }
 
-    // Joint name dicitionary
-    // Will be expanded if new joints are added
-    [SerializeField]
-    private static Dictionary<int, string> jointTypeDict = new Dictionary<int, string>();
     private Vector2 scroll;
-
     void OnGUI()
     {
         EditorGUILayout.BeginHorizontal();
         {
             scroll = EditorGUILayout.BeginScrollView(scroll, GUILayout.Width(200), GUILayout.Height(300));
             {
-                //GameObject[] gameObjects = GameObject.FindObjectsOfType(typeof(GameObject)) as GameObject[];
-                foreach (KeyValuePair<int, string> kvp in jointTypeDict)
+                if (jointTypeDict != null)
                 {
-                    EditorGUILayout.LabelField(kvp.Key + " - " + kvp.Value);
+                    //GameObject[] gameObjects = GameObject.FindObjectsOfType(typeof(GameObject)) as GameObject[];
+                    foreach (KeyValuePair<int, string> kvp in jointTypeDict)
+                    {
+                        EditorGUILayout.LabelField(kvp.Key + " - " + kvp.Value);
+                    }
                 }
             }
             EditorGUILayout.EndScrollView();
@@ -37,13 +67,16 @@ class GenerateBodyPartPrefabs : EditorWindow {
         // add selected
         if (GUILayout.Button("Add Currently Selected Prefabs"))
         {
+            createdPrefabs = Resources.LoadAll<GameObject>("Prefabs/").ToDictionary(x => x.name, x => x);
             GameObject[] selectedObjects = Selection.gameObjects;
             Dictionary<string, List<GameObject>> currentConnections = BuildPrefabConnections();
             foreach (GameObject go in selectedObjects)
-                AddCharacter(go, currentConnections, true);
+                AddCharacter(go);
+            ReconnectAllPrefabs(BuildPrefabConnections(), true);
         }
 
         // Rebuild all
+        /*
         if (GUILayout.Button("Rebuild ALL Body Part Prefabs"))
         {
             if (EditorUtility.DisplayDialog("Rebuild All Body Part Prefabs",
@@ -55,18 +88,31 @@ class GenerateBodyPartPrefabs : EditorWindow {
                 GenerateBodyParts();
             }
         }
+        */
     }
     
-    private void AddCharacter(GameObject character, Dictionary<string, List<GameObject>> gameObjPrefab, bool overWriteBodyPrefabs)
+    private void AddCharacter(GameObject character)
     {
-        // Get current prefab connections for character
-        // creat tmp dict of currently created prefabs
-        Dictionary<string, GameObject> createdPrefabs;
-        if(overWriteBodyPrefabs)
-            createdPrefabs = new Dictionary<string, GameObject>();
-        else
-            createdPrefabs = Resources.LoadAll<GameObject>("Prefabs/BodyParts").ToDictionary(x=>x.name, x=>x);
+        if(character == null || character.activeInHierarchy)
+        {
+            Debug.Log("ERROR: Provided character or all game objs is NULL or character is present in the hierarchy.");
+            return;
+        }
 
+        // make sure we didnt already create the character
+        if (createdPrefabs.ContainsKey(character.name))
+        {
+            Debug.Log("ERROR: prefab already created");
+            return;
+        }
+
+        // final character name
+        string characterName = character.name;
+
+        // create tmp character
+        character = Instantiate(character);
+
+        // APPLY CHANGES
         // Go through all joints and process relationships
         Joint[] joints = character.GetComponentsInChildren<Joint>();
 
@@ -76,18 +122,9 @@ class GenerateBodyPartPrefabs : EditorWindow {
             // add to joint dict
             AddToJointDict(joints[z]);
 
-            //Debug.Log(joints[z].name + " : " + joints[z].JointTest);
-
             // ensure joint has atleast 1 child
             if (joints[z].transform.childCount < 1)
                 throw new UnityException("ERROR: Joint does not have enough children!!");
-
-            // get first child
-            //Transform subJoint = joints[z].transform.GetChild(0);
-
-            // ensure child has only one child
-            //if (subJoint.childCount != 1)
-            //    throw new UnityException("ERROR: Sub Joint does not have exactly one child!");
 
             // Ensure subjoint child is a body part
             BodyPart bodyPart = null;
@@ -98,78 +135,7 @@ class GenerateBodyPartPrefabs : EditorWindow {
             if (bodyPart == null)
                 throw new UnityException("ERROR: Body part does not exist in joint: " + joints[z].name);
 
-            //Debug.Log(joints[z].name + " --> " + bodyPart.name);
-
-            // calculate joint offset proportion relative to subjoint
-
-            // joint offset constant is simply the mag from SUBJOINT to LOCALPOS
-            // which should just be mag of LOCAL POS.
-            // Div this by total LENGTH of new body part
-
-            //Bounds bodyPartLocalBounds = bodyPart.GetComponent<MeshFilter>().sharedMesh.bounds;
-            //Debug.Log(subJoint.TransformPoint(bodyPartLocalBounds.center));
-            //bodyPartLocalBounds.center = subJoint.InverseTransformPoint(bodyPart.transform.TransformPoint(bodyPartLocalBounds.center));
-            //Debug.Log(string.Format("{0}: {1}", bodyPart.name, bodyPart.transform.localPosition));
-            //Debug.Log(bodyPartLocalBounds);
-
-            // store it
-            //localPosRotDict[bodyPart.name] =
-            //    new PosRot(bodyPart.transform.localPosition, bodyPart.transform.rotation, jointID);
-
-
-
-
-            // CANT GRAB BY NAME SINCE WHAT IF MULTIPLE OF SAME BODY PART?
-            // This is where ID TYPE will come in handy
-            // ok this is how it works.
-            // we do a grab by name ONCE (at regenerate) to generate body part relations
-            // use body parts found in BODYPARTS folder to place body parts!
-            // should replace if needed
-
-
             bodyPart.BodyPartType = joints[z].JointType;
-
-            // update existing values based on existing parent prefabs
-            // reconnect if it exists!
-            /*
-            if (gameObjPrefab.ContainsKey(bodyPart.name))
-            {
-                for (int x = 0; x < gameObjPrefab[bodyPart.name].Count; ++x)
-                {
-                    //var instanceRoot = PrefabUtility.FindRootGameObjectWithSameParentPrefab(bodyPart.gameObject);
-                    //var targetPrefab = PrefabUtility.GetPrefabParent(instanceRoot);
-
-                    Object parentPrefab = PrefabUtility.GetPrefabParent(gameObjPrefab[bodyPart.name][x]);
-                    //PrefabUtility.ConnectGameObjectToPrefab(bodyPart.gameObject, (GameObject)parentPrefab);
-
-                    // Get modifications based on existing body part prefabs.
-                    //PropertyModification[] modifications = PrefabUtility.GetPropertyModifications(bodyPart.gameObject); // WORKS
-                    PropertyModification[] modifications = PrefabUtility.GetPropertyModifications(parentPrefab);
-
-                    if (modifications != null)
-                    {
-
-                        Debug.Log(modifications.LongLength);
-                        for (int h = 0; h < modifications.Length; ++h)
-                            Debug.Log(modifications[h].propertyPath + " : " + modifications[h].value + " - " + modifications[h].target + " - " + modifications[h].objectReference.name);
-
-                        //Debug.Log("Parent: " + parentPrefab.name);
-                        //PrefabUtility.SetPropertyModifications(parentPrefab, modifications);
-                        PrefabUtility.SetPropertyModifications(gameObjPrefab[bodyPart.name][x], modifications); // WORKS
-                        //Debug.Log("Modified: " + gameObjPrefab[bodyPart.name][x].name);
-
-                        //PrefabUtility.ReplacePrefab(PrefabUtility.FindRootGameObjectWithSameParentPrefab(gameObjPrefab[bodyPart.name][x]), gameObjPrefab[bodyPart.name][x], ReplacePrefabOptions.ConnectToPrefab);
-                    }
-                }
-                //PrefabUtility.ConnectGameObjectToPrefab(gameObjPrefab[newPrefab.name][x], newPrefab);
-            }
-            else
-            {
-                // set joint relationships in joints
-                // recreate prefabs to break connections
-                // seb body part 
-            }
-            */
 
             // generate prefabs
             if (!createdPrefabs.ContainsKey(bodyPart.name))
@@ -178,6 +144,7 @@ class GenerateBodyPartPrefabs : EditorWindow {
             } 
 
             // connect prefabs if they exist in scene
+            /*
             if (gameObjPrefab.ContainsKey(bodyPart.name))
             {
                 for (int h = 0; h < gameObjPrefab[bodyPart.name].Count; ++h)
@@ -188,8 +155,6 @@ class GenerateBodyPartPrefabs : EditorWindow {
                         Vector3 savedLocation = gameObjPrefab[bodyPart.name][h].transform.position;
                         Quaternion saveRotation = gameObjPrefab[bodyPart.name][h].transform.rotation;
 
-                        
-
                         GameObject finalConnection = PrefabUtility.ConnectGameObjectToPrefab(gameObjPrefab[bodyPart.name][h], createdPrefabs[bodyPart.name]);
 
                         // bring back pos and rot
@@ -197,37 +162,91 @@ class GenerateBodyPartPrefabs : EditorWindow {
                         finalConnection.transform.rotation = saveRotation;
                     }
                 }
+                
+                // remove all null go's
+                gameObjPrefab[bodyPart.name].RemoveAll(x => x == null);
 
-                //gameObjPrefab[newPrefab.name].RemoveAll(null);
+                // remove all 0 count lists
+                if (gameObjPrefab[bodyPart.name].Count == 0)
+                    gameObjPrefab.Remove(bodyPart.name);
             }
+            */
         }
 
-        // Reconnect root back to prefab (if any?)
+        // CREATE PREFAB
+        createdPrefabs[characterName] = PrefabUtility.CreatePrefab("Assets/Resources/Prefabs/Characters/" + characterName + ".prefab", character, ReplacePrefabOptions.ConnectToPrefab);
+
+        // CONNECT OBJS TO PREFABS AT THEIR ROOT
+
+
+        // connect prefabs if they exist in scene
+        /*
         if (gameObjPrefab.ContainsKey(character.name))
         {
             for (int h = 0; h < gameObjPrefab[character.name].Count; ++h)
             {
-                // Reconnect
-                if (PrefabUtility.ReconnectToLastPrefab(gameObjPrefab[character.name][h]))
+                if (gameObjPrefab[character.name][h] != null)
                 {
-                    // revert only joint scripts, grab all joints for this character
-                    Joint[] charJoints = gameObjPrefab[character.name][h].GetComponentsInChildren<Joint>();
-                    for (int z = 0; z < charJoints.Length; ++z)
-                    {
-                        if (!PrefabUtility.ResetToPrefabState(charJoints[z]))
-                        {
-                            Debug.Log("ERROR REVERTING JOINTS");
-                        }
-                    }
+                    // Save rotation and location, then connect
+                    Vector3 savedLocation = gameObjPrefab[character.name][h].transform.position;
+                    Quaternion saveRotation = gameObjPrefab[character.name][h].transform.rotation;
+
+                    GameObject finalConnection = PrefabUtility.ConnectGameObjectToPrefab(gameObjPrefab[character.name][h], createdPrefabs[character.name]);
+
+                    // bring back pos and rot
+                    finalConnection.transform.position = savedLocation;
+                    finalConnection.transform.rotation = saveRotation;
                 }
-                else
+            }
+
+            // remove all null go's
+            gameObjPrefab[character.name].RemoveAll(x => x == null);
+
+            // remove all 0 count lists
+            if (gameObjPrefab[character.name].Count == 0)
+                gameObjPrefab.Remove(character.name);
+        }
+
+        */
+        DestroyImmediate(character);
+    }
+
+    private void ReconnectAllPrefabs(Dictionary<string, List<GameObject>> gameObjPrefab, bool revert)
+    {
+        if (gameObjPrefab == null || createdPrefabs == null)
+        {
+            Debug.Log("ERROR: Provided dictionary or created prefabs is NULL.");
+            return;
+        }
+
+        foreach(KeyValuePair<string, GameObject> kvp in createdPrefabs)
+        {
+            if(gameObjPrefab.ContainsKey(kvp.Key))
+            {
+                // hilolf
+                // connect all game objs to prefab
+                for(int i = 0; i < gameObjPrefab[kvp.Key].Count; ++i)
                 {
-                    Debug.Log("ERROR RECONNECTING");
+                    // Could be faster if  had all parents before hand.
+                    GameObject rootGO = PrefabUtility.FindRootGameObjectWithSameParentPrefab(gameObjPrefab[kvp.Key][i]);
+
+                    if (rootGO == gameObjPrefab[kvp.Key][i])
+                    {
+                        // Save rotation and location, then connect
+                        Vector3 savedLocation = gameObjPrefab[kvp.Key][i].transform.position;
+                        Quaternion saveRotation = gameObjPrefab[kvp.Key][i].transform.rotation;
+
+                        GameObject go = PrefabUtility.ConnectGameObjectToPrefab(gameObjPrefab[kvp.Key][i], kvp.Value);
+                        if (go && revert)
+                            PrefabUtility.RevertPrefabInstance(go);
+
+                        // bring back pos and rot
+                        go.transform.position = savedLocation;
+                        go.transform.rotation = saveRotation;
+                    }
                 }
             }
         }
-
-        // add prefabs if needed.
     }
 
     private Dictionary<string, List<GameObject>> BuildPrefabConnections()
@@ -266,8 +285,10 @@ class GenerateBodyPartPrefabs : EditorWindow {
         // go through each character and set up ALL body part / subjoint / joint related info.
         for (int i = 0; i < characterPrefabs.Length; ++i)
         {
-            AddCharacter(characterPrefabs[i], BuildPrefabConnections(), true);
+            AddCharacter(characterPrefabs[i]);
         }
+
+        ReconnectAllPrefabs(BuildPrefabConnections(), true);
     }
 
     private void AddToJointDict(Joint joint)
@@ -291,5 +312,17 @@ class GenerateBodyPartPrefabs : EditorWindow {
 
         // set joint type for joint
         joint.JointType = jointID;
+    }
+
+    void OnDestroy()
+    {
+        // save dictionary to text asset
+        string finalFile = "";
+        foreach (KeyValuePair<int, string> kvp in jointTypeDict)
+            finalFile += kvp.Key + "\t" + kvp.Value + "\n";
+
+        File.WriteAllText(Application.dataPath + "/Resources/joints.txt", finalFile);
+        AssetDatabase.SaveAssets();
+        
     }
 }
