@@ -14,10 +14,6 @@ public class GameManager : MonoBehaviour
     { 
         // Have bparts ignore character colliders
         Physics.IgnoreLayerCollision(9, 10);
-
-        // Build skeletal structure and grab initial positions.
-        //BuildSkeletons();
-        //LoadSkeletonFiles();
     }
 
     // Use this for initialization

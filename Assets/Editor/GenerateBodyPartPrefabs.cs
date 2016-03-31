@@ -12,34 +12,31 @@ using System.Collections.Generic;
 */
 
 class GenerateBodyPartPrefabs : EditorWindow {
-    private static Dictionary<int, string> jointTypeDict;
+    private static Dictionary<int, string> jointTypeDict = new Dictionary<int, string>();
     private Dictionary<string, GameObject> createdPrefabs;
 
     [MenuItem("Body Parts/Rebuild Body Part Prefabs")]
     static void Init()
     {
-        if (jointTypeDict == null)
+
+        // load data into dictionary when null
+        TextAsset textAsset = Resources.Load<TextAsset>("joints");
+
+        if (textAsset != null)
         {
-            jointTypeDict = new Dictionary<int, string>();
-
-            // load data into dictionary when null
-            TextAsset textAsset = Resources.Load<TextAsset>("joints");
-
-            if (textAsset != null)
+            // split at \n and \t
+            string[] lines = textAsset.text.Split('\n');
+            for (int i = 0; i < lines.Length; ++i)
             {
-                // split at \n and \t
-                string[] lines = textAsset.text.Split('\n');
-                for (int i = 0; i < lines.Length; ++i)
+                if (lines[i] != "")
                 {
-                    if (lines[i] != "")
-                    {
-                        string[] data = lines[i].Split('\t');
+                    string[] data = lines[i].Split('\t');
 
-                        jointTypeDict[int.Parse(data[0])] = data[1];
-                    }
+                    jointTypeDict[int.Parse(data[0])] = data[1];
                 }
             }
         }
+        
 
         EditorWindow window = GetWindow(typeof(GenerateBodyPartPrefabs), false, "Body Part Prefab Generator");
     }
@@ -51,13 +48,10 @@ class GenerateBodyPartPrefabs : EditorWindow {
         {
             scroll = EditorGUILayout.BeginScrollView(scroll, GUILayout.Width(200), GUILayout.Height(300));
             {
-                if (jointTypeDict != null)
+                //GameObject[] gameObjects = GameObject.FindObjectsOfType(typeof(GameObject)) as GameObject[];
+                foreach (KeyValuePair<int, string> kvp in jointTypeDict)
                 {
-                    //GameObject[] gameObjects = GameObject.FindObjectsOfType(typeof(GameObject)) as GameObject[];
-                    foreach (KeyValuePair<int, string> kvp in jointTypeDict)
-                    {
-                        EditorGUILayout.LabelField(kvp.Key + " - " + kvp.Value);
-                    }
+                    EditorGUILayout.LabelField(kvp.Key + " - " + kvp.Value);
                 }
             }
             EditorGUILayout.EndScrollView();
@@ -114,8 +108,8 @@ class GenerateBodyPartPrefabs : EditorWindow {
 
         // APPLY CHANGES
         // Go through all joints and process relationships
-        Joint[] joints = character.GetComponentsInChildren<Joint>();
-
+        CustomJoint[] joints = character.GetComponentsInChildren<CustomJoint>();
+        List<BodyPart> leafBodyParts = new List<BodyPart>(); // change to array?
         // verify joint layout
         for (int z = 0; z < joints.Length; ++z)
         {
@@ -136,6 +130,14 @@ class GenerateBodyPartPrefabs : EditorWindow {
                 throw new UnityException("ERROR: Body part does not exist in joint: " + joints[z].name);
 
             bodyPart.BodyPartType = joints[z].JointType;
+            bodyPart.InitialLocalPosition = bodyPart.transform.localPosition;
+            bodyPart.InitialLocalRotation = bodyPart.transform.localRotation;
+
+            if (joints[z].GetComponentsInChildren<CustomJoint>().Length == 1)
+            {
+                Debug.Log(bodyPart.name + " has no child " );
+                leafBodyParts.Add(bodyPart);
+            }
 
             // generate prefabs
             if (!createdPrefabs.ContainsKey(bodyPart.name))
@@ -172,6 +174,41 @@ class GenerateBodyPartPrefabs : EditorWindow {
             }
             */
         }
+
+        // construct tmp character with following layout
+        // BASE NAME (delete animator)
+        // - bodyParts 
+        GameObject bodyPartRoot = new GameObject("bodyParts");
+        bodyPartRoot.transform.parent = character.transform;
+        bodyPartRoot.transform.localPosition = Vector3.zero;
+        bodyPartRoot.transform.localRotation = Quaternion.identity;
+
+        //      -- bparts --
+        for(int i = 0; i < leafBodyParts.Count; ++i)
+            IsolateBodyPart(leafBodyParts[i], bodyPartRoot.transform);
+
+        // - skeleton (animator)
+        GameObject skeletonRoot = new GameObject("skeleton");
+        skeletonRoot.transform.parent = character.transform;
+        skeletonRoot.transform.localPosition = Vector3.zero;
+        skeletonRoot.transform.localRotation = Quaternion.identity;
+
+        // copy animator
+        Animator animator;
+        if ((animator = character.GetComponent<Animator>()) != null)
+            if (UnityEditorInternal.ComponentUtility.CopyComponent(animator))
+                if (UnityEditorInternal.ComponentUtility.PasteComponentAsNew(skeletonRoot))
+                {
+                    DestroyImmediate(animator);
+                    Debug.Log("Copied animator as well...");
+                }
+
+        //      -- joints --
+        //      set immediate joints to skeleton gameobject.
+        CustomJoint[] childJoints = character.GetComponentsInChildren<CustomJoint>();
+        for(int i = 0; i < childJoints.Length; ++i)
+            if(childJoints[i].transform.parent == character.transform)
+                childJoints[i].transform.parent = skeletonRoot.transform;
 
         // CREATE PREFAB
         createdPrefabs[characterName] = PrefabUtility.CreatePrefab("Assets/Resources/Prefabs/Characters/" + characterName + ".prefab", character, ReplacePrefabOptions.ConnectToPrefab);
@@ -291,7 +328,7 @@ class GenerateBodyPartPrefabs : EditorWindow {
         ReconnectAllPrefabs(BuildPrefabConnections(), true);
     }
 
-    private void AddToJointDict(Joint joint)
+    private void AddToJointDict(CustomJoint joint)
     {
         // Go through dict and try to find matching string name.
         foreach (KeyValuePair<int, string> jointInfo in jointTypeDict)
@@ -312,6 +349,33 @@ class GenerateBodyPartPrefabs : EditorWindow {
 
         // set joint type for joint
         joint.JointType = jointID;
+    }
+
+    void IsolateBodyPart(BodyPart leafBodyPart, Transform bodyPartRef)
+    {
+        // Grab the parent joint relative to this bpart
+        CustomJoint[] parentJoint;
+        
+        if ((parentJoint = leafBodyPart.transform.GetComponentsInParent<CustomJoint>()) == null ||
+            parentJoint.Length <= 1)
+        {
+            leafBodyPart.transform.parent = bodyPartRef;
+            return;
+        }
+
+        // look for first bodypart in the joint since every joint should
+        // only have 1 body part.
+        BodyPart parentBodyPart = null;
+        foreach (Transform child in parentJoint[1].transform)
+        {
+            if ((parentBodyPart = child.GetComponent<BodyPart>()) != null)
+            {
+                // set leaf to parent and call func again from parent
+                leafBodyPart.transform.parent = parentBodyPart.transform;
+                IsolateBodyPart(parentBodyPart, bodyPartRef);
+                break;
+            }
+        }
     }
 
     void OnDestroy()

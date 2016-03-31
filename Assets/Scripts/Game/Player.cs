@@ -53,6 +53,8 @@ public class Player : Character {
 	    
 	}
 
+    int tmpIndex = 0;
+    BodyPart tmpBodyPart = null;
     // Update is called once per frame
     protected override void Update () {
 
@@ -139,9 +141,11 @@ public class Player : Character {
             }
         }
         */
+
+        /* DEBUG TESTS */
         if (Input.GetMouseButtonDown(0))
         {
-            Detach(joints.Values.First().BodyPart.BodyPartType);
+            tmpBodyPart = Detach(3);
 
             // RAY CAST
             // cast ray from camera to where mouse position is
@@ -162,11 +166,12 @@ public class Player : Character {
             }
         }
 
+        /* DEBUG TESTS */
         // TMP INVENTORY
         if (Input.GetKeyDown("i"))
         {
-            displayCharacterInventory = !displayCharacterInventory;
-            characterInventory.SetActive(displayCharacterInventory);
+            Attach(tmpBodyPart);
+            Debug.Log("TRYING TO ATTACH");
         }
 
         base.Update();

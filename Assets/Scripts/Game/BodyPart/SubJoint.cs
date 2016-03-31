@@ -16,7 +16,7 @@ using System.Collections;
 public class SubJoint : MonoBehaviour {
 
     // !! SINGLE !! body part associated with this subjoint
-    private Joint joint; // parent
+    private CustomJoint joint; // parent
     private BodyPart bodyPart; // child
 
     // Proportional offset value based off of initial body part connected.
@@ -31,7 +31,7 @@ public class SubJoint : MonoBehaviour {
     /// <summary>
     /// Returns the parent joint to this subjoint (this should never change).
     /// </summary>
-    public Joint Joint
+    public CustomJoint Joint
     {
         get
         {
@@ -68,7 +68,7 @@ public class SubJoint : MonoBehaviour {
         tag = "subJoint";
 
         // grab parent joint reference, if none, throw error.
-        if ((joint = GetComponentInParent<Joint>()) == null)
+        if ((joint = GetComponentInParent<CustomJoint>()) == null)
             throw new UnityException(string.Format("ERROR: Joint not found for subjoint {0}.", name));
 
         // grab body part reference, if none, throw error.

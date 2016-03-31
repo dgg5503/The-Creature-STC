@@ -20,6 +20,7 @@
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Collider))]
@@ -28,7 +29,7 @@ public abstract class Character : MonoBehaviour
 {
     // Body stuff
     //protected List<BodyPart> bodyParts;
-    protected Dictionary<int, SubJoint> joints;
+    protected Dictionary<int, CustomJoint> joints;
     protected List<RegularItem> regularItems;
 
     // Inventory
@@ -80,13 +81,22 @@ public abstract class Character : MonoBehaviour
         // Grab all children with BodyPart scripts and store them for reference
         // Q: Is the head/torso a body part with inf health?
 
-        foreach(Joint joint in transform.GetComponentsInChildren<Joint>())
+        //bodyParts = new List<BodyPart>(transform.GetComponentsInChildren<BodyPart>());
+        
+        joints = GetComponentsInChildren<CustomJoint>().ToDictionary(x => x.JointType, x => x);
+        foreach (CustomJoint joint in joints.Values)
         {
             Debug.Log(string.Format("{0}: {1}", joint.JointType, joint.name));
         }
 
-        //bodyParts = new List<BodyPart>(transform.GetComponentsInChildren<BodyPart>());
-        joints = transform.GetComponentsInChildren<Joint>().ToDictionary(x => x.JointType, x => x.GetComponent<SubJoint>());
+        // get all body parts that are children and set joint relationships ONCE
+        // all other joint relationship will be handled in attach and detach
+        BodyPart[] bodyParts = GetComponentsInChildren<BodyPart>();
+        for (int i = 0; i < bodyParts.Length; ++i)
+        {
+            bodyParts[i].Joint = joints[bodyParts[i].BodyPartType];
+            Debug.Log("Connected " + bodyParts[i].name + " to " + joints[bodyParts[i].BodyPartType].name);
+        }
 
         // init items in hand
         regularItems = new List<RegularItem>();
@@ -110,7 +120,7 @@ public abstract class Character : MonoBehaviour
         collider = GetComponent<CapsuleCollider>();
         
         // calc bounds for the character
-        RecalculateCollisionBounds();
+        //RecalculateCollisionBounds();
 
         // always start alive
         isAlive = true;
@@ -125,41 +135,6 @@ public abstract class Character : MonoBehaviour
     {
 	    
 	}
-
-    /*
-    protected virtual void Update()
-    {
-        ProcessMovement();
-
-        // apply velocity changes to this character
-        if (acceleration != Vector3.zero)
-            velocity += acceleration * Time.deltaTime;
-
-        // local space velocity
-        Vector3 localVelNorm = transform.InverseTransformDirection(velocity.normalized);
-
-        // determine amount to turn
-        float turnAmount = Mathf.Atan2(localVelNorm.x, localVelNorm.z);
-
-        // turn based on z position (which is forward)
-        float turnSpeed = Mathf.Lerp(180, 360, localVelNorm.z);
-        transform.Rotate(0, turnAmount * turnSpeed * Time.deltaTime, 0);
-
-        // apply velocity to local coord
-        //transform.localPosition.z += (velocity.z * Time.deltaTime);
-
-        // set accel to 0
-        acceleration = Vector3.zero;
-
-
-    }*/
-
-    // Update is called once per frame
-
-    void FixedUpdate()
-    {
-
-    }
 
     protected virtual void Update ()
     {
@@ -235,8 +210,12 @@ public abstract class Character : MonoBehaviour
 
         // TODO: perhaps use addforce to rid of this check?
         // or just use the RB velocity overall.
-        if(velocity != Vector3.zero)
+
+        // TMP FIX
+        //velocity.y = rigidbody.velocity.y;
+        if (velocity != Vector3.zero)
             rigidbody.velocity = velocity;
+
 
         // set accel to 0
         acceleration = Vector3.zero;
@@ -248,22 +227,20 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     abstract protected void ProcessMovement();
 
-    /// <summary>
-    /// Attaches a provided body part to its appropriate area if the parts
-    /// parent exists on the character.
-    /// </summary>
-    /// <param name="bodyPartToAttach">Body part to attach.</param>
-    /// <returns>True if the body part was attached. False if the parent part was not found.</returns>
     public bool Attach(BodyPart bodyPartToAttach)
     {
         if (bodyPartToAttach == null || !joints.ContainsKey(bodyPartToAttach.BodyPartType))
             return false;
 
         //bodyParts = transform.GetComponentsInChildren<BodyPart>().ToDictionary(x => x.name, x => x.GetComponent<BodyPart>());
-        bodyPartToAttach.AttachTo(joints[bodyPartToAttach.BodyPartType].Joint);
-        RecalculateCollisionBounds();
+        //bodyPartToAttach.AttachTo(joints[bodyPartToAttach.BodyPartType].Joint);
+        if (!bodyPartToAttach.SetParent(joints[bodyPartToAttach.BodyPartType]))
+            return false;
+
+        //RecalculateCollisionBounds();
         return true;
     }
+    
 
     /// <summary>
     /// Detaches a body part based on its index within the list of body parts.
@@ -272,20 +249,30 @@ public abstract class Character : MonoBehaviour
     /// <returns>Reference to body part detached if it exists.</returns>
     public BodyPart Detach(int bodyPartID)
     {
-        // see if part exists
-        if (!joints.ContainsKey(bodyPartID))
-            return null;
-
         // store in a variable
-        BodyPart tmpPart = joints[bodyPartID].BodyPart;
+        BodyPart tmpPart = GetComponentsInChildren<BodyPart>().First(x => x.BodyPartType == bodyPartID);
 
         // dont remove root (this).
         //if (tmpPart.name == "root")
         //    return null;
 
-        // can only remove parts where part has no children
-        //if (tmpPart.transform.childCount != 0)
-        //   return null;
+        // set as active in the world.
+        tmpPart.Detach();
+
+        Debug.Log("Trying: " + bodyPartID);
+        // see if part exists
+        if (!joints.ContainsKey(bodyPartID) || joints[bodyPartID].BodyPart == null)
+        {
+            Debug.Log("Failed: " + joints[bodyPartID].name);
+            return null;
+        }
+
+        // store in a variable
+        //BodyPart tmpPart = joints[bodyPartID].BodyPart;
+
+        // dont remove root (this).
+        //if (tmpPart.name == "root")
+        //    return null;
 
         // set as active in the world.
         tmpPart.Detach();
@@ -302,24 +289,9 @@ public abstract class Character : MonoBehaviour
         // TODO: make this not terrible... more dynamic
         // perhaps a rule class or struct with events?
         // adjust capsule collider pivot to new center and height
-        RecalculateCollisionBounds();
+        //RecalculateCollisionBounds();
 
         return tmpPart;
-    }
-
-    /// <summary>
-    /// Detaches a body part based on its index within the list of body parts.
-    /// </summary>
-    /// <param name="bodyPart">Index location of the body part to detach.</param>
-    /// <returns>Reference to body part detached if it exists.</returns>
-    public BodyPart Detach(BodyPart bodyPart)
-    {
-        // see if part exists
-        if (!joints.ContainsKey(bodyPart.BodyPartType))
-            return null;
-
-        // TODO MAKE LESS HACKY!!
-        return Detach(bodyPart.BodyPartType);
     }
 
     /// <summary>
@@ -356,9 +328,9 @@ public abstract class Character : MonoBehaviour
     // still broken....
     // TODO, FIX STRANGE ANOMLY WHERE BODY PARTS SLOWLY MOVE AWAY FROM ORIGIN LOCATIONS.
     // TODO, MAKE SURE THIS IS CALLED IN FIXED UPDATE (BEFORE PHYSICS ARE CALCd)
-            // PERHAPS VELOCITY JUST NEEDS TO BE IN FIXED UPDATE?
-            // REIMPLEMENT ROTATION TO IDENTITY (OR DEFAULT POSE)
-            // YIELD FIXED UPDATE?
+    // PERHAPS VELOCITY JUST NEEDS TO BE IN FIXED UPDATE?
+    // REIMPLEMENT ROTATION TO IDENTITY (OR DEFAULT POSE)
+    // YIELD FIXED UPDATE?
     // TODO, ALERRRRRRRT MAKE SURE TO PUT IN CHECKS FOR WHEN RESIZING UP/DOWN, DONT WANNA GO OOB :)))
     private void RecalculateCollisionBounds(ref Bounds currentBounds, GameObject currentBodyPart)
     {
@@ -389,7 +361,9 @@ public abstract class Character : MonoBehaviour
         // FIND A WAY TO GET TRUE CENTER ANOTHER WAY (this is because it is in world space and NOT local.
         newBounds.center = transform.InverseTransformPoint(currentBodyPart.transform.TransformPoint(newBounds.center));
         currentBounds.Encapsulate(newBounds);
-       
+
+        Debug.Log("PROCESSED: " + currentBodyPart.name);
+
         // put back rotation after all have been processed?
         //currentBodyPart.transform.rotation = currWorldRot;
         //currentBodyPart.transform.localPosition = localPos;
