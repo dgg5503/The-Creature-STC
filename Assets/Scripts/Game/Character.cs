@@ -130,9 +130,9 @@ public abstract class Character : MonoBehaviour
         
         // get the overall capsule collider
         collider = GetComponent<CapsuleCollider>();
-        
+
         // calc bounds for the character
-        //RecalculateCollisionBounds();
+        StartCoroutine(RecalculateCollisionBounds());
 
         // always start alive
         isAlive = true;
@@ -278,8 +278,8 @@ public abstract class Character : MonoBehaviour
         }
 
         // store in a variable
-        //BodyPart tmpPart = joints[bodyPartID].BodyPart;
-        BodyPart tmpPart = GetComponentsInChildren<BodyPart>().First(x => x.BodyPartType == bodyPartID);
+        BodyPart tmpPart = joints[bodyPartID].BodyPart;
+        //BodyPart tmpPart = GetComponentsInChildren<BodyPart>().First(x => x.BodyPartType == bodyPartID);
 
         // dont remove root (this).
         //if (tmpPart.name == "root")
@@ -301,6 +301,7 @@ public abstract class Character : MonoBehaviour
         // perhaps a rule class or struct with events?
         // adjust capsule collider pivot to new center and height
         //RecalculateCollisionBounds();
+        StartCoroutine(RecalculateCollisionBounds());
 
         return tmpPart;
     }
@@ -308,8 +309,10 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// Recalculates the capsule colliders bounds.
     /// </summary>
-    private void RecalculateCollisionBounds()
+    private IEnumerator RecalculateCollisionBounds()
     {
+        yield return new WaitForFixedUpdate();
+
         // preserve rotation, rotate to 0 and then put back.
         //Quaternion currWorldRot = transform.rotation;
         //Quaternion currLocalRot = transform.localRotation;
@@ -321,10 +324,10 @@ public abstract class Character : MonoBehaviour
         // TODO: make this function better
 
         // Get first body part (doesnt matter which one...)
-        BodyPart initialBodyPart = joints.Values.First().BodyPart;
-        Bounds initialBounds = initialBodyPart.GetComponent<MeshFilter>().mesh.bounds;
+        //BodyPart initialBodyPart = joints.Values.First().BodyPart;
+        Bounds initialBounds = root.GetComponent<MeshFilter>().mesh.bounds;
 
-        RecalculateCollisionBounds(ref initialBounds, gameObject);
+        RecalculateCollisionBounds(ref initialBounds, root.gameObject);
 
         //Debug.Log("The local bounds of this model is " + initialBounds);
         collider.center = initialBounds.center;
@@ -370,7 +373,8 @@ public abstract class Character : MonoBehaviour
         // !!!!!! THIS IS WHY EVERYTHING SHOULD IMPORT AT 1 1 1 SCALE !!!!!!!
         // RENDERER CENTER BOUNDS ARE LOCAL
         // FIND A WAY TO GET TRUE CENTER ANOTHER WAY (this is because it is in world space and NOT local.
-        newBounds.center = transform.InverseTransformPoint(currentBodyPart.transform.TransformPoint(newBounds.center));
+        newBounds.center = (currentBodyPart.GetComponent<Renderer>().bounds.center - transform.position) / transform.localScale.x;
+        //newBounds.center = transform.InverseTransformPoint(currentBodyPart.transform.TransformPoint(newBounds.center));
         currentBounds.Encapsulate(newBounds);
 
         Debug.Log("PROCESSED: " + currentBodyPart.name);

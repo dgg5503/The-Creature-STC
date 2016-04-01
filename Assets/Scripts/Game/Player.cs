@@ -145,7 +145,7 @@ public class Player : Character {
         /* DEBUG TESTS */
         if (Input.GetMouseButtonDown(0))
         {
-            tmpBodyPart = Detach(3);
+            tmpBodyPart = Detach(Random.Range(0, 10));
         }
 
         /* DEBUG TESTS */
@@ -153,6 +153,7 @@ public class Player : Character {
         if (Input.GetKeyDown("i"))
         {
             Attach(tmpBodyPart);
+            //Attach(GameObject.Find("Creature_Left_Arm_Part_1").GetComponent<BodyPart>());
             Debug.Log("TRYING TO ATTACH " + tmpBodyPart.name);
         }
 

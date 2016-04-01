@@ -34,12 +34,6 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     // Part specific
     private CustomJoint joint;
 
-    [SerializeField]
-    private Vector3 initialLocalPosition = Vector3.zero; // holds inital rotation and position relative to parent
-
-    [SerializeField]
-    private Quaternion initialLocalRotation = Quaternion.identity;
-
     // Serialized to store body part type.
     [SerializeField]
     private int bodyPartType = -1; // body part type of this body part based on ORIGINAL joint. (treated as an "enum")
@@ -72,39 +66,6 @@ public class BodyPart : Item, ISerializationCallbackReceiver
                 Debug.Log("CANT SET BODY PART TYPE AFTER ALREADY SET");
         }
     }
-
-    // DO NOT CHANGE THIS!!
-    /*
-    public Vector3 InitialLocalPosition
-    {
-        get
-        {
-            return initialLocalPosition;
-        }
-
-        set
-        {
-
-            initialLocalPosition = value;
-        }
-    }
-    */
-
-    // DO NOT CHANGE THIS!
-    /*
-    public Quaternion InitialLocalRotation
-    {
-        get
-        {
-            return initialLocalRotation;
-        }
-
-        set
-        {
-            initialLocalRotation = value;
-        }
-    }
-    */
 
     // Stats
     private int currHealth;
@@ -149,45 +110,6 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         }
     }
 
-    /// <summary>
-    /// Get or set the current joint that this body part is attached to.
-    /// </summary>
-    /*
-    public CustomJoint Joint
-    {
-        get
-        {
-            return joint;
-        }
-
-        set
-        {
-            if (value.JointType == bodyPartType)
-            {
-                joint = value;
-                joint.BodyPart = this;
-
-                if (joint.Parent != null)
-                {
-                    Debug.Log(joint.Parent.BodyPart.name);
-                    SetParent(joint.Parent.BodyPart);
-                }
-            }
-            else if(value == null)
-            {
-                joint = null;
-                joint.BodyPart = null;
-                Detach();
-            }
-            else
-            {
-                Debug.Log("ERROR: Trying to attach " + name +
-                    " to JointType " + value.JointType + " but its " + bodyPartType);
-            }
-        }
-    }
-    */
-
     /*
         Use this function as the "constructor" since it occurs at the same time
         as instantiation.
@@ -220,6 +142,8 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         // no joint connected
         if (joint == null)
         {
+            Debug.Log(name + " is null.");
+
             // start rb as loose on the ground
             rigidbody.isKinematic = false;
 
@@ -257,7 +181,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
             transform.localRotation = joint.transform.localRotation;
     }
 
-    // FIX THIS
+    // TO-DO: TEST AND FIX?
     public bool AttachTo(BodyPart parentBodyPart)
     {
         // Detach if connected to anything.
@@ -269,17 +193,6 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         if (parentBodyPart == null || transform.parent != null)
             return false;
 
-
-
-        // set this joint to new parent joint
-        // ???
-        /*
-        if (associatedJoint != null)
-        {
-            joint = associatedJoint;
-            joint.BodyPart = this;
-        }
-        */
         Debug.Log(name + " TO " + parentBodyPart.name);
 
         // parent it
@@ -290,37 +203,9 @@ public class BodyPart : Item, ISerializationCallbackReceiver
 
         // Apply detach properties to all.
         for (int i = 0; i < childBodyParts.Length; ++i)
-        {
             if (childBodyParts[i].isDetachable == true)
-            {
                 childBodyParts[i].SetParent(childBodyParts[i]);
 
-                /*
-                // add a hinge joint for visual indication that connection still exists
-                // if parent body part has a joint, then it means its being animated
-                // must delete then!
-                if (childBodyParts[i] != this)
-                    if ((tmpHinge = GetComponent<ConfigurableJoint>()) != null && parentBodyPart.joint != null)
-                        Destroy(GetComponent<ConfigurableJoint>());
-
-                // set back to kinematic
-                rigidbody.isKinematic = true;
-
-                // set our parent, localposition, rotation based on offset value of subJoint
-                transform.localRotation = Quaternion.identity;
-
-                // below should never error
-                //Debug.Log
-                transform.localPosition = parentBodyPart.endPoints[bodyPartType];
-
-                //transform.localPosition = initialLocalTransform.position * (bodyPartLength / parentJoint.OffsetProportion);
-
-                // re-ignore parent collision
-                if (transform.parent != null)
-                    Physics.IgnoreCollision(collider, transform.parent.GetComponent<Collider>());
-                    */
-            }
-        }
         return true;
     }
 
@@ -351,7 +236,6 @@ public class BodyPart : Item, ISerializationCallbackReceiver
             transform.localRotation = Quaternion.identity;
         
         // below should never error
-     
         transform.localPosition = newParent.endPoints[bodyPartType];
 
         //transform.localPosition = initialLocalTransform.position * (bodyPartLength / parentJoint.OffsetProportion);
@@ -370,61 +254,25 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         if (skeleton == null || !skeleton.ContainsKey(bodyPartType))
             return false;
 
-        // attach this body part to root, set joint and its bpart
-        //joint = skeleton[bodyPartType];
-        //joint.BodyPart = this;
-
-        //if (joint.Parent != null)
-        //{
-        //    transform.parent = joint.Parent.BodyPart.transform;
-        //}
-
         // Get all child body parts
-        // TO-DO: CONSOLIDATE BOTH FORT LOOPS 
         BodyPart[] childBodyParts = transform.GetComponentsInChildren<BodyPart>();
 
         // Apply detach properties to all.
         for (int i = 0; i < childBodyParts.Length; ++i)
         {
             // if not in skeleton, ignore!
-            if (childBodyParts[i].isDetachable == true &&
-                skeleton.ContainsKey(childBodyParts[i].bodyPartType))
+            // childBodyParts[i].isDetachable == true &&
+            if (skeleton.ContainsKey(childBodyParts[i].bodyPartType))
             {
                 childBodyParts[i].joint = skeleton[childBodyParts[i].bodyPartType];
                 childBodyParts[i].joint.BodyPart = childBodyParts[i];
 
                 if(childBodyParts[i].joint.Parent != null)
                     childBodyParts[i].SetParent(childBodyParts[i].joint.Parent.BodyPart);
-
-                // add a hinge joint for visual indication that connection still exists
-                // if parent body part has a joint, then it means its being animated
-                // must delete then!
-                /*
-                if ((tmpHinge = childBodyParts[i].GetComponent<ConfigurableJoint>()) != null)
-                    Destroy(tmpHinge);
-
-                // set off kinematic
-                if(childBodyParts[i].rigidbody != null)
-                    childBodyParts[i].rigidbody.isKinematic = false;
-
-                // set our parent, localposition, rotation based on offset value of subJoint
-                childBodyParts[i].transform.localRotation = childBodyParts[i].joint.transform.localRotation;
-
-                // below should never error
-                Debug.Log(childBodyParts[i].name + " -> " + childBodyParts[i].joint.name);
-                Debug.Log("Gonna try " + childBodyParts[i].joint.Parent.name);
-                childBodyParts[i].transform.localPosition = childBodyParts[i].joint.Parent.BodyPart.endPoints[childBodyParts[i].bodyPartType];
-
-                // re-ignore parent collision
-                if(childBodyParts[i].collider != null)
-                    Physics.IgnoreCollision(childBodyParts[i].collider, childBodyParts[i].transform.parent.GetComponent<Collider>());
-                    */
             }
         }
         return true;        
     }
-
-
 
     /// <summary>
     /// Detaches this body part from whatever parent it's connected to.
@@ -496,59 +344,6 @@ public class BodyPart : Item, ISerializationCallbackReceiver
             hinge.anchor = Vector3.zero;
         }
     }
-
-    /*
-    private void DetachAndParent(CustomJoint joint)
-    {
-        // if no bodypart, then we're done
-        if (joint.BodyPart == null)
-            return;
-
-        // see what next attached body part is from this joint
-        CustomJoint nextJoint = null;
-
-        // get immediate children
-        foreach (Transform child in joint.transform)
-            if ((nextJoint = child.GetComponent<CustomJoint>()) != null)
-                joint.BodyPart.DetachAndParent(nextJoint);
-
-        if (joint.BodyPart == this)
-            return;
-
-        HingeJoint hinge = joint.BodyPart.gameObject.AddComponent<HingeJoint>();
-        hinge.connectedBody = rigidbody;
-        hinge.anchor = joint.BodyPart.transform.localPosition;
-
-        // parent body part to this one
-        joint.BodyPart.rigidbody.isKinematic = false;
-        joint.BodyPart.transform.parent = transform;
-    }
-    
-    private void AttachAndParent(CustomJoint joint)
-    {
-        // if no bodypart, then we're done
-        if (joint.BodyPart != null)
-            return;
-
-        // see what next attached body part is from this joint
-        CustomJoint nextJoint = null;
-
-        // get immediate children
-        foreach (Transform child in joint.transform)
-            if ((nextJoint = child.GetComponent<CustomJoint>()) != null)
-                joint.BodyPart.DetachAndParent(nextJoint);
-
-        if (joint.BodyPart == this)
-            return;
-
-        Destroy(GetComponent<HingeJoint>());
-
-        // parent body part to this one
-        this.joint = joint;
-        transform.parent = joint.transform;
-        rigidbody.isKinematic = true;
-    }
-    */
 
     // --- EDITOR ONLY ---
     public void OnBeforeSerialize()
