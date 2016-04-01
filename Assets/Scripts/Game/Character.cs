@@ -74,9 +74,10 @@ public abstract class Character : MonoBehaviour
             
             if (isAlive == false)
             {
+                //root.Detach();
                 // set all bparts to false kinematics...
                 BodyPart[] allBodyParts = GetComponentsInChildren<BodyPart>();
-                for (int i = 1; i < allBodyParts.Length; ++i)
+                for (int i = 0; i < allBodyParts.Length; ++i)
                     allBodyParts[i].SetSilly();
             }
         }
@@ -120,7 +121,7 @@ public abstract class Character : MonoBehaviour
             if ((root = possBodyPart.GetComponent<BodyPart>()) != null)
                 break;
 
-        root.SetSkeleton(joints);
+        root.InitSkeleton(joints);
 
         /*
         BodyPart[] bodyParts = GetComponentsInChildren<BodyPart>();
@@ -300,30 +301,14 @@ public abstract class Character : MonoBehaviour
 
         // store in a variable
         BodyPart tmpPart = joints[bodyPartID].BodyPart;
-        //BodyPart tmpPart = GetComponentsInChildren<BodyPart>().First(x => x.BodyPartType == bodyPartID);
 
-        // dont remove root (this).
-        //if (tmpPart.name == "root")
-        //    return null;
+        if (tmpPart == null)
+            return null;
 
         // set as active in the world.
         tmpPart.Detach();
 
-        // update body part list
-        // TO-DO: this body parts should instead be a tree or linked list or something so
-        // we dont have to keep asking for children. instead, we can just remove the root
-        // of the tree!
-        // remove the body part from this characters bodypart list
-        // VVV VERY SLOW VVV
-        //bodyParts = transform.GetComponentsInChildren<BodyPart>().ToDictionary(x => x.name, x => x.GetComponent<BodyPart>());
-
-        // check to see if both legs are now detached
-        // TODO: make this not terrible... more dynamic
-        // perhaps a rule class or struct with events?
         // adjust capsule collider pivot to new center and height
-        //RecalculateCollisionBounds();
-        //StartCoroutine(RecalculateCollisionBounds());
-
         RecalculateCollisionBounds();
 
         return tmpPart;
@@ -371,11 +356,11 @@ public abstract class Character : MonoBehaviour
     // TODO, ALERRRRRRRT MAKE SURE TO PUT IN CHECKS FOR WHEN RESIZING UP/DOWN, DONT WANNA GO OOB :)))
     private void RecalculateCollisionBounds(ref Bounds currentBounds, GameObject currentBodyPart)
     {
-        //Quaternion currLocalRot = currentBodyPart.transform.localRotation;
+        Quaternion currLocalRot = currentBodyPart.transform.localRotation;
         //Quaternion currWorldRot = currentBodyPart.transform.rotation;
         //Vector3 localPos = currentBodyPart.transform.localPosition;
 
-        //currentBodyPart.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+        currentBodyPart.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
         //currentBodyPart.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
         // ^ shouldnt need above if implemented in fixed update... ^
 
@@ -397,13 +382,14 @@ public abstract class Character : MonoBehaviour
         // !!!!!! THIS IS WHY EVERYTHING SHOULD IMPORT AT 1 1 1 SCALE !!!!!!!
         // RENDERER CENTER BOUNDS ARE LOCAL
         // FIND A WAY TO GET TRUE CENTER ANOTHER WAY (this is because it is in world space and NOT local.
-        //newBounds.center = (currentBodyPart.GetComponent<Renderer>().bounds.center - transform.position) / transform.localScale.x;
+        //newBounds.center = transform.InverseTransformPoint(currentBodyPart.transform.TransformPoint(newBounds.center));
         newBounds.center = transform.InverseTransformPoint(currentBodyPart.transform.TransformPoint(newBounds.center));
         currentBounds.Encapsulate(newBounds);
 
         //Debug.Log("PROCESSED: " + currentBodyPart.name);
 
         // put back rotation after all have been processed?
+        currentBodyPart.transform.localRotation = currLocalRot;
         //currentBodyPart.transform.rotation = currWorldRot;
         //currentBodyPart.transform.localPosition = localPos;
     }

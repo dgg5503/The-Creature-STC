@@ -23,9 +23,9 @@ public class Corpse : Character
         // Initiate parent first THEN move on to this classes stuff.
         base.Awake();
 
-        // 0 everything out
+        // place in ragdoll mode.
         rigidbody.isKinematic = false;
-        rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+        collider.enabled = false;
         accelerationScalar = 0;
         rotationAccelFactor = 0;
         maxSpeed = 0;
@@ -45,14 +45,16 @@ public class Corpse : Character
     protected override void Update()
     { 
         base.Update();
+        /*
         if (Input.GetMouseButtonDown(0))
         {
             Detach(3);
         }
+        */
 
         // TODO: APPEND CAPSULE COLLIDER TO TORSO?
-        transform.position = root.transform.position;
-        transform.rotation = root.transform.rotation;
+        //transform.position = root.transform.position;
+        //transform.rotation = root.transform.rotation;
     }
 
     /// <summary>

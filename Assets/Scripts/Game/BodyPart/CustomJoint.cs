@@ -64,22 +64,6 @@ public class CustomJoint : MonoBehaviour {
     }
 
     /// <summary>
-    /// Get the offset proportion for this specific joint that will be used for given body parts attached to this joint.
-    /// </summary>
-    public float OffsetProportion
-    {
-        get
-        {
-            return offsetProportion;
-        }
-
-        set
-        {
-            offsetProportion = value;
-        }
-    }
-
-    /// <summary>
     /// Get the single bodypart currently connected to this joint.
     /// </summary>
     

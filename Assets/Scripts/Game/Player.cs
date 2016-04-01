@@ -145,7 +145,24 @@ public class Player : Character {
         /* DEBUG TESTS */
         if (Input.GetMouseButtonDown(0))
         {
-            tmpBodyPart = Detach(3);
+            // ray cast
+            // RAY CAST
+            // cast ray from camera to where mouse position is
+            Ray ray = playerCamera.ScreenPointToRay(Input.mousePosition);
+
+            // Raycast
+            RaycastHit[] hit = Physics.RaycastAll(ray);
+
+            // Get first body part
+            BodyPart foundBodyPart = null;
+            foreach (RaycastHit obj in hit)  
+                if ((foundBodyPart = obj.collider.GetComponent<BodyPart>()) != null)
+                    break;
+
+            // Detach if parented
+            if (foundBodyPart != null)
+                if (Detach(foundBodyPart.BodyPartType) == null)
+                    Attach(foundBodyPart);
         }
 
         /* DEBUG TESTS */

@@ -41,6 +41,8 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     [SerializeField]
     private bool isDetachable = true;
 
+    private bool isControlledByJoint;
+
     // Holds joint bodypart endpoint connections
     [Header("End Points")]
     public List<int> _keys = new List<int>();
@@ -64,6 +66,33 @@ public class BodyPart : Item, ISerializationCallbackReceiver
                 bodyPartType = value;
             else
                 Debug.Log("CANT SET BODY PART TYPE AFTER ALREADY SET");
+        }
+    }
+
+    public CustomJoint Joint
+    {
+        get
+        {
+            return joint;
+        }
+
+        private set
+        {
+            if (value != null)
+            {
+                joint = value;
+                joint.BodyPart = this;
+                isControlledByJoint = true;
+            }
+            else
+            {
+                if (joint != null)
+                {
+                    joint.BodyPart = null;
+                    joint = null;
+                    isControlledByJoint = false;
+                }
+            }
         }
     }
 
@@ -132,13 +161,12 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         minHealth = 30;
         currHealth = maxHealth;
 
-        // calculate length of this body part based on initial rotation.
-        // grab extents and length based on default rotation
-        //bodyPartLength = GetComponent<MeshFilter>().mesh.bounds.max.magnitude * 2;
+        // Control determined later
+        isControlledByJoint = true;
     }
 
     // Use this for initialization
-    void Start ()
+    void Start()
     {
         // no joint connected
         if (joint == null)
@@ -167,53 +195,20 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         // TODO ignore collision with all immediate children no matter type
     }
 
-    void FixedUpdate()
-    {
-        //Debug.Log("THE FIXED");
-    }
-
     /// <summary>
     /// Late update used to update rotation from skeleton.
     /// LateUpdate occurs after Unity's internal animation.
     /// </summary>
     void LateUpdate()
     {
-        if (joint != null)
+        if (joint != null && isControlledByJoint)
             transform.localRotation = joint.transform.localRotation;
-    }
-
-    // TO-DO: TEST AND FIX?
-    public bool AttachTo(BodyPart parentBodyPart)
-    {
-        // Detach if connected to anything.
-        //if (joint != null || transform.parent != null)
-        //    Detach();
-
-        //Debug.Log(string.Format("{0} expecting {1} and got {2}", name, expectedParentType, parent.name));
-        // null check and ensure this body part has no parent and ensure correct type
-        if (parentBodyPart == null || transform.parent != null)
-            return false;
-
-        Debug.Log(name + " TO " + parentBodyPart.name);
-
-        // parent it
-        transform.parent = parentBodyPart.transform;
-
-        // Get all child body parts
-        BodyPart[] childBodyParts = transform.GetComponentsInChildren<BodyPart>();
-
-        // Apply detach properties to all.
-        for (int i = 0; i < childBodyParts.Length; ++i)
-            if (childBodyParts[i].isDetachable == true)
-                childBodyParts[i].SetParent(childBodyParts[i]);
-
-        return true;
     }
 
     public bool SetParent(BodyPart newParent)
     {
         // cant set this as parent
-        if (newParent == this)
+        if (newParent == this || newParent == null)
             return false;
 
         // set parent
@@ -223,7 +218,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         // if parent body part has a joint, then it means its being animated
         // must delete then!
         ConfigurableJoint tmpHinge;
-        if ((tmpHinge = GetComponent<ConfigurableJoint>()) != null && newParent.joint != null)
+        if ((tmpHinge = GetComponent<ConfigurableJoint>()) != null && newParent.Joint != null)
                 Destroy(GetComponent<ConfigurableJoint>());
 
         // set back to kinematic
@@ -231,15 +226,13 @@ public class BodyPart : Item, ISerializationCallbackReceiver
             rigidbody.isKinematic = true;
 
         // set our parent, localposition, rotation based on offset value of subJoint
-        if (newParent.joint != null)
-            transform.localRotation = newParent.joint.transform.localRotation;
+        if (newParent.Joint != null)
+            transform.localRotation = newParent.Joint.transform.localRotation;
         else
             transform.localRotation = Quaternion.identity;
         
         // below should never error
         transform.localPosition = newParent.endPoints[bodyPartType];
-
-        //transform.localPosition = initialLocalTransform.position * (bodyPartLength / parentJoint.OffsetProportion);
 
         // re-ignore parent collision
         if (transform.parent != null && collider != null)
@@ -248,11 +241,47 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         return true;
     }
 
-    // TO-DO: make recursive
-    public bool SetSkeleton(Dictionary<int, CustomJoint> skeleton)
+    // TODO: FIND FIX FOR THIS FUNCTION, dont have 2
+    public bool InitSkeleton(Dictionary<int, CustomJoint> skeleton)
     {
         // null check
         if (skeleton == null || !skeleton.ContainsKey(bodyPartType))
+            return false;
+
+        // make sure bpart exists at parent joint
+
+
+        // Get all child body parts
+        BodyPart[] childBodyParts = transform.GetComponentsInChildren<BodyPart>();
+
+        // Apply detach properties to all.
+        for (int i = 0; i < childBodyParts.Length; ++i)
+        {
+            // if not in skeleton, ignore!
+            // childBodyParts[i].isDetachable == true &&
+            if (skeleton.ContainsKey(childBodyParts[i].bodyPartType))
+            {
+                //childBodyParts[i].joint = skeleton[childBodyParts[i].bodyPartType];
+                //childBodyParts[i].joint.BodyPart = childBodyParts[i];
+
+                childBodyParts[i].Joint = skeleton[childBodyParts[i].bodyPartType];
+
+                if (childBodyParts[i].Joint.Parent != null)
+                    childBodyParts[i].SetParent(childBodyParts[i].Joint.Parent.BodyPart);
+            }
+        }
+        return true;
+    }
+
+    // TO-DO: make recursive
+    public bool SetSkeleton(Dictionary<int, CustomJoint> skeleton)
+    {
+        // null check, ensure type is in skeleton, dont attach if joint is full.
+        if (skeleton == null || !skeleton.ContainsKey(bodyPartType) || skeleton[bodyPartType].BodyPart != null)
+            return false;
+
+        // ensure expected parent exists
+        if (skeleton[bodyPartType].Parent.BodyPart == null)
             return false;
 
         // Get all child body parts
@@ -265,11 +294,13 @@ public class BodyPart : Item, ISerializationCallbackReceiver
             // childBodyParts[i].isDetachable == true &&
             if (skeleton.ContainsKey(childBodyParts[i].bodyPartType))
             {
-                childBodyParts[i].joint = skeleton[childBodyParts[i].bodyPartType];
-                childBodyParts[i].joint.BodyPart = childBodyParts[i];
+                //childBodyParts[i].joint = skeleton[childBodyParts[i].bodyPartType];
+                //childBodyParts[i].joint.BodyPart = childBodyParts[i];
 
-                if(childBodyParts[i].joint.Parent != null)
-                    childBodyParts[i].SetParent(childBodyParts[i].joint.Parent.BodyPart);
+                childBodyParts[i].Joint = skeleton[childBodyParts[i].bodyPartType];
+
+                if (childBodyParts[i].Joint.Parent != null)
+                    childBodyParts[i].SetParent(childBodyParts[i].Joint.Parent.BodyPart);
             }
         }
         return true;        
@@ -278,8 +309,8 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     public void SetSilly()
     {
         SetupPhysicsJoint();
-        //joint.BodyPart = null;
-        //joint = null;
+        rigidbody.isKinematic = false;
+        isControlledByJoint = false;
     }
     /// <summary>
     /// Detaches this body part from whatever parent it's connected to.
@@ -288,11 +319,8 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     /// </summary>
     public BodyPart Detach()
     {
-        //yield return new WaitForFixedUpdate();
-        //Debug.Log("IN FIXED");
-        if (isDetachable == false)
+        if (isDetachable == false || transform.parent == null)
             return null;
-        //yield break;
 
         // reapply collision detection to parent
         Collider parentCollider;
@@ -300,6 +328,10 @@ public class BodyPart : Item, ISerializationCallbackReceiver
             collider != null &&
             (parentCollider = transform.parent.GetComponent<Collider>()) != null)
             Physics.IgnoreCollision(collider, parentCollider, false);
+
+        ConfigurableJoint tmpHinge;
+        if ((tmpHinge = GetComponent<ConfigurableJoint>()) != null)
+            Destroy(GetComponent<ConfigurableJoint>());
 
         // unparent THIS ONLY! (this is considered to be the root of the detached bodypart)
         transform.parent = null;
@@ -313,11 +345,13 @@ public class BodyPart : Item, ISerializationCallbackReceiver
             if (childBodyParts[i].isDetachable == true)
             {
                 // ensure body part connection is off before detach
-                if(childBodyParts[i].joint != null)
-                    childBodyParts[i].joint.BodyPart = null;
+                //if(childBodyParts[i].joint != null)
+                //    childBodyParts[i].joint.BodyPart = null;
 
                 // unparent from joint, animation now off.
-                childBodyParts[i].joint = null;
+                //childBodyParts[i].joint = null;
+
+                childBodyParts[i].Joint = null;
 
                 // add a hinge joint for visual indication that connection still exists
                 if (childBodyParts[i] != this)
