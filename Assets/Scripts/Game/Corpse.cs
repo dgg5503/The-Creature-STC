@@ -24,10 +24,12 @@ public class Corpse : Character
         base.Awake();
 
         // 0 everything out
+        rigidbody.isKinematic = false;
+        rigidbody.constraints = RigidbodyConstraints.FreezeAll;
         accelerationScalar = 0;
         rotationAccelFactor = 0;
         maxSpeed = 0;
-        isAlive = false;
+        IsAlive = false;
 
         // tag as corpse for easy mouse detection
         tag = "Corpse";
@@ -43,6 +45,14 @@ public class Corpse : Character
     protected override void Update()
     { 
         base.Update();
+        if (Input.GetMouseButtonDown(0))
+        {
+            Detach(3);
+        }
+
+        // TODO: APPEND CAPSULE COLLIDER TO TORSO?
+        transform.position = root.transform.position;
+        transform.rotation = root.transform.rotation;
     }
 
     /// <summary>

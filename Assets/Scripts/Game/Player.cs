@@ -145,14 +145,15 @@ public class Player : Character {
         /* DEBUG TESTS */
         if (Input.GetMouseButtonDown(0))
         {
-            tmpBodyPart = Detach(Random.Range(0, 10));
+            tmpBodyPart = Detach(3);
         }
 
         /* DEBUG TESTS */
         // TMP INVENTORY
         if (Input.GetKeyDown("i"))
         {
-            Attach(tmpBodyPart);
+            Attach(GameObject.Find("Male_Villager2_Left_Leg_Part_1").GetComponent<BodyPart>());
+            //Attach(tmpBodyPart);
             //Attach(GameObject.Find("Creature_Left_Arm_Part_1").GetComponent<BodyPart>());
             Debug.Log("TRYING TO ATTACH " + tmpBodyPart.name);
         }

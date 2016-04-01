@@ -9,6 +9,9 @@ using System.Collections.Generic;
     - Add more checks for adding specific new characters
     - Perhaps make a copy character first then create links
     - Load in skeleton info with unity (shouldnt serialize do this???)
+
+    - move root GO to torso center
+    - move all joints to child of TORSO
 */
 
 class GenerateBodyPartPrefabs : EditorWindow {
@@ -108,11 +111,13 @@ class GenerateBodyPartPrefabs : EditorWindow {
 
         // hold root bodypart
         BodyPart rootBodyPart = null;
+        CustomJoint rootJoint = null;
 
         // APPLY CHANGES
         // Go through all joints and process relationships
         CustomJoint[] joints = character.GetComponentsInChildren<CustomJoint>();
         List<BodyPart> leafBodyParts = new List<BodyPart>(); // change to array?
+        List<BodyPart> allBodyParts = new List<BodyPart>();
         // verify joint layout
         for (int z = 0; z < joints.Length; ++z)
         {
@@ -127,7 +132,10 @@ class GenerateBodyPartPrefabs : EditorWindow {
             BodyPart bodyPart = null;
             foreach (Transform child in joints[z].transform)
                 if ((bodyPart = child.GetComponent<BodyPart>()) != null)
+                {
+                    allBodyParts.Add(bodyPart);
                     break;
+                }
 
             if (bodyPart == null)
                 throw new UnityException("ERROR: Body part does not exist in joint: " + joints[z].name);
@@ -136,19 +144,18 @@ class GenerateBodyPartPrefabs : EditorWindow {
             //bodyPart.InitialLocalPosition = bodyPart.transform.localPosition;
             //bodyPart.InitialLocalRotation = bodyPart.transform.localRotation;
 
-            if(bodyPart.name.ToLower().Contains("torso"))
+            if (bodyPart.name.ToLower().Contains("torso"))
+            {
+                rootJoint = joints[z];
                 rootBodyPart = bodyPart;
+            }
             else if (joints[z].GetComponentsInChildren<CustomJoint>().Length == 1)
             {
-                Debug.Log(bodyPart.name + " has no child " );
+                Debug.Log(bodyPart.name + " has no child ");
                 leafBodyParts.Add(bodyPart);
             }
 
-            // generate prefabs
-            if (!createdPrefabs.ContainsKey(bodyPart.name))
-            {
-                createdPrefabs[bodyPart.name] = PrefabUtility.CreatePrefab("Assets/Resources/Prefabs/BodyParts/" + bodyPart.name + ".prefab", bodyPart.gameObject, ReplacePrefabOptions.ConnectToPrefab);
-            } 
+            
 
             // connect prefabs if they exist in scene
             /*
@@ -185,6 +192,7 @@ class GenerateBodyPartPrefabs : EditorWindow {
         // - bodyParts 
         // find torso bodypart and set as root.
         rootBodyPart.transform.parent = character.transform;
+
         //GameObject bodyPartRoot = character.transform.f
         //bodyPartRoot.transform.parent = character.transform;
         //bodyPartRoot.transform.localPosition = Vector3.zero;
@@ -193,20 +201,18 @@ class GenerateBodyPartPrefabs : EditorWindow {
         //      -- bparts --
         for (int i = 0; i < leafBodyParts.Count; ++i)
             IsolateBodyPart(leafBodyParts[i], rootBodyPart);
-        
-
-
+        rootBodyPart.transform.localPosition = Vector3.zero;
         // - skeleton (animator)
-        GameObject skeletonRoot = new GameObject("skeleton");
-        skeletonRoot.transform.parent = character.transform;
-        skeletonRoot.transform.localPosition = Vector3.zero;
-        skeletonRoot.transform.localRotation = Quaternion.identity;
+        //GameObject skeletonRoot = new GameObject("skeleton");
+        rootJoint.transform.parent = character.transform;
+        rootJoint.transform.localPosition = Vector3.zero;
+        rootJoint.transform.localRotation = Quaternion.identity;
 
         // copy animator
         Animator animator;
         if ((animator = character.GetComponent<Animator>()) != null)
             if (UnityEditorInternal.ComponentUtility.CopyComponent(animator))
-                if (UnityEditorInternal.ComponentUtility.PasteComponentAsNew(skeletonRoot))
+                if (UnityEditorInternal.ComponentUtility.PasteComponentAsNew(rootJoint.gameObject))
                 {
                     DestroyImmediate(animator);
                     Debug.Log("Copied animator as well...");
@@ -217,9 +223,14 @@ class GenerateBodyPartPrefabs : EditorWindow {
         CustomJoint[] childJoints = character.GetComponentsInChildren<CustomJoint>();
         for(int i = 0; i < childJoints.Length; ++i)
             if(childJoints[i].transform.parent == character.transform)
-                childJoints[i].transform.parent = skeletonRoot.transform;
+                childJoints[i].transform.parent = rootJoint.transform;
 
-        // CREATE PREFAB
+        // CREATE PREFABS
+        // generate prefabs
+        for(int i = 0; i < allBodyParts.Count; ++i)
+            if (!createdPrefabs.ContainsKey(allBodyParts[i].name))
+                createdPrefabs[allBodyParts[i].name] = PrefabUtility.CreatePrefab("Assets/Resources/Prefabs/BodyParts/" + allBodyParts[i].name + ".prefab", allBodyParts[i].gameObject, ReplacePrefabOptions.ConnectToPrefab);
+
         createdPrefabs[characterName] = PrefabUtility.CreatePrefab("Assets/Resources/Prefabs/Characters/" + characterName + ".prefab", character, ReplacePrefabOptions.ConnectToPrefab);
 
         // CONNECT OBJS TO PREFABS AT THEIR ROOT

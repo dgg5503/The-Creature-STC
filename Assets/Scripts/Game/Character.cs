@@ -49,7 +49,7 @@ public abstract class Character : MonoBehaviour
     protected new CapsuleCollider collider;
 
     // States n' Actions
-    protected bool isAlive;
+    private bool isAlive;
 
     /// <summary>
     /// Get the dictionary of body parts for this character.
@@ -60,6 +60,27 @@ public abstract class Character : MonoBehaviour
     /// Get the inventory of this character.
     /// </summary>
     public Inventory Inventory { get { return inventory; } }
+
+    protected bool IsAlive
+    {
+        get
+        {
+            return isAlive;
+        }
+
+        set
+        {
+            isAlive = value;
+            
+            if (isAlive == false)
+            {
+                // set all bparts to false kinematics...
+                BodyPart[] allBodyParts = GetComponentsInChildren<BodyPart>();
+                for (int i = 1; i < allBodyParts.Length; ++i)
+                    allBodyParts[i].SetSilly();
+            }
+        }
+    }
 
     /*
     public bool IsGrounded
@@ -132,7 +153,8 @@ public abstract class Character : MonoBehaviour
         collider = GetComponent<CapsuleCollider>();
 
         // calc bounds for the character
-        StartCoroutine(RecalculateCollisionBounds());
+        //StartCoroutine(RecalculateCollisionBounds());
+        RecalculateCollisionBounds();
 
         // always start alive
         isAlive = true;
@@ -257,8 +279,7 @@ public abstract class Character : MonoBehaviour
         if (!bodyPartToAttach.SetSkeleton(joints))
             return false;
 
-
-        //RecalculateCollisionBounds();
+        RecalculateCollisionBounds();
         return true;
     }
     
@@ -301,7 +322,9 @@ public abstract class Character : MonoBehaviour
         // perhaps a rule class or struct with events?
         // adjust capsule collider pivot to new center and height
         //RecalculateCollisionBounds();
-        StartCoroutine(RecalculateCollisionBounds());
+        //StartCoroutine(RecalculateCollisionBounds());
+
+        RecalculateCollisionBounds();
 
         return tmpPart;
     }
@@ -309,9 +332,9 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// Recalculates the capsule colliders bounds.
     /// </summary>
-    private IEnumerator RecalculateCollisionBounds()
+    private void RecalculateCollisionBounds()
     {
-        yield return new WaitForFixedUpdate();
+        //yield return new WaitForFixedUpdate();
 
         // preserve rotation, rotate to 0 and then put back.
         //Quaternion currWorldRot = transform.rotation;
@@ -363,6 +386,7 @@ public abstract class Character : MonoBehaviour
         // attempt to get MeshFilter
         // TODO OR ASK FOR MESHFILTER IN FUNCTION AS WE CAN DO MESHFILTER.TRANSFORM
         MeshFilter tmpMeshFilter = currentBodyPart.GetComponent<MeshFilter>();
+
         if (tmpMeshFilter == null)
             return;
 
@@ -373,11 +397,11 @@ public abstract class Character : MonoBehaviour
         // !!!!!! THIS IS WHY EVERYTHING SHOULD IMPORT AT 1 1 1 SCALE !!!!!!!
         // RENDERER CENTER BOUNDS ARE LOCAL
         // FIND A WAY TO GET TRUE CENTER ANOTHER WAY (this is because it is in world space and NOT local.
-        newBounds.center = (currentBodyPart.GetComponent<Renderer>().bounds.center - transform.position) / transform.localScale.x;
-        //newBounds.center = transform.InverseTransformPoint(currentBodyPart.transform.TransformPoint(newBounds.center));
+        //newBounds.center = (currentBodyPart.GetComponent<Renderer>().bounds.center - transform.position) / transform.localScale.x;
+        newBounds.center = transform.InverseTransformPoint(currentBodyPart.transform.TransformPoint(newBounds.center));
         currentBounds.Encapsulate(newBounds);
 
-        Debug.Log("PROCESSED: " + currentBodyPart.name);
+        //Debug.Log("PROCESSED: " + currentBodyPart.name);
 
         // put back rotation after all have been processed?
         //currentBodyPart.transform.rotation = currWorldRot;

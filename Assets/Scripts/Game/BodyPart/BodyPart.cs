@@ -87,8 +87,9 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         set
         {
             // TODO CHECK TO SEE IF SHOULD DETACH.
-
             currHealth = value;
+            if (currHealth <= minHealth)
+                Detach();
         }
     }
 
@@ -274,6 +275,12 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         return true;        
     }
 
+    public void SetSilly()
+    {
+        SetupPhysicsJoint();
+        //joint.BodyPart = null;
+        //joint = null;
+    }
     /// <summary>
     /// Detaches this body part from whatever parent it's connected to.
     /// TO-DO: Figure out why velocity doesnt carry over to joint?
@@ -285,14 +292,14 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         //Debug.Log("IN FIXED");
         if (isDetachable == false)
             return null;
-            //yield break;
+        //yield break;
 
         // reapply collision detection to parent
-        if (transform.parent != null)
-        {
-            Debug.Log("Enabled col between " + collider.name + " and " + transform.parent.name);
-            Physics.IgnoreCollision(collider, transform.parent.GetComponent<Collider>(), false);
-        }
+        Collider parentCollider;
+        if (transform.parent != null &&
+            collider != null &&
+            (parentCollider = transform.parent.GetComponent<Collider>()) != null)
+            Physics.IgnoreCollision(collider, parentCollider, false);
 
         // unparent THIS ONLY! (this is considered to be the root of the detached bodypart)
         transform.parent = null;
@@ -317,7 +324,8 @@ public class BodyPart : Item, ISerializationCallbackReceiver
                     childBodyParts[i].SetupPhysicsJoint();
 
                 // turn off kinematic
-                childBodyParts[i].rigidbody.isKinematic = false;
+                if(childBodyParts[i].rigidbody != null)
+                    childBodyParts[i].rigidbody.isKinematic = false;
             }
         }
 
