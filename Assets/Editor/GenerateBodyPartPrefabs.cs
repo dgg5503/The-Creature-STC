@@ -106,6 +106,9 @@ class GenerateBodyPartPrefabs : EditorWindow {
         // create tmp character
         character = Instantiate(character);
 
+        // hold root bodypart
+        BodyPart rootBodyPart = null;
+
         // APPLY CHANGES
         // Go through all joints and process relationships
         CustomJoint[] joints = character.GetComponentsInChildren<CustomJoint>();
@@ -130,10 +133,12 @@ class GenerateBodyPartPrefabs : EditorWindow {
                 throw new UnityException("ERROR: Body part does not exist in joint: " + joints[z].name);
 
             bodyPart.BodyPartType = joints[z].JointType;
-            bodyPart.InitialLocalPosition = bodyPart.transform.localPosition;
-            bodyPart.InitialLocalRotation = bodyPart.transform.localRotation;
+            //bodyPart.InitialLocalPosition = bodyPart.transform.localPosition;
+            //bodyPart.InitialLocalRotation = bodyPart.transform.localRotation;
 
-            if (joints[z].GetComponentsInChildren<CustomJoint>().Length == 1)
+            if(bodyPart.name.ToLower().Contains("torso"))
+                rootBodyPart = bodyPart;
+            else if (joints[z].GetComponentsInChildren<CustomJoint>().Length == 1)
             {
                 Debug.Log(bodyPart.name + " has no child " );
                 leafBodyParts.Add(bodyPart);
@@ -178,14 +183,18 @@ class GenerateBodyPartPrefabs : EditorWindow {
         // construct tmp character with following layout
         // BASE NAME (delete animator)
         // - bodyParts 
-        GameObject bodyPartRoot = new GameObject("bodyParts");
-        bodyPartRoot.transform.parent = character.transform;
-        bodyPartRoot.transform.localPosition = Vector3.zero;
-        bodyPartRoot.transform.localRotation = Quaternion.identity;
+        // find torso bodypart and set as root.
+        rootBodyPart.transform.parent = character.transform;
+        //GameObject bodyPartRoot = character.transform.f
+        //bodyPartRoot.transform.parent = character.transform;
+        //bodyPartRoot.transform.localPosition = Vector3.zero;
+        //bodyPartRoot.transform.localRotation = Quaternion.identity;
 
         //      -- bparts --
-        for(int i = 0; i < leafBodyParts.Count; ++i)
-            IsolateBodyPart(leafBodyParts[i], bodyPartRoot.transform);
+        for (int i = 0; i < leafBodyParts.Count; ++i)
+            IsolateBodyPart(leafBodyParts[i], rootBodyPart);
+        
+
 
         // - skeleton (animator)
         GameObject skeletonRoot = new GameObject("skeleton");
@@ -351,7 +360,7 @@ class GenerateBodyPartPrefabs : EditorWindow {
         joint.JointType = jointID;
     }
 
-    void IsolateBodyPart(BodyPart leafBodyPart, Transform bodyPartRef)
+    void IsolateBodyPart(BodyPart leafBodyPart, BodyPart bodyPartRef)
     {
         // Grab the parent joint relative to this bpart
         CustomJoint[] parentJoint;
@@ -359,7 +368,8 @@ class GenerateBodyPartPrefabs : EditorWindow {
         if ((parentJoint = leafBodyPart.transform.GetComponentsInParent<CustomJoint>()) == null ||
             parentJoint.Length <= 1)
         {
-            leafBodyPart.transform.parent = bodyPartRef;
+            leafBodyPart.transform.parent = bodyPartRef.transform;
+            bodyPartRef.endPoints[leafBodyPart.BodyPartType] = leafBodyPart.transform.localPosition;
             return;
         }
 
@@ -372,6 +382,7 @@ class GenerateBodyPartPrefabs : EditorWindow {
             {
                 // set leaf to parent and call func again from parent
                 leafBodyPart.transform.parent = parentBodyPart.transform;
+                parentBodyPart.endPoints[leafBodyPart.BodyPartType] = leafBodyPart.transform.localPosition;
                 IsolateBodyPart(parentBodyPart, bodyPartRef);
                 break;
             }

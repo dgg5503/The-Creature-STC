@@ -58,7 +58,8 @@ public class CustomJoint : MonoBehaviour {
     {
         get
         {
-            return parentJoint;
+            //Debug.Log("The parent is " + parentJoint.name);
+            return transform.parent.GetComponent<CustomJoint>();
         }
     }
 
@@ -113,7 +114,6 @@ public class CustomJoint : MonoBehaviour {
         //CustomJoint[] joints = GetComponentsInParent<CustomJoint>();
         //if (joints.Length > 1)
         //    parentJoint = joints[1];
-        parentJoint = transform.parent.GetComponent<CustomJoint>();
 
         // set tag
         tag = "Joint";
@@ -121,8 +121,7 @@ public class CustomJoint : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
-        if(parentJoint != null)
-            Debug.Log(string.Format("{0} --> {1}", parentJoint.name, name));
+
     }
 	
 	// Update is called once per frame

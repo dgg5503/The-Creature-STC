@@ -31,6 +31,7 @@ public abstract class Character : MonoBehaviour
     //protected List<BodyPart> bodyParts;
     protected Dictionary<int, CustomJoint> joints;
     protected List<RegularItem> regularItems;
+    protected BodyPart root;
 
     // Inventory
     protected Inventory inventory;
@@ -91,12 +92,23 @@ public abstract class Character : MonoBehaviour
 
         // get all body parts that are children and set joint relationships ONCE
         // all other joint relationship will be handled in attach and detach
+
+        // get root and set its skeleton
+
+        foreach (Transform possBodyPart in transform)
+            if ((root = possBodyPart.GetComponent<BodyPart>()) != null)
+                break;
+
+        root.SetSkeleton(joints);
+
+        /*
         BodyPart[] bodyParts = GetComponentsInChildren<BodyPart>();
         for (int i = 0; i < bodyParts.Length; ++i)
         {
-            bodyParts[i].Joint = joints[bodyParts[i].BodyPartType];
+            bodyParts[i].SetSkeleton(joints); // = joints[bodyParts[i].BodyPartType];
             Debug.Log("Connected " + bodyParts[i].name + " to " + joints[bodyParts[i].BodyPartType].name);
         }
+        */
 
         // init items in hand
         regularItems = new List<RegularItem>();
@@ -127,16 +139,20 @@ public abstract class Character : MonoBehaviour
 
         // set layer of character colliders to 10
         gameObject.layer = 10;
-        Debug.Log(transform.rotation);
     }
 
 	// Use this for initialization
 	void Start ()
     {
-	    
-	}
+        
+    }
 
     protected virtual void Update ()
+    {
+       
+    }
+
+    void FixedUpdate()
     {
         // calculate movement
         ProcessMovement();
@@ -146,7 +162,7 @@ public abstract class Character : MonoBehaviour
         {
             // TODO: When on slope, apply velocity parallel to slope with slope max.?
             velocity += acceleration * Time.deltaTime;
-            
+
             // lerp directional velocity from this objects forward to the accel norm
             // creates rotation effect purely from velocity
             // TODO: looks smooth when not performing a 180
@@ -155,7 +171,7 @@ public abstract class Character : MonoBehaviour
             //float angleBetween = Vector3.Angle(transform.forward, acceleration.normalized) * Mathf.Deg2Rad;
             //Vector3 facingDir = transform.forward;
             //Vector3 desiredDir = acceleration.normalized;
-            
+
             //rotate velocity based on turnspeed uniformly
             //float speed = 10 * Time.deltaTime;
             //velocity = Vector3.RotateTowards(transform.forward, acceleration.normalized, rotationAccelFactor * (angleBetween / Mathf.PI) * Time.deltaTime, 0) * velocity.magnitude;
@@ -193,7 +209,7 @@ public abstract class Character : MonoBehaviour
             }
             // */
         }
-        
+
         // clamp to this characters max velocity.
         velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
 
@@ -227,6 +243,7 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     abstract protected void ProcessMovement();
 
+    
     public bool Attach(BodyPart bodyPartToAttach)
     {
         if (bodyPartToAttach == null || !joints.ContainsKey(bodyPartToAttach.BodyPartType))
@@ -234,8 +251,12 @@ public abstract class Character : MonoBehaviour
 
         //bodyParts = transform.GetComponentsInChildren<BodyPart>().ToDictionary(x => x.name, x => x.GetComponent<BodyPart>());
         //bodyPartToAttach.AttachTo(joints[bodyPartToAttach.BodyPartType].Joint);
-        if (!bodyPartToAttach.SetParent(joints[bodyPartToAttach.BodyPartType]))
+        //if (!bodyPartToAttach.SetParent(joints[bodyPartToAttach.BodyPartType].Parent.BodyPart, joints[bodyPartToAttach.BodyPartType]))
+        //    return false;
+        //Debug.Log(joints[bodyPartToAttach.BodyPartType].name);
+        if (!bodyPartToAttach.SetSkeleton(joints))
             return false;
+
 
         //RecalculateCollisionBounds();
         return true;
@@ -249,19 +270,8 @@ public abstract class Character : MonoBehaviour
     /// <returns>Reference to body part detached if it exists.</returns>
     public BodyPart Detach(int bodyPartID)
     {
-        // store in a variable
-        BodyPart tmpPart = GetComponentsInChildren<BodyPart>().First(x => x.BodyPartType == bodyPartID);
-
-        // dont remove root (this).
-        //if (tmpPart.name == "root")
-        //    return null;
-
-        // set as active in the world.
-        tmpPart.Detach();
-
-        Debug.Log("Trying: " + bodyPartID);
         // see if part exists
-        if (!joints.ContainsKey(bodyPartID) || joints[bodyPartID].BodyPart == null)
+        if (!joints.ContainsKey(bodyPartID))
         {
             Debug.Log("Failed: " + joints[bodyPartID].name);
             return null;
@@ -269,6 +279,7 @@ public abstract class Character : MonoBehaviour
 
         // store in a variable
         //BodyPart tmpPart = joints[bodyPartID].BodyPart;
+        BodyPart tmpPart = GetComponentsInChildren<BodyPart>().First(x => x.BodyPartType == bodyPartID);
 
         // dont remove root (this).
         //if (tmpPart.name == "root")

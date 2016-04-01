@@ -146,24 +146,6 @@ public class Player : Character {
         if (Input.GetMouseButtonDown(0))
         {
             tmpBodyPart = Detach(3);
-
-            // RAY CAST
-            // cast ray from camera to where mouse position is
-            Ray ray = playerCamera.ScreenPointToRay(Input.mousePosition);
-
-            // Raycast
-            RaycastHit[] hit = Physics.RaycastAll(ray);
-
-            // Get first body part
-            foreach (RaycastHit obj in hit)
-            {
-                // MAKE SURE NEAR BY
-                Character otherGuyRoot = GetRoot(obj.collider.gameObject).GetComponent<Character>();
-                if (otherGuyRoot != null)
-                {
-
-                }
-            }
         }
 
         /* DEBUG TESTS */
@@ -171,7 +153,7 @@ public class Player : Character {
         if (Input.GetKeyDown("i"))
         {
             Attach(tmpBodyPart);
-            Debug.Log("TRYING TO ATTACH");
+            Debug.Log("TRYING TO ATTACH " + tmpBodyPart.name);
         }
 
         base.Update();
