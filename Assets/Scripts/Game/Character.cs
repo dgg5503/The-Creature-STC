@@ -52,11 +52,6 @@ public abstract class Character : MonoBehaviour
     private bool isAlive;
 
     /// <summary>
-    /// Get the dictionary of body parts for this character.
-    /// </summary>
-    //public Dictionary<string, BodyPart> BodyParts { get { return bodyParts; } }
-
-    /// <summary>
     /// Get the inventory of this character.
     /// </summary>
     public Inventory Inventory { get { return inventory; } }
@@ -103,8 +98,6 @@ public abstract class Character : MonoBehaviour
     {
         // Grab all children with BodyPart scripts and store them for reference
         // Q: Is the head/torso a body part with inf health?
-
-        //bodyParts = new List<BodyPart>(transform.GetComponentsInChildren<BodyPart>());
         
         joints = GetComponentsInChildren<CustomJoint>().ToDictionary(x => x.JointType, x => x);
         foreach (CustomJoint joint in joints.Values)
@@ -116,21 +109,11 @@ public abstract class Character : MonoBehaviour
         // all other joint relationship will be handled in attach and detach
 
         // get root and set its skeleton
-
         foreach (Transform possBodyPart in transform)
             if ((root = possBodyPart.GetComponent<BodyPart>()) != null)
                 break;
 
         root.InitSkeleton(joints);
-
-        /*
-        BodyPart[] bodyParts = GetComponentsInChildren<BodyPart>();
-        for (int i = 0; i < bodyParts.Length; ++i)
-        {
-            bodyParts[i].SetSkeleton(joints); // = joints[bodyParts[i].BodyPartType];
-            Debug.Log("Connected " + bodyParts[i].name + " to " + joints[bodyParts[i].BodyPartType].name);
-        }
-        */
 
         // init items in hand
         regularItems = new List<RegularItem>();
@@ -272,11 +255,6 @@ public abstract class Character : MonoBehaviour
         if (bodyPartToAttach == null || !joints.ContainsKey(bodyPartToAttach.BodyPartType))
             return false;
 
-        //bodyParts = transform.GetComponentsInChildren<BodyPart>().ToDictionary(x => x.name, x => x.GetComponent<BodyPart>());
-        //bodyPartToAttach.AttachTo(joints[bodyPartToAttach.BodyPartType].Joint);
-        //if (!bodyPartToAttach.SetParent(joints[bodyPartToAttach.BodyPartType].Parent.BodyPart, joints[bodyPartToAttach.BodyPartType]))
-        //    return false;
-        //Debug.Log(joints[bodyPartToAttach.BodyPartType].name);
         if (!bodyPartToAttach.SetSkeleton(joints))
             return false;
 
@@ -316,34 +294,28 @@ public abstract class Character : MonoBehaviour
 
     /// <summary>
     /// Recalculates the capsule colliders bounds.
+    /// TODO: IGNORE HANDS
     /// </summary>
     private void RecalculateCollisionBounds()
     {
-        //yield return new WaitForFixedUpdate();
-
         // preserve rotation, rotate to 0 and then put back.
-        //Quaternion currWorldRot = transform.rotation;
         //Quaternion currLocalRot = transform.localRotation;
         
-        //transform.rotation = Quaternion.Euler(0f, 0f, 0f);
         //transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
 
         // RECURSIVELY GO THROUGH ALL CHILDREN AND ENCAPSULATE
         // TODO: make this function better
 
         // Get first body part (doesnt matter which one...)
-        //BodyPart initialBodyPart = joints.Values.First().BodyPart;
         Bounds initialBounds = root.GetComponent<MeshFilter>().mesh.bounds;
 
         RecalculateCollisionBounds(ref initialBounds, root.gameObject);
 
-        //Debug.Log("The local bounds of this model is " + initialBounds);
         collider.center = initialBounds.center;
         collider.radius = Mathf.Max(initialBounds.size.x / 2, initialBounds.size.z / 2);
         collider.height = initialBounds.size.y;
 
         // put back rotation
-        //transform.rotation = currWorldRot;
         //transform.localRotation = currLocalRot;
     }
 
@@ -356,13 +328,14 @@ public abstract class Character : MonoBehaviour
     // TODO, ALERRRRRRRT MAKE SURE TO PUT IN CHECKS FOR WHEN RESIZING UP/DOWN, DONT WANNA GO OOB :)))
     private void RecalculateCollisionBounds(ref Bounds currentBounds, GameObject currentBodyPart)
     {
-        Quaternion currLocalRot = currentBodyPart.transform.localRotation;
-        //Quaternion currWorldRot = currentBodyPart.transform.rotation;
-        //Vector3 localPos = currentBodyPart.transform.localPosition;
+        // QUICK FIX TODO DELETE
+        BodyPart currBPart = currentBodyPart.GetComponent<BodyPart>();
+        if (currBPart != null && (currBPart.BodyPartType == 1 || currBPart.BodyPartType == 5))
+            return;
 
+        // keep last local rot
+        Quaternion currLocalRot = currentBodyPart.transform.localRotation;
         currentBodyPart.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-        //currentBodyPart.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-        // ^ shouldnt need above if implemented in fixed update... ^
 
         if (currentBodyPart.transform.childCount != 0)
             foreach (Transform child in currentBodyPart.transform) 
@@ -371,7 +344,6 @@ public abstract class Character : MonoBehaviour
         // attempt to get MeshFilter
         // TODO OR ASK FOR MESHFILTER IN FUNCTION AS WE CAN DO MESHFILTER.TRANSFORM
         MeshFilter tmpMeshFilter = currentBodyPart.GetComponent<MeshFilter>();
-
         if (tmpMeshFilter == null)
             return;
 
@@ -386,12 +358,7 @@ public abstract class Character : MonoBehaviour
         newBounds.center = transform.InverseTransformPoint(currentBodyPart.transform.TransformPoint(newBounds.center));
         currentBounds.Encapsulate(newBounds);
 
-        //Debug.Log("PROCESSED: " + currentBodyPart.name);
-
         // put back rotation after all have been processed?
         currentBodyPart.transform.localRotation = currLocalRot;
-        //currentBodyPart.transform.rotation = currWorldRot;
-        //currentBodyPart.transform.localPosition = localPos;
     }
-
 }

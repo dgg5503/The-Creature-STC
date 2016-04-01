@@ -248,9 +248,6 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         if (skeleton == null || !skeleton.ContainsKey(bodyPartType))
             return false;
 
-        // make sure bpart exists at parent joint
-
-
         // Get all child body parts
         BodyPart[] childBodyParts = transform.GetComponentsInChildren<BodyPart>();
 
@@ -261,9 +258,6 @@ public class BodyPart : Item, ISerializationCallbackReceiver
             // childBodyParts[i].isDetachable == true &&
             if (skeleton.ContainsKey(childBodyParts[i].bodyPartType))
             {
-                //childBodyParts[i].joint = skeleton[childBodyParts[i].bodyPartType];
-                //childBodyParts[i].joint.BodyPart = childBodyParts[i];
-
                 childBodyParts[i].Joint = skeleton[childBodyParts[i].bodyPartType];
 
                 if (childBodyParts[i].Joint.Parent != null)
@@ -294,9 +288,6 @@ public class BodyPart : Item, ISerializationCallbackReceiver
             // childBodyParts[i].isDetachable == true &&
             if (skeleton.ContainsKey(childBodyParts[i].bodyPartType))
             {
-                //childBodyParts[i].joint = skeleton[childBodyParts[i].bodyPartType];
-                //childBodyParts[i].joint.BodyPart = childBodyParts[i];
-
                 childBodyParts[i].Joint = skeleton[childBodyParts[i].bodyPartType];
 
                 if (childBodyParts[i].Joint.Parent != null)
@@ -344,13 +335,6 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         {
             if (childBodyParts[i].isDetachable == true)
             {
-                // ensure body part connection is off before detach
-                //if(childBodyParts[i].joint != null)
-                //    childBodyParts[i].joint.BodyPart = null;
-
-                // unparent from joint, animation now off.
-                //childBodyParts[i].joint = null;
-
                 childBodyParts[i].Joint = null;
 
                 // add a hinge joint for visual indication that connection still exists

@@ -169,9 +169,6 @@ public class Player : Character {
         // TMP INVENTORY
         if (Input.GetKeyDown("i"))
         {
-            Attach(GameObject.Find("Male_Villager2_Left_Leg_Part_1").GetComponent<BodyPart>());
-            //Attach(tmpBodyPart);
-            //Attach(GameObject.Find("Creature_Left_Arm_Part_1").GetComponent<BodyPart>());
             Debug.Log("TRYING TO ATTACH " + tmpBodyPart.name);
         }
 

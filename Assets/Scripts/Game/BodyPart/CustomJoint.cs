@@ -66,7 +66,6 @@ public class CustomJoint : MonoBehaviour {
     /// <summary>
     /// Get the single bodypart currently connected to this joint.
     /// </summary>
-    
     public BodyPart BodyPart
     {
         get
@@ -91,15 +90,6 @@ public class CustomJoint : MonoBehaviour {
     */
     void Awake()
     {
-        // init parent joint as null
-        //parentJoint = null;
-
-        // Get parent joint (if there is one)
-        //CustomJoint[] joints = GetComponentsInParent<CustomJoint>();
-        //if (joints.Length > 1)
-        //    parentJoint = joints[1];
-
-        // set tag
         tag = "Joint";
     }
 

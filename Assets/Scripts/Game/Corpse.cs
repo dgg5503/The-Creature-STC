@@ -7,7 +7,6 @@
         - Used for objects in the scene that are spawned as dead and will never
           ever move.
 */
-
 using UnityEngine;
 using System.Collections;
 
@@ -45,16 +44,6 @@ public class Corpse : Character
     protected override void Update()
     { 
         base.Update();
-        /*
-        if (Input.GetMouseButtonDown(0))
-        {
-            Detach(3);
-        }
-        */
-
-        // TODO: APPEND CAPSULE COLLIDER TO TORSO?
-        //transform.position = root.transform.position;
-        //transform.rotation = root.transform.rotation;
     }
 
     /// <summary>
