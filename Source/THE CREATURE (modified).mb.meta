@@ -1,0 +1,179 @@
+fileFormatVersion: 2
+guid: 1d996ccfd6a7b884194f33fd86e11578
+timeCreated: 1457736525
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Creature_Left_Arm_Part_1
+    100002: Creature_Left_Arm_Part_2
+    100004: Creature_Left_Leg_Part_1
+    100006: Creature_Left_Leg_Part_2
+    100008: Creature_Right_Arm_Part_1
+    100010: Creature_Right_Arm_Part_2
+    100012: Creature_Right_Leg_Part_1
+    100014: Creature_Right_Leg_Part_2
+    100016: Creature_Torso
+    100018: CreatureEyes
+    100020: CreatureHead
+    100022: Head
+    100024: Head_subJoint
+    100026: HeadScrew
+    100028: Left_Arm
+    100030: Left_Arm_Part_2
+    100032: Left_Arm_Part_2_subJoint
+    100034: Left_Arm_subJoint
+    100036: Left_Leg
+    100038: Left_Leg_Part_2
+    100040: Left_Leg_Part_2_subJoint
+    100042: Left_Leg_subJoint
+    100044: NeckScrew
+    100046: Right_Arm
+    100048: Right_Arm_Part_2
+    100050: Right_Arm_Part_2_subJoint
+    100052: Right_Arm_subJoint
+    100054: Right_Leg
+    100056: Right_Leg_Part_2
+    100058: Right_Leg_Part_2_subJoint
+    100060: Right_Leg_subJoint
+    100062: //RootNode
+    100064: Torso
+    100066: Torso_subJoint
+    400000: Creature_Left_Arm_Part_1
+    400002: Creature_Left_Arm_Part_2
+    400004: Creature_Left_Leg_Part_1
+    400006: Creature_Left_Leg_Part_2
+    400008: Creature_Right_Arm_Part_1
+    400010: Creature_Right_Arm_Part_2
+    400012: Creature_Right_Leg_Part_1
+    400014: Creature_Right_Leg_Part_2
+    400016: Creature_Torso
+    400018: CreatureEyes
+    400020: CreatureHead
+    400022: Head
+    400024: Head_subJoint
+    400026: HeadScrew
+    400028: Left_Arm
+    400030: Left_Arm_Part_2
+    400032: Left_Arm_Part_2_subJoint
+    400034: Left_Arm_subJoint
+    400036: Left_Leg
+    400038: Left_Leg_Part_2
+    400040: Left_Leg_Part_2_subJoint
+    400042: Left_Leg_subJoint
+    400044: NeckScrew
+    400046: Right_Arm
+    400048: Right_Arm_Part_2
+    400050: Right_Arm_Part_2_subJoint
+    400052: Right_Arm_subJoint
+    400054: Right_Leg
+    400056: Right_Leg_Part_2
+    400058: Right_Leg_Part_2_subJoint
+    400060: Right_Leg_subJoint
+    400062: //RootNode
+    400064: Torso
+    400066: Torso_subJoint
+    2300000: Creature_Left_Arm_Part_1
+    2300002: Creature_Left_Arm_Part_2
+    2300004: Creature_Left_Leg_Part_1
+    2300006: Creature_Left_Leg_Part_2
+    2300008: Creature_Right_Arm_Part_1
+    2300010: Creature_Right_Arm_Part_2
+    2300012: Creature_Right_Leg_Part_1
+    2300014: Creature_Right_Leg_Part_2
+    2300016: Creature_Torso
+    2300018: CreatureEyes
+    2300020: CreatureHead
+    2300022: HeadScrew
+    2300024: NeckScrew
+    3300000: Creature_Left_Arm_Part_1
+    3300002: Creature_Left_Arm_Part_2
+    3300004: Creature_Left_Leg_Part_1
+    3300006: Creature_Left_Leg_Part_2
+    3300008: Creature_Right_Arm_Part_1
+    3300010: Creature_Right_Arm_Part_2
+    3300012: Creature_Right_Leg_Part_1
+    3300014: Creature_Right_Leg_Part_2
+    3300016: Creature_Torso
+    3300018: CreatureEyes
+    3300020: CreatureHead
+    3300022: HeadScrew
+    3300024: NeckScrew
+    4300000: Creature_Left_Leg_Part_1
+    4300002: Creature_Left_Leg_Part_2
+    4300004: Creature_Right_Leg_Part_1
+    4300006: Creature_Right_Leg_Part_2
+    4300008: CreatureHead
+    4300010: CreatureEyes
+    4300012: HeadScrew
+    4300014: Creature_Right_Arm_Part_1
+    4300016: Creature_Right_Arm_Part_2
+    4300018: Creature_Left_Arm_Part_1
+    4300020: Creature_Left_Arm_Part_2
+    4300022: Creature_Torso
+    4300024: NeckScrew
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
