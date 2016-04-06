@@ -44,6 +44,7 @@ public class Inventory : MonoBehaviour {
                         Vector3 position = new Vector3(1, 0, 1);
                         string pathToTheFile = "Prefabs/" + item.itemName;
                         GameObject test = Resources.Load(pathToTheFile) as GameObject;
+                        Debug.Log(test);
                         GameObject.Instantiate(test, playerPosition.transform.position - position, Quaternion.identity);
                     }
                     else
