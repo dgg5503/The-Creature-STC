@@ -22,8 +22,8 @@ public class Inventory : MonoBehaviour {
         {
             GameObject slot = child.gameObject;
             allSlots.Add(slot);
-            playerRef = GetComponent<Player>(); 
         }
+        playerRef = GetComponent<Player>();
         emptySlot = allSlots.Count;
 
         playerPosition = GameObject.FindGameObjectWithTag("Player");
@@ -53,24 +53,28 @@ public class Inventory : MonoBehaviour {
                         { 
                             case "Head":
                             {
-                                break;
+                                    playerRef.Detach(0);
+                                    break;
                             }
                             case "LeftHand":
                             {
-                                break;
+                                    playerRef.Detach(1);
+                                    break;
                             }
                             case "RightHand":
                             {
-                                break;
+                                    playerRef.Detach(5);
+                                    break;
                             }
                             case "LeftLeg":
                             {
-
-                                break;
+                                    playerRef.Detach(3);
+                                    break;
                             }
                             case "RightLeg":
                             {
-                                break;
+                                    playerRef.Detach(7);
+                                    break;
                             }
                         
                         }

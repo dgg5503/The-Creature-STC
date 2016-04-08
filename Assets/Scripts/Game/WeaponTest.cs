@@ -44,6 +44,8 @@ public class WeaponTest : Item {
 
             // turn on kinematic
             rigidbody.isKinematic = true;
+
+            //rigidbody.dr
         }
     }
 
