@@ -39,9 +39,10 @@ class GenerateBodyPartPrefabs : EditorWindow {
                 }
             }
         }
-        
 
-        EditorWindow window = GetWindow(typeof(GenerateBodyPartPrefabs), false, "Body Part Prefab Generator");
+
+        //EditorWindow window = GetWindow(typeof(GenerateBodyPartPrefabs), false, "Body Part Prefab Generator");
+        GetWindow(typeof(GenerateBodyPartPrefabs), false, "Body Part Prefab Generator");
     }
 
     private Vector2 scroll;
@@ -66,7 +67,7 @@ class GenerateBodyPartPrefabs : EditorWindow {
         {
             createdPrefabs = Resources.LoadAll<GameObject>("Prefabs/").ToDictionary(x => x.name, x => x);
             GameObject[] selectedObjects = Selection.gameObjects;
-            Dictionary<string, List<GameObject>> currentConnections = BuildPrefabConnections();
+            //Dictionary<string, List<GameObject>> currentConnections = BuildPrefabConnections(); // needed??
             foreach (GameObject go in selectedObjects)
                 AddCharacter(go);
             ReconnectAllPrefabs(BuildPrefabConnections(), true);

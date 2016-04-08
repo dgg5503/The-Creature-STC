@@ -28,8 +28,7 @@ public class Corpse : Character
         accelerationScalar = 0;
         rotationAccelFactor = 0;
         maxSpeed = 0;
-        IsAlive = false;
-
+        
         // tag as corpse for easy mouse detection
         tag = "Corpse";
     }
@@ -37,7 +36,7 @@ public class Corpse : Character
     // Use this for initialization
     void Start()
     {
-
+        IsAlive = false;
     }
 
     // Update is called once per frame

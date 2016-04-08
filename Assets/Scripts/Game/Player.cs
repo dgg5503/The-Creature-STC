@@ -29,11 +29,6 @@ public class Player : Character
     private GameObject leftLegHealthBar;
     private GameObject rightLegHealthBar;
 
-    // TMP VAR
-    private float minRaidus;
-    private BodyPart holdingBPart;
-    private BodyPart handInUse;
-
     /*
         Use this function as the "constructor" since it occurs at the same time
         as instantiation.
@@ -49,7 +44,6 @@ public class Player : Character
         accelerationScalar = 10f;
         rotationAccelFactor = 5f;
         maxSpeed = 5.0f;
-        minRaidus = 4.0f;
 
         characterInventory = GameObject.FindGameObjectWithTag("Inventory");
         headHealthBar = GameObject.FindGameObjectWithTag("HHB");
@@ -58,9 +52,6 @@ public class Player : Character
         leftLegHealthBar = GameObject.FindGameObjectWithTag("LLHB");
         rightLegHealthBar = GameObject.FindGameObjectWithTag("RLHB");
         characterInventory.SetActive(false);
-
-        holdingBPart = null;
-        handInUse = null;
     }
 
     // Use this for initialization
@@ -69,8 +60,8 @@ public class Player : Character
         characterInventory.SetActive(true);
     }
 
-    int tmpIndex = 0;
-    BodyPart tmpBodyPart = null;
+    //int tmpIndex = 0;
+    //BodyPart tmpBodyPart = null;
     // Update is called once per frame
     protected override void Update()
     {

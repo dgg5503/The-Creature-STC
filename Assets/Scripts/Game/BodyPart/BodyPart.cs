@@ -39,7 +39,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     private int bodyPartType = -1; // body part type of this body part based on ORIGINAL joint. (treated as an "enum")
 
     [SerializeField]
-    private bool isDetachable = true;
+    private readonly bool isDetachable = true;
 
     private bool isControlledByJoint;
 
@@ -219,7 +219,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         // must delete then!
         ConfigurableJoint tmpHinge;
         if ((tmpHinge = GetComponent<ConfigurableJoint>()) != null && newParent.Joint != null)
-                Destroy(GetComponent<ConfigurableJoint>());
+                Destroy(tmpHinge);
 
         // set back to kinematic
         if(rigidbody != null)
@@ -297,12 +297,18 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         return true;        
     }
 
+    /// <summary>
+    /// Set this body part to "limp" but still connected.
+    /// </summary>
     public void SetSilly()
     {
         SetupPhysicsJoint();
-
+        Debug.Log("Set silly: " + name);
         if (rigidbody != null)
+        {
             rigidbody.isKinematic = false;
+            Debug.Log("Set silly OFF: " + name);
+        }
 
         isControlledByJoint = false;
         
@@ -326,7 +332,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
 
         ConfigurableJoint tmpHinge;
         if ((tmpHinge = GetComponent<ConfigurableJoint>()) != null)
-            Destroy(GetComponent<ConfigurableJoint>());
+            Destroy(tmpHinge);
 
         // unparent THIS ONLY! (this is considered to be the root of the detached bodypart)
         transform.parent = null;

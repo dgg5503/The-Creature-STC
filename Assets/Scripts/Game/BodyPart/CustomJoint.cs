@@ -18,16 +18,7 @@ using System.Collections.Generic;
 
 public class CustomJoint : MonoBehaviour {
     // Joint information
-    private CustomJoint parentJoint; // every joint can only have ONE PARENT but can have MULTIPLE CHILDREN
-    
-    // Proportional offset value based off of initial body part connected.
-    // Should allow any other body part to connect and offset from this joint similarly
-    // to the original body part.
-    // Formula used will be:
-    // offset = thisJointLocalPos + (DirectionOfInitialRotation ( modelLengthOnAxisOfDirectionOfInitRot * PreCalcOffsetConst) )
-    // PreCalcOffsetConst = 
-    [SerializeField]
-    float offsetProportion = 0; // calculated at game start once.
+    private CustomJoint parentJoint; // this should be set once and then never change!
 
     [SerializeField]
     private int jointType = -1; // joint type (this should never change)
@@ -59,7 +50,8 @@ public class CustomJoint : MonoBehaviour {
         get
         {
             //Debug.Log("The parent is " + parentJoint.name);
-            return transform.parent.GetComponent<CustomJoint>();
+            //return transform.parent.GetComponent<CustomJoint>();
+            return parentJoint;
         }
     }
 
@@ -90,6 +82,7 @@ public class CustomJoint : MonoBehaviour {
     */
     void Awake()
     {
+        parentJoint = transform.parent.GetComponent<CustomJoint>();
         tag = "Joint";
     }
 
