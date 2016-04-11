@@ -3,6 +3,7 @@ using UnityEditor;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+using System.Collections;
 
 /*
     TODO:
@@ -21,6 +22,10 @@ class GenerateBodyPartPrefabs : EditorWindow {
     [MenuItem("Body Parts/Rebuild Body Part Prefabs")]
     static void Init()
     {
+        // set texts to readable
+        //AssetPreview.SetPreviewTextureCacheSize(1);
+        //TextureImporter textureImporter = new TextureImporter();
+        //textureImporter.isReadable = true;
 
         // load data into dictionary when null
         TextAsset textAsset = Resources.Load<TextAsset>("joints");
@@ -88,10 +93,10 @@ class GenerateBodyPartPrefabs : EditorWindow {
         }
         */
     }
-    
+
     private void AddCharacter(GameObject character)
     {
-        if(character == null || character.activeInHierarchy)
+        if (character == null || character.activeInHierarchy)
         {
             Debug.Log("ERROR: Provided character or all game objs is NULL or character is present in the hierarchy.");
             return;
@@ -156,7 +161,7 @@ class GenerateBodyPartPrefabs : EditorWindow {
                 leafBodyParts.Add(bodyPart);
             }
 
-            
+
 
             // connect prefabs if they exist in scene
             /*
@@ -222,15 +227,77 @@ class GenerateBodyPartPrefabs : EditorWindow {
         //      -- joints --
         //      set immediate joints to skeleton gameobject.
         CustomJoint[] childJoints = character.GetComponentsInChildren<CustomJoint>();
-        for(int i = 0; i < childJoints.Length; ++i)
-            if(childJoints[i].transform.parent == character.transform)
+        for (int i = 0; i < childJoints.Length; ++i)
+            if (childJoints[i].transform.parent == character.transform)
                 childJoints[i].transform.parent = rootJoint.transform;
 
         // CREATE PREFABS
         // generate prefabs
-        for(int i = 0; i < allBodyParts.Count; ++i)
+        for (int i = 0; i < allBodyParts.Count; ++i)
             if (!createdPrefabs.ContainsKey(allBodyParts[i].name))
-                createdPrefabs[allBodyParts[i].name] = PrefabUtility.CreatePrefab("Assets/Resources/Prefabs/BodyParts/" + allBodyParts[i].name + ".prefab", allBodyParts[i].gameObject, ReplacePrefabOptions.ConnectToPrefab);
+            { 
+                // create as prefab
+                string prefabPath = "Assets/Resources/Prefabs/BodyParts/" + allBodyParts[i].name + ".prefab";
+                GameObject bodyPartPrefab = PrefabUtility.CreatePrefab(prefabPath, allBodyParts[i].gameObject, ReplacePrefabOptions.ConnectToPrefab);
+                createdPrefabs[allBodyParts[i].name] = bodyPartPrefab;
+                //AssetDatabase.SaveAssets();
+                //AssetDatabase.Refresh(ImportAssetOptions.DontDownloadFromCacheServer);
+                //AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+                //AssetDatabase.Refresh(ImportAssetOptions.ForceUncompressedImport);
+                //AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
+                //AssetDatabase.Refresh(ImportAssetOptions.ImportRecursive);
+
+                // grab asset 
+
+                //Wait();
+                //AssetDatabase.ImportAsset(prefabPath);
+                //GameObject test = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+
+                //AssetDatabase.SaveAssets();
+                //AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+                Texture2D icon = AssetPreview.GetAssetPreview(bodyPartPrefab);
+                ContinuationManager.Run(() => !AssetPreview.IsLoadingAssetPreview(bodyPartPrefab.GetInstanceID()), () =>
+                {
+                    Debug.Log("Finished with " + bodyPartPrefab.name);
+                    icon = AssetPreview.GetAssetPreview(bodyPartPrefab);
+                    Texture2D tmp = new Texture2D(icon.width, icon.height, icon.format, false);
+
+
+
+                    tmp.LoadRawTextureData(icon.GetRawTextureData());
+                    tmp.Apply();
+
+                    //TextureImporter lol = (TextureImporter)AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(bpartIcon));
+                    //lol.isReadable = true;
+                    //Texture2D modify = Instantiate(bpartIcon) as Texture2D;
+
+                    //bpartIcon.name = "LOL";
+                    //bpartIcon.hideFlags = HideFlags.None;
+                    //while (AssetPreview.IsLoadingAssetPreview(allBodyParts[i].gameObject.GetInstanceID())) ;
+                    //TextureImporter lol = (TextureImporter)AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(bpartIcon));
+                    //lol.isReadable = true;
+                    //SetTextureImporterFormat(bpartIcon, false);
+                    byte[] bytesToWrite = tmp.EncodeToPNG();
+                    File.WriteAllBytes("./Assets/Resources/Prefabs/Icons/" + bodyPartPrefab.name + ".png", bytesToWrite);
+                });
+
+                //if (icon == null)
+                //    icon = AssetDatabase.GetCachedIcon(prefabPath) as Texture2D;
+                /*while(bpartIcon == null)
+                {
+
+                }*/
+                //AssetDatabase.CreateAsset(bpartIcon, "Assets/test");
+                //while (bpartIcon == null) bpartIcon =
+                //bpartIcon = AssetPreview.GetMiniThumbnail(bodyPartPrefab);
+                
+
+                //DestroyImmediate(modify);
+
+
+
+
+            }
 
         createdPrefabs[characterName] = PrefabUtility.CreatePrefab("Assets/Resources/Prefabs/Characters/" + characterName + ".prefab", character, ReplacePrefabOptions.ConnectToPrefab);
 
@@ -267,6 +334,40 @@ class GenerateBodyPartPrefabs : EditorWindow {
 
         */
         DestroyImmediate(character);
+    }
+
+    IEnumerator Wait(GameObject partToRender)
+    {
+        yield return new WaitForSeconds(5);
+        Texture2D icon = AssetPreview.GetAssetPreview(partToRender);
+        //if (icon == null)
+        //    icon = AssetDatabase.GetCachedIcon(prefabPath) as Texture2D;
+        /*while(bpartIcon == null)
+        {
+
+        }*/
+        //AssetDatabase.CreateAsset(bpartIcon, "Assets/test");
+        //while (bpartIcon == null) bpartIcon =
+        //bpartIcon = AssetPreview.GetMiniThumbnail(bodyPartPrefab);
+        Texture2D tmp = new Texture2D(icon.width, icon.height, icon.format, false);
+
+
+
+        tmp.LoadRawTextureData(icon.GetRawTextureData());
+        tmp.Apply();
+
+        //TextureImporter lol = (TextureImporter)AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(bpartIcon));
+        //lol.isReadable = true;
+        //Texture2D modify = Instantiate(bpartIcon) as Texture2D;
+
+        //bpartIcon.name = "LOL";
+        //bpartIcon.hideFlags = HideFlags.None;
+        //while (AssetPreview.IsLoadingAssetPreview(allBodyParts[i].gameObject.GetInstanceID())) ;
+        //TextureImporter lol = (TextureImporter)AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(bpartIcon));
+        //lol.isReadable = true;
+        //SetTextureImporterFormat(bpartIcon, false);
+        byte[] bytesToWrite = tmp.EncodeToPNG();
+        File.WriteAllBytes("./Assets/Resources/Prefabs/Icons/" + partToRender.name + ".png", bytesToWrite);
     }
 
     private void ReconnectAllPrefabs(Dictionary<string, List<GameObject>> gameObjPrefab, bool revert)

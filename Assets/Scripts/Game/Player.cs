@@ -46,12 +46,14 @@ public class Player : Character
         maxSpeed = 5.0f;
 
         characterInventory = GameObject.FindGameObjectWithTag("Inventory");
+        /*
         headHealthBar = GameObject.FindGameObjectWithTag("HHB");
         leftHandHealthBar = GameObject.FindGameObjectWithTag("LHHB");
         rightHandHealthBar = GameObject.FindGameObjectWithTag("RHHB");
         leftLegHealthBar = GameObject.FindGameObjectWithTag("LLHB");
         rightLegHealthBar = GameObject.FindGameObjectWithTag("RLHB");
-        characterInventory.SetActive(false);
+        */
+        //characterInventory.SetActive(false);
     }
 
     // Use this for initialization
@@ -85,7 +87,7 @@ public class Player : Character
         }
 
         /* DEBUG TESTS */
-        /*
+        
         if (Input.GetMouseButtonDown(0))
         {
             // ray cast
@@ -106,7 +108,7 @@ public class Player : Character
             if (foundBodyPart != null)
                 if (Detach(foundBodyPart.BodyPartType) == null)
                     Attach(foundBodyPart);
-        }*/
+        }
 
         /* DEBUG TESTS */
         // TMP INVENTORY
