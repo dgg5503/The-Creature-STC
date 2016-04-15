@@ -1,0 +1,233 @@
+fileFormatVersion: 2
+guid: 28bf7e3fa1debc1459c75800dad3e5c7
+timeCreated: 1460708414
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: castle
+    100002: Castle:Fence:metal_fence_with_proxy:metal_fence_column_2
+    100004: Castle:Fence:metal_fence_with_proxy:metal_fence_small_spear_top
+    100006: Castle:group1
+    100008: Castle:group2
+    100010: Castle:group3
+    100012: Castle:metal_fence_small_spear_top
+    100014: Castle:metal_fence_small_spear_top1
+    100016: Castle:metal_fence_small_spear_top2
+    100018: Castle:pCube1
+    100020: Castle:polySurface1
+    100022: Castle:polySurface3
+    100024: Castle:polySurface4
+    100026: Castle:transform14
+    100028: Castle:transform14 1
+    100030: Castle:transform14 2
+    100032: curveTreeSimple
+    100034: curveTreeSimple1
+    100036: curveTreeSimple2
+    100038: curveTreeSimple3
+    100040: curveTreeSimple4
+    100042: grassClump1MeshGroup
+    100044: group1
+    100046: group10
+    100048: group11
+    100050: group12
+    100052: group13
+    100054: group14
+    100056: group2
+    100058: group3
+    100060: group4
+    100062: group5
+    100064: group6
+    100066: group7
+    100068: group8
+    100070: group9
+    100072: house1
+    100074: house2
+    100076: house3
+    100078: house4
+    100080: house5
+    100082: leaves
+    100084: polySurface565
+    100086: strokeTreeSimple1
+    100088: strokeTreeSimple2
+    100090: strokeTreeSimple3
+    100092: strokeTreeSimple4
+    100094: strokeTreeSimple5
+    100096: tombs:pCube2
+    100098: tombs:transform1
+    100100: //RootNode
+    100102: tree
+    100104: treeSimple1MeshGroup
+    100106: treeSimple2MeshGroup
+    100108: treeSimple3MeshGroup
+    100110: treeSimple4MeshGroup
+    100112: treeSimple5MeshGroup
+    100114: VillageHouse2:pCube1
+    100116: VillageHouse2:transform1
+    100118: VillageHouse3:group1
+    100120: VillageHouse3:group2
+    100122: VillageHouse3:pCube1
+    100124: VillageHouse3:transform1
+    100126: VillageHouse4:pCube1
+    100128: VillageHouse4:wINDOWS:pCube1
+    100130: VillageHouse4:wINDOWS:transform1
+    100132: VillageHouse5:VillageHouse4:pCube1
+    100134: VillageHouse5:VillageHouse4:wINDOWS:pCube1
+    100136: VillageHouse5:VillageHouse4:wINDOWS:transform1
+    100138: VillageHouse5:VillageHouse:pCube1
+    100140: VillageHouse5:VillageHouse:transform1
+    100142: VillageHouse5:wINDOWS:pCube1
+    100144: VillageHouse5:wINDOWS:transform1
+    100146: VillageHouse:pCube1
+    100148: VillageHouse:transform1
+    100150: well
+    400000: castle
+    400002: Castle:Fence:metal_fence_with_proxy:metal_fence_column_2
+    400004: Castle:Fence:metal_fence_with_proxy:metal_fence_small_spear_top
+    400006: Castle:group1
+    400008: Castle:group2
+    400010: Castle:group3
+    400012: Castle:metal_fence_small_spear_top
+    400014: Castle:metal_fence_small_spear_top1
+    400016: Castle:metal_fence_small_spear_top2
+    400018: Castle:pCube1
+    400020: Castle:polySurface1
+    400022: Castle:polySurface3
+    400024: Castle:polySurface4
+    400026: Castle:transform14
+    400028: Castle:transform14 1
+    400030: Castle:transform14 2
+    400032: curveTreeSimple
+    400034: curveTreeSimple1
+    400036: curveTreeSimple2
+    400038: curveTreeSimple3
+    400040: curveTreeSimple4
+    400042: grassClump1MeshGroup
+    400044: group1
+    400046: group10
+    400048: group11
+    400050: group12
+    400052: group13
+    400054: group14
+    400056: group2
+    400058: group3
+    400060: group4
+    400062: group5
+    400064: group6
+    400066: group7
+    400068: group8
+    400070: group9
+    400072: house1
+    400074: house2
+    400076: house3
+    400078: house4
+    400080: house5
+    400082: leaves
+    400084: polySurface565
+    400086: strokeTreeSimple1
+    400088: strokeTreeSimple2
+    400090: strokeTreeSimple3
+    400092: strokeTreeSimple4
+    400094: strokeTreeSimple5
+    400096: tombs:pCube2
+    400098: tombs:transform1
+    400100: //RootNode
+    400102: tree
+    400104: treeSimple1MeshGroup
+    400106: treeSimple2MeshGroup
+    400108: treeSimple3MeshGroup
+    400110: treeSimple4MeshGroup
+    400112: treeSimple5MeshGroup
+    400114: VillageHouse2:pCube1
+    400116: VillageHouse2:transform1
+    400118: VillageHouse3:group1
+    400120: VillageHouse3:group2
+    400122: VillageHouse3:pCube1
+    400124: VillageHouse3:transform1
+    400126: VillageHouse4:pCube1
+    400128: VillageHouse4:wINDOWS:pCube1
+    400130: VillageHouse4:wINDOWS:transform1
+    400132: VillageHouse5:VillageHouse4:pCube1
+    400134: VillageHouse5:VillageHouse4:wINDOWS:pCube1
+    400136: VillageHouse5:VillageHouse4:wINDOWS:transform1
+    400138: VillageHouse5:VillageHouse:pCube1
+    400140: VillageHouse5:VillageHouse:transform1
+    400142: VillageHouse5:wINDOWS:pCube1
+    400144: VillageHouse5:wINDOWS:transform1
+    400146: VillageHouse:pCube1
+    400148: VillageHouse:transform1
+    400150: well
+    2300000: leaves
+    2300002: polySurface565
+    2300004: tree
+    3300000: leaves
+    3300002: polySurface565
+    3300004: tree
+    4300000: polySurface565
+    4300002: tree
+    4300004: leaves
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

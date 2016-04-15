@@ -29,6 +29,7 @@ namespace UnityStandardAssets.Cameras
 		private Quaternion m_TransformTargetRot;
 
         public float altTranY;
+        public float altTranZ;
         public float altRotX;
 
         protected override void Awake()
@@ -71,7 +72,7 @@ namespace UnityStandardAssets.Cameras
 
             Vector3 temp = Vector3.Lerp(transform.position, m_Target.position, deltaTime * m_MoveSpeed);
             temp.y = m_Target.position.y + altTranY;
-            temp.z = m_Target.position.z - 2.0f;
+            temp.z = m_Target.position.z + altTranZ;
             transform.position = temp;
         }
 
