@@ -16,7 +16,7 @@ public class EnvironmentButton : MonoBehaviour {
     {
         if(col.tag == "Player")
         {
-            
+            Debug.Log("Lift floor");
             wallManager.GetComponent<WallManager>().lastButtonTouched = buttonNumber;
             wallManager.GetComponent<WallManager>().ManageButtons(buttonNumber);
         }

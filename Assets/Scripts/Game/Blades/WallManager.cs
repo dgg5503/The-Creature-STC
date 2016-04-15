@@ -25,7 +25,7 @@ public class WallManager : MonoBehaviour {
     public int lastButtonTouched;
     // Use this for initialization
     void Start () {
-        buttonArray = GameObject.FindGameObjectsWithTag("Button");
+        buttonArray = GameObject.FindGameObjectsWithTag("FloorPlate");
         onSwitch = 1;
         lastButtonTouched = 0;
         //********************************************

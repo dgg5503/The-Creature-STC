@@ -8,23 +8,25 @@ public class RaiseDoor : MonoBehaviour {
     private bool isColliding;
     private float liftVal;
     private float currentLift;
+    private float liftHeight;
 
     void Awake()
     {
         exitDoor = GameObject.Find("Door");
         isColliding = false;
-        liftVal = 0.85f/60.0f;
+        liftHeight = 0.45f;
+        liftVal = liftHeight/60.0f;
         currentLift = 0.0f;
         //Debug.Log("Start");
     }
     
     void OnTriggerStay(Collider colWith)
     {
-        if(colWith.tag == "BodyPart")
+        if(colWith.tag == "Item")
         {
             //Debug.Log("stay");
             isColliding = true;
-            if (currentLift < 0.85f) {
+            if (currentLift < liftHeight) {
                 currentLift += liftVal;
                 exitDoor.transform.position += new Vector3(0.0f, liftVal, 0.0f);
             }
@@ -33,7 +35,7 @@ public class RaiseDoor : MonoBehaviour {
     }
     void OnTriggerExit(Collider colWith)
     {
-        if (colWith.tag == "BodyPart")
+        if (colWith.tag == "Item")
         {
             isColliding = false;
         }

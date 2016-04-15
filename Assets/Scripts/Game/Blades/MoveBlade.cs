@@ -19,8 +19,8 @@ public class MoveBlade : MonoBehaviour {
     }
     // Use this for initialization
     void Start () {
-        wallHigh = 3.35f;
-        wallLow = -1.129f;
+        wallHigh = 1.9f;
+        wallLow = 0.0f;
         moveUp = true;
     }
 	

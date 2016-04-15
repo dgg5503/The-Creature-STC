@@ -8,11 +8,12 @@ public class OpenDoor : MonoBehaviour {
     private float currentLift;
     private float liftVal;
     private GameObject exitDoor;
+    private float neededHeight = 2.0f;
 
     void Awake () {
-        player = GameObject.Find("Player");
+        player = GameObject.FindGameObjectWithTag("Player");
         pulled = false;
-        liftVal = 4.8f / 300.0f;
+        liftVal = 4.8f / 200.0f;
         currentLift = 0.0f;
         exitDoor = GameObject.Find("Door");
     }
@@ -21,7 +22,7 @@ public class OpenDoor : MonoBehaviour {
     {
         if (colWith.tag == "Player")
         {
-            if (Input.GetKeyDown("p") && player.GetComponent<CapsuleCollider>().height >= 333.5f)
+            if (Input.GetKeyDown("p") && player.GetComponent<CapsuleCollider>().height >= neededHeight)
             {
                 pulled = true;
                 
