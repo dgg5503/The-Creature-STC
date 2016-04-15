@@ -442,6 +442,21 @@ class GenerateBodyPartPrefabs : EditorWindow {
 
             //
             Debug.Log("Placed " + prefab.name + " in " + path);
+
+            Item itemCheck;
+            if((itemCheck = prefab.GetComponent<Item>()) != null)
+            {
+                // get the asset
+                Sprite spriteIcon = AssetDatabase.LoadAssetAtPath<Sprite>(path + prefab.name + ".png");
+
+                // its an item! set the icon...
+                itemCheck.itemIcon = spriteIcon;
+
+                // save changes
+                GameObject changes = Instantiate(itemCheck.gameObject);
+                PrefabUtility.ReplacePrefab(changes, prefab, ReplacePrefabOptions.ConnectToPrefab);
+                DestroyImmediate(changes);
+            }
         });
     }
     
