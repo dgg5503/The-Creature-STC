@@ -19,7 +19,7 @@ class GenerateBodyPartPrefabs : EditorWindow {
     private static Dictionary<int, string> jointTypeDict = new Dictionary<int, string>();
     private Dictionary<string, GameObject> createdPrefabs;
 
-    [MenuItem("Body Parts/Rebuild Body Part Prefabs")]
+    
     static void Init()
     {
         // set texts to readable
@@ -78,6 +78,18 @@ class GenerateBodyPartPrefabs : EditorWindow {
             ReconnectAllPrefabs(BuildPrefabConnections(), true);
         }
 
+        // add selected
+        if (GUILayout.Button("Generate Icon for Selected Prefabs"))
+        {
+            //createdPrefabs = Resources.LoadAll<GameObject>("Prefabs/").ToDictionary(x => x.name, x => x);
+            GameObject[] selectedObjects = Selection.gameObjects;
+            //Dictionary<string, List<GameObject>> currentConnections = BuildPrefabConnections(); // needed??
+            foreach (GameObject go in selectedObjects)
+            {
+                if(PrefabUtility.GetPrefabType(go) != PrefabType.None)
+                    GenerateIcon(go, "Assets/Resources/Prefabs/Icons/");
+            }
+        }
         // Rebuild all
         /*
         if (GUILayout.Button("Rebuild ALL Body Part Prefabs"))
@@ -98,14 +110,14 @@ class GenerateBodyPartPrefabs : EditorWindow {
     {
         if (character == null || character.activeInHierarchy)
         {
-            Debug.Log("ERROR: Provided character or all game objs is NULL or character is present in the hierarchy.");
+            Debug.LogError("ERROR: Provided character or all game objs is NULL or character is present in the hierarchy.");
             return;
         }
 
         // make sure we didnt already create the character
         if (createdPrefabs.ContainsKey(character.name))
         {
-            Debug.Log("ERROR: prefab already created");
+            Debug.LogError("ERROR: prefab already created");
             return;
         }
 
@@ -239,6 +251,7 @@ class GenerateBodyPartPrefabs : EditorWindow {
                 // create as prefab
                 string prefabPath = "Assets/Resources/Prefabs/BodyParts/" + allBodyParts[i].name + ".prefab";
                 GameObject bodyPartPrefab = PrefabUtility.CreatePrefab(prefabPath, allBodyParts[i].gameObject, ReplacePrefabOptions.ConnectToPrefab);
+                GameObject actualBodyPartRef = allBodyParts[i].gameObject;
                 createdPrefabs[allBodyParts[i].name] = bodyPartPrefab;
 
                 // create icon
@@ -247,7 +260,7 @@ class GenerateBodyPartPrefabs : EditorWindow {
                 // create threaded job until all assets are done generating
                 ContinuationManager.Run(() => !AssetPreview.IsLoadingAssetPreview(bodyPartPrefab.GetInstanceID()), () =>
                 {
-                    Debug.Log("Finished with " + bodyPartPrefab.name);
+                    //Debug.Log("Finished with " + bodyPartPrefab.name);
                     icon = AssetPreview.GetAssetPreview(bodyPartPrefab);
                     Texture2D tmp = new Texture2D(icon.width, icon.height, icon.format, false);
 
@@ -275,7 +288,7 @@ class GenerateBodyPartPrefabs : EditorWindow {
                     TextureImporter importer = AssetImporter.GetAtPath("Assets/Resources/Prefabs/Icons/" + bodyPartPrefab.name + ".png") as TextureImporter;
                     if (importer == null)
                     {
-                        Debug.Log("FAILED " + bodyPartPrefab.name);
+                        Debug.LogError("FAILED " + bodyPartPrefab.name);
                         return;
                     }
                         
@@ -289,15 +302,29 @@ class GenerateBodyPartPrefabs : EditorWindow {
                     // get the asset
                     Sprite spriteIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Resources/Prefabs/Icons/" + bodyPartPrefab.name + ".png");
 
-                    // set the icon, apply changes
+                    // set the icon to prefab and bpart, apply changes
                     bodyPartPrefab.GetComponent<Item>().itemIcon = spriteIcon;
+                    actualBodyPartRef.GetComponent<Item>().itemIcon = spriteIcon;
+                    Debug.Log("adding icon to: " + actualBodyPartRef.name);
                     GameObject changes = Instantiate(bodyPartPrefab);
                     PrefabUtility.ReplacePrefab(changes, bodyPartPrefab, ReplacePrefabOptions.ConnectToPrefab);
                     DestroyImmediate(changes);
                 });
             }
 
-        createdPrefabs[characterName] = PrefabUtility.CreatePrefab("Assets/Resources/Prefabs/Characters/" + characterName + ".prefab", character, ReplacePrefabOptions.ConnectToPrefab);
+        // Create job to make sure all bodyparts have assigned icons
+        Object[] bodyPartsToCheck = allBodyParts.ToArray();
+
+        // Wait until ALL body parts have been created.
+        ContinuationManager.Run(() => !IsStillGenerating(bodyPartsToCheck), () =>
+        {
+            Debug.Log("CREATING CHARACTER...");
+            createdPrefabs[characterName] = PrefabUtility.CreatePrefab("Assets/Resources/Prefabs/Characters/" + characterName + ".prefab", character, ReplacePrefabOptions.ConnectToPrefab);
+            DestroyImmediate(character);
+        });
+
+        //createdPrefabs[characterName] = PrefabUtility.CreatePrefab("Assets/Resources/Prefabs/Characters/" + characterName + ".prefab", character, ReplacePrefabOptions.ConnectToPrefab);
+
 
         // CONNECT OBJS TO PREFABS AT THEIR ROOT
         // connect prefabs if they exist in scene
@@ -329,14 +356,113 @@ class GenerateBodyPartPrefabs : EditorWindow {
         }
 
         */
-        DestroyImmediate(character);
+        //DestroyImmediate(character);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="prefab"></param>
+    /// <param name="path">Path must be in following format "Assets/.../Icons/"</param>
+    private void GenerateIcon(GameObject prefab, string path)
+    {
+        // not a prefab check
+        if (PrefabUtility.GetPrefabType(prefab) == PrefabType.None)
+        {
+            Debug.LogError("ERROR: " + prefab.name + " is not a prefab!");
+            return;
+        }
+
+        // if already trying to load check
+        if(AssetPreview.IsLoadingAssetPreview(prefab.GetInstanceID()))
+        {
+            Debug.LogError("ERROR: Already processing " + prefab.name);
+            return;
+        }
+
+        // Let use know we're generating preview...
+        Debug.Log("Generating icon for " + prefab.name + "...");
+
+        // create icon
+        Texture2D icon = AssetPreview.GetAssetPreview(prefab);
+
+        // create threaded job until all assets are done generating
+        ContinuationManager.Run(() => !AssetPreview.IsLoadingAssetPreview(prefab.GetInstanceID()), () =>
+        {
+            icon = AssetPreview.GetAssetPreview(prefab);
+
+            // null check
+            if (icon == null)
+            {
+                Debug.LogWarning("WARNING: Cannot grab a preview icon for " + prefab.name + " grabbing cached icon...");
+                icon = AssetDatabase.GetCachedIcon(AssetDatabase.GetAssetPath(prefab)) as Texture2D;
+                if(icon == null)
+                {
+                    Debug.LogError("ERROR: Cannot grab a preview icon for " + prefab.name);
+                    return;
+                }
+            }
+
+            Texture2D tmp = new Texture2D(icon.width, icon.height, icon.format, false);
+
+            tmp.LoadRawTextureData(icon.GetRawTextureData());
+            tmp.Apply();
+
+            // make the texture transparent
+            Color bgGray = new Color(82 / 255f, 82 / 255f, 82 / 255f);
+            Color alpha = new Color(0, 0, 0, 0);
+            for (int x = 0; x < tmp.width; ++x)
+                for (int y = 0; y < tmp.height; ++y)
+                    if (tmp.GetPixel(x, y) == bgGray)
+                        tmp.SetPixel(x, y, alpha);
+
+            tmp.Apply();
+
+            // write texture to file
+            byte[] bytesToWrite = tmp.EncodeToPNG();
+            File.WriteAllBytes(path + prefab.name + ".png", bytesToWrite);
+
+            // refresh db
+            AssetDatabase.Refresh();
+
+            // set the import type as SPRITE
+            TextureImporter importer = AssetImporter.GetAtPath(path + prefab.name + ".png") as TextureImporter;
+            if (importer == null)
+            {
+                Debug.Log("FAILED " + prefab.name);
+                return;
+            }
+
+
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spritePixelsPerUnit = 100;
+
+            // save settings and reimport
+            importer.SaveAndReimport();
+
+            //
+            Debug.Log("Placed " + prefab.name + " in " + path);
+        });
+    }
+    
+    /// <summary>
+    /// See if provided game objects are still generating previews.
+    /// </summary>
+    /// <param name="gameObjects"></param>
+    /// <returns></returns>
+    private bool IsStillGenerating(Object[] gameObjects)
+    {
+        for (int i = 0; i < gameObjects.Length; ++i)
+            if (AssetPreview.IsLoadingAssetPreview(gameObjects[i].GetInstanceID()))
+                return true;
+        return false;
     }
 
     private void ReconnectAllPrefabs(Dictionary<string, List<GameObject>> gameObjPrefab, bool revert)
     {
         if (gameObjPrefab == null || createdPrefabs == null)
         {
-            Debug.Log("ERROR: Provided dictionary or created prefabs is NULL.");
+            Debug.LogError("ERROR: Provided dictionary or created prefabs is NULL.");
             return;
         }
 
