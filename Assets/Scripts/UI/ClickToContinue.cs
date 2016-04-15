@@ -16,7 +16,7 @@ public class ClickToContinue : MonoBehaviour {
 	
 	void Update () {
         timeCounter += Time.deltaTime;
-        if(timeCounter >= 4.0f && showOnce == false)
+        if(timeCounter >= 2.0f && showOnce == false)
         {
             showOnce = true;
             clickText.text += "Click 'P' to continue";
