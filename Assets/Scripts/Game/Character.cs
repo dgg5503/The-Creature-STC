@@ -83,7 +83,7 @@ public abstract class Character : MonoBehaviour
     {
         get
         {
-            return GetComponentsInParent<BodyPart>();
+            return joints.Values.Where(j => j.BodyPart != null).Select(j => j.BodyPart).ToArray();
         }
     }
 

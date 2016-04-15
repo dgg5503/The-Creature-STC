@@ -39,7 +39,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     private int bodyPartType = -1; // body part type of this body part based on ORIGINAL joint. (treated as an "enum")
 
     [SerializeField]
-    private readonly bool isDetachable = true;
+    private bool isDetachable = true;
 
     private bool isControlledByJoint;
 
