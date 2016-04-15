@@ -29,6 +29,8 @@ public class Player : Character
     private GameObject leftLegHealthBar;
     private GameObject rightLegHealthBar;
 
+    private string path;
+
     /*
         Use this function as the "constructor" since it occurs at the same time
         as instantiation.
@@ -46,14 +48,12 @@ public class Player : Character
         maxSpeed = 5.0f;
 
         characterInventory = GameObject.FindGameObjectWithTag("Inventory");
-        /*
         headHealthBar = GameObject.FindGameObjectWithTag("HHB");
         leftHandHealthBar = GameObject.FindGameObjectWithTag("LHHB");
         rightHandHealthBar = GameObject.FindGameObjectWithTag("RHHB");
         leftLegHealthBar = GameObject.FindGameObjectWithTag("LLHB");
         rightLegHealthBar = GameObject.FindGameObjectWithTag("RLHB");
-        */
-        //characterInventory.SetActive(false);
+        characterInventory.SetActive(false);
     }
 
     // Use this for initialization
@@ -77,7 +77,15 @@ public class Player : Character
                 if (Input.GetMouseButtonDown(1))
                 {
                     Debug.Log(hit.transform.gameObject.GetComponent<Item>().itemName);
-                    GameObject itemToAdd = Resources.Load("Prefabs/" + hit.transform.gameObject.GetComponent<Item>().itemName) as GameObject;
+                    if (hit.transform.gameObject.GetComponent<BodyPart>())
+                    {
+                        path = "Prefabs/BodyParts/";
+                    }
+                    else if (hit.transform.gameObject.GetComponent<RegularItem>())
+                    {
+                        path = "Prefabs/Items/";
+                    }
+                    GameObject itemToAdd = Resources.Load(path + hit.transform.gameObject.GetComponent<Item>().itemName) as GameObject;
                     Debug.Log(itemToAdd);
                     Item itemToAddNew = itemToAdd.GetComponent<Item>() as Item;
                     charInventory.AddItem(itemToAddNew);
