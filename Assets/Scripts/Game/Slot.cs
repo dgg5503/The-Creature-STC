@@ -2,7 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
-public class Slot : MonoBehaviour {
+public class Slot : MonoBehaviour
+{
 
     private List<Item> items; // items that we can stack
     public Sprite standart;
@@ -13,15 +14,17 @@ public class Slot : MonoBehaviour {
     }
 
     public Text numberOfItems; // display the number of items 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
         items = new List<Item>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
 
     /// <summary>
     /// Add Items to the slot
@@ -29,22 +32,22 @@ public class Slot : MonoBehaviour {
     /// <param name="item">Items that is added to the slot</param>
     public void AddItem(Item item)
     {
-       
+
         items.Add(item);
         if (items.Count > 1)
         {
-          numberOfItems.text = items.Count.ToString();
+            numberOfItems.text = items.Count.ToString();
         }
 
         SwapIcon(item.itemIcon);
     }
-    
+
     //Function that handle multiple stack items
     public void addMultipleItems(List<Item> itemsAdd)
     {
         items = new List<Item>(itemsAdd); // copy the stacked items 
         SwapIcon(itemInTheSlot().itemIcon); // swap the icon
-       
+
         // check how many items are there. It its more then one
         // change the text label to appropriate number
         // else leave the text field blank
@@ -52,23 +55,24 @@ public class Slot : MonoBehaviour {
         {
             numberOfItems.text = items.Count.ToString();
         }
-        else {
+        else
+        {
             numberOfItems.text = "";
         }
-        
+
     }
 
     // Check if slot is empty or not
     public bool IsEmptySlot()
     {
-       if(items.Count == 0)
-       {
-         return  true;
-       }
-       else
-       {
-           return false;
-       }
+        if (items.Count == 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     //Handle Swaping icon's inside the inventory
@@ -77,7 +81,7 @@ public class Slot : MonoBehaviour {
 
         GetComponent<Image>().sprite = standart;
         GetComponent<Button>().image.sprite = itemIconSprite;
-    
+
     }
 
     public void clearItemSlot()
@@ -88,21 +92,21 @@ public class Slot : MonoBehaviour {
         {
             numberOfItems.text = null;
         }
-       // GetComponent<Button>().image.sprite = standart;
+        // GetComponent<Button>().image.sprite = standart;
         //GetComponent<Button>().image.sprite = Resources.Load<Sprite>("initSlot");
     }
 
     // Get the top item in the slot
     public Item itemInTheSlot()
     {
-        return items[items.Count - 1];   
+        return items[items.Count - 1];
     }
 
     //Check if you can stack multipleItems in the slot
     //Depends on an item
     public bool stackAvailable()
     {
-        if(itemInTheSlot().GetComponent<RegularItem>())
+        if (itemInTheSlot().GetComponent<RegularItem>())
         {
             if (itemInTheSlot().GetComponent<RegularItem>().amountOfItems > items.Count)
             {

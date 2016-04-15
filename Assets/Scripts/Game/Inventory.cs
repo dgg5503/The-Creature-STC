@@ -3,22 +3,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-public class Inventory : MonoBehaviour {
+public class Inventory : MonoBehaviour
+{
 
     List<Item> items = new List<Item>();
     List<GameObject> allSlots = new List<GameObject>();
-    static int  emptySlot; // Check how many empty slots are there;
+    static int emptySlot; // Check how many empty slots are there;
     private static Slot moveFromSlot; // reference the slot from which we are moving 
     private static Slot moveToSlot; // reference to the slot to which we are moving
     private Player playerRef;
     private BodyPart bodyRef;
-   // public GameObject dropItem;
+    // public GameObject dropItem;
     private GameObject playerPosition;
-	// Use this for initialization
+    // Use this for initialization
 
 
-    void Start () {
-        foreach(Transform child in transform)
+    void Start()
+    {
+        foreach (Transform child in transform)
         {
             GameObject slot = child.gameObject;
             allSlots.Add(slot);
@@ -28,59 +30,56 @@ public class Inventory : MonoBehaviour {
 
         playerPosition = GameObject.FindGameObjectWithTag("Player");
 
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
         if (Input.GetMouseButtonUp(0) && !EventSystem.current.IsPointerOverGameObject())
         {
             if (moveFromSlot != null)
             {
-                Debug.Log("Items in the Slot: " + moveFromSlot.itemInTheSlot());
-                foreach(Item item in moveFromSlot.Items)
+                foreach (Item item in moveFromSlot.Items)
                 {
                     if (item.GetComponent<RegularItem>())
                     {
                         Vector3 position = new Vector3(1, 0, 1);
-                        string pathToTheFile = "Prefabs/" + item.itemName;
+                        string pathToTheFile = "Prefabs/Items/" + item.itemName;
                         GameObject test = Resources.Load(pathToTheFile) as GameObject;
-                        Debug.Log(test);
                         GameObject.Instantiate(test, playerPosition.transform.position - position, Quaternion.identity);
                     }
                     else
                     {
                         switch (moveFromSlot.name)
-                        { 
+                        {
                             case "Head":
-                            {
+                                {
                                     playerRef.Detach(0);
                                     break;
-                            }
+                                }
                             case "LeftHand":
-                            {
+                                {
                                     playerRef.Detach(1);
                                     break;
-                            }
+                                }
                             case "RightHand":
-                            {
+                                {
                                     playerRef.Detach(5);
                                     break;
-                            }
+                                }
                             case "LeftLeg":
-                            {
+                                {
                                     playerRef.Detach(3);
                                     break;
-                            }
+                                }
                             case "RightLeg":
-                            {
+                                {
                                     playerRef.Detach(7);
                                     break;
-                            }
-                        
+                                }
                         }
-                     //   playerRef.Detach("l_leg");
                     }
-                    
+
                 }
 
                 moveFromSlot.clearItemSlot();
@@ -89,7 +88,7 @@ public class Inventory : MonoBehaviour {
                 emptySlot++;
             }
         }
-	}
+    }
 
     /// <summary>
     /// Search for an empty slot and add to it
@@ -98,118 +97,93 @@ public class Inventory : MonoBehaviour {
     /// <returns></returns>
     private bool findEmptyAndAdd(Item item)
     {
-        if(emptySlot > 0)
+        if (emptySlot > 0)
         {
             foreach (GameObject slot in allSlots)
             {
-                
+
                 Slot tempSlot = slot.GetComponent<Slot>();
-                /*
-                if (tempSlot.name.Contains("InventorySlot"))
-                {
-                    if (item.GetComponent<RegularItem>())
-                    {
-                        if (tempSlot.IsEmptySlot())
-                        {
-                            tempSlot.AddItem(item);
-                            emptySlot--;
-                            return true;
-                        } // end of if
-                    }
-                }
-                else if (tempSlot.name == "Head")
-                {
-                    if (item.GetComponent<BodyPart>()  && item.GetComponent<BodyPart>().bodyPartType == BodyPartType.HEAD)
-                    {
-                        if (tempSlot.IsEmptySlot())
-                        {
-                            tempSlot.AddItem(item);
-                            emptySlot--;
-                            return true;
-                        } // end of if
-                    }
-                }
-               */
+
                 switch (tempSlot.name)
                 {
                     case "InventorySlot":
-                    {
-                        if (item.GetComponent<RegularItem>())
                         {
-                            if (tempSlot.IsEmptySlot())
+                            if (item.GetComponent<RegularItem>())
                             {
-                                tempSlot.AddItem(item);
-                                emptySlot--;
-                                return true;
-                            } // end of if
+                                if (tempSlot.IsEmptySlot())
+                                {
+                                    tempSlot.AddItem(item);
+                                    emptySlot--;
+                                    return true;
+                                } // end of if
+                            }
+                            break;
                         }
-                        break;
-                    }
                     case "Head":
-                    {
-                        if (item.GetComponent<BodyPart>() && item.GetComponent<BodyPart>().BodyPartType == 0)
                         {
-                            if (tempSlot.IsEmptySlot())
+                            if (item.GetComponent<BodyPart>() && item.GetComponent<BodyPart>().name.Contains("Head"))
                             {
-                                tempSlot.AddItem(item);
-                                emptySlot--;
-                                return true;
-                            } // end of if
+                                if (tempSlot.IsEmptySlot())
+                                {
+                                    tempSlot.AddItem(item);
+                                    emptySlot--;
+                                    return true;
+                                } // end of if
+                            }
+                            break;
                         }
-                        break;
-                    }
                     case "LeftHand":
-                    {
-                        if (item.GetComponent<BodyPart>() && item.GetComponent<BodyPart>().BodyPartType == 1)
                         {
-                            if (tempSlot.IsEmptySlot())
+                            if (item.GetComponent<BodyPart>() && item.GetComponent<BodyPart>().name.Contains("Left_Arm"))
                             {
-                                tempSlot.AddItem(item);
-                                emptySlot--;
-                                return true;
-                            } // end of if
+                                if (tempSlot.IsEmptySlot())
+                                {
+                                    tempSlot.AddItem(item);
+                                    emptySlot--;
+                                    return true;
+                                } // end of if
+                            }
+                            break;
                         }
-                        break;
-                    }
                     case "RightHand":
-                    {
-                        if (item.GetComponent<BodyPart>() && item.GetComponent<BodyPart>().BodyPartType == 6)
                         {
-                            if (tempSlot.IsEmptySlot())
+                            if (item.GetComponent<BodyPart>() && item.GetComponent<BodyPart>().name.Contains("Right_Arm"))
                             {
-                                tempSlot.AddItem(item);
-                                emptySlot--;
-                                return true;
-                            } // end of if
+                                if (tempSlot.IsEmptySlot())
+                                {
+                                    tempSlot.AddItem(item);
+                                    emptySlot--;
+                                    return true;
+                                } // end of if
+                            }
+                            break;
                         }
-                        break;
-                    }
                     case "LeftLeg":
-                    {
-                        if (item.GetComponent<BodyPart>() && item.GetComponent<BodyPart>().BodyPartType == 4)
                         {
-                            if (tempSlot.IsEmptySlot())
+                            if (item.GetComponent<BodyPart>() && item.GetComponent<BodyPart>().name.Contains("Left_Leg"))
                             {
-                                tempSlot.AddItem(item);
-                                emptySlot--;
-                                return true;
-                            } // end of if
+                                if (tempSlot.IsEmptySlot())
+                                {
+                                    tempSlot.AddItem(item);
+                                    emptySlot--;
+                                    return true;
+                                } // end of if
+                            }
+                            break;
                         }
-                        break;
-                    }
                     case "RightLeg":
-                    {
-                        if (item.GetComponent<BodyPart>() && item.GetComponent<BodyPart>().BodyPartType == 8)
                         {
-                            if (tempSlot.IsEmptySlot())
+                            if (item.GetComponent<BodyPart>() && item.GetComponent<BodyPart>().name.Contains("Right_Leg"))
                             {
-                                tempSlot.AddItem(item);
-                                emptySlot--;
-                                return true;
-                            } // end of if
+                                if (tempSlot.IsEmptySlot())
+                                {
+                                    tempSlot.AddItem(item);
+                                    emptySlot--;
+                                    return true;
+                                } // end of if
+                            }
+                            break;
                         }
-                        break;
-                    }
                 }
             } //end of foreach
         } // end of if
@@ -224,24 +198,24 @@ public class Inventory : MonoBehaviour {
     /// <returns></returns>
     public bool AddItem(Item item)
     {
-        if(item.GetComponent<RegularItem>())
+        if (item.GetComponent<RegularItem>())
         {
-            if(item.GetComponent<RegularItem>().amountOfItems == 1)
+            if (item.GetComponent<RegularItem>().amountOfItems == 1)
             {
                 findEmptyAndAdd(item);
                 return true;
             }
             else
             {
-                foreach(GameObject slot in allSlots)
+                foreach (GameObject slot in allSlots)
                 {
                     Slot tempSlot = slot.GetComponent<Slot>();
                     //check if slot is not empty
-                    if(tempSlot.IsEmptySlot() != true)
+                    if (tempSlot.IsEmptySlot() != true)
                     {
                         // compare the items and check if you can stack more items in that slot.
                         //if you can, then stack items in that slot
-                        if(tempSlot.itemInTheSlot() == item && tempSlot.stackAvailable())
+                        if (tempSlot.itemInTheSlot() == item && tempSlot.stackAvailable())
                         {
                             tempSlot.AddItem(item);
                             return true;
@@ -250,13 +224,13 @@ public class Inventory : MonoBehaviour {
                 }
                 //if slot is full
                 // stack in a new slot.
-                if(emptySlot > 0)
+                if (emptySlot > 0)
                 {
                     findEmptyAndAdd(item);
                 }
             }
         }
-        else if(item.GetComponent<BodyPart>())
+        else if (item.GetComponent<BodyPart>())
         {
             findEmptyAndAdd(item);
             return true;
