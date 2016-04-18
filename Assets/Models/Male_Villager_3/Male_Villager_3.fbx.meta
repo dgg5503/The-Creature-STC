@@ -33,6 +33,21 @@ ModelImporter:
     100050: Villager1_Right_Boot
     100052: Villager1_Right_Leg_Part_2
     100054: Villager_1_Left_Leg_Part_2
+    100056: Male_Villager3_Eyes
+    100058: Male_Villager3_Head
+    100060: Male_Villager3_Hood
+    100062: Male_Villager3_Left_Arm_Part_1
+    100064: Male_Villager3_Left_Arm_Part_2
+    100066: Male_Villager3_Left_Leg_Part_1
+    100068: Male_Villager3_Right_Arm_Part_1
+    100070: Male_Villager3_Right_Arm_Part_2
+    100072: Male_Villager3_Right_Boot
+    100074: Male_Villager3_Right_Boot 1
+    100076: Male_Villager3_Right_Boot_Part
+    100078: Male_Villager3_Right_Boot_Part 1
+    100080: Male_Villager3_Right_Leg_Part_1
+    100082: Male_Villager3_Robe
+    100084: Male_Villager3_Torso
     400000: Head
     400002: Left_Arm
     400004: Left_Arm_Part_2
@@ -61,6 +76,21 @@ ModelImporter:
     400050: Villager1_Right_Boot
     400052: Villager1_Right_Leg_Part_2
     400054: Villager_1_Left_Leg_Part_2
+    400056: Male_Villager3_Eyes
+    400058: Male_Villager3_Head
+    400060: Male_Villager3_Hood
+    400062: Male_Villager3_Left_Arm_Part_1
+    400064: Male_Villager3_Left_Arm_Part_2
+    400066: Male_Villager3_Left_Leg_Part_1
+    400068: Male_Villager3_Right_Arm_Part_1
+    400070: Male_Villager3_Right_Arm_Part_2
+    400072: Male_Villager3_Right_Boot
+    400074: Male_Villager3_Right_Boot 1
+    400076: Male_Villager3_Right_Boot_Part
+    400078: Male_Villager3_Right_Boot_Part 1
+    400080: Male_Villager3_Right_Leg_Part_1
+    400082: Male_Villager3_Robe
+    400084: Male_Villager3_Torso
     2300000: Male_Villager1_Eyes
     2300002: Male_Villager1_Head
     2300004: Male_Villager1_Hood
@@ -78,6 +108,21 @@ ModelImporter:
     2300028: Villager1_Right_Boot
     2300030: Villager1_Right_Leg_Part_2
     2300032: Villager_1_Left_Leg_Part_2
+    2300034: Male_Villager3_Eyes
+    2300036: Male_Villager3_Head
+    2300038: Male_Villager3_Hood
+    2300040: Male_Villager3_Left_Arm_Part_1
+    2300042: Male_Villager3_Left_Arm_Part_2
+    2300044: Male_Villager3_Left_Leg_Part_1
+    2300046: Male_Villager3_Right_Arm_Part_1
+    2300048: Male_Villager3_Right_Arm_Part_2
+    2300050: Male_Villager3_Right_Boot
+    2300052: Male_Villager3_Right_Boot 1
+    2300054: Male_Villager3_Right_Boot_Part
+    2300056: Male_Villager3_Right_Boot_Part 1
+    2300058: Male_Villager3_Right_Leg_Part_1
+    2300060: Male_Villager3_Robe
+    2300062: Male_Villager3_Torso
     3300000: Male_Villager1_Eyes
     3300002: Male_Villager1_Head
     3300004: Male_Villager1_Hood
@@ -95,6 +140,21 @@ ModelImporter:
     3300028: Villager1_Right_Boot
     3300030: Villager1_Right_Leg_Part_2
     3300032: Villager_1_Left_Leg_Part_2
+    3300034: Male_Villager3_Eyes
+    3300036: Male_Villager3_Head
+    3300038: Male_Villager3_Hood
+    3300040: Male_Villager3_Left_Arm_Part_1
+    3300042: Male_Villager3_Left_Arm_Part_2
+    3300044: Male_Villager3_Left_Leg_Part_1
+    3300046: Male_Villager3_Right_Arm_Part_1
+    3300048: Male_Villager3_Right_Arm_Part_2
+    3300050: Male_Villager3_Right_Boot
+    3300052: Male_Villager3_Right_Boot 1
+    3300054: Male_Villager3_Right_Boot_Part
+    3300056: Male_Villager3_Right_Boot_Part 1
+    3300058: Male_Villager3_Right_Leg_Part_1
+    3300060: Male_Villager3_Robe
+    3300062: Male_Villager3_Torso
     4300000: Male_Villager1_Torso
     4300002: Male_Villager1_Head
     4300004: Villager1_Hair
@@ -112,6 +172,21 @@ ModelImporter:
     4300028: Male_Villager1_Shirt
     4300030: Male_Villager1_Hood
     4300032: Male_Villager1_Pants
+    4300034: Male_Villager3_Head
+    4300036: Male_Villager3_Eyes
+    4300038: Male_Villager3_Left_Arm_Part_1
+    4300040: Male_Villager3_Left_Arm_Part_2
+    4300042: Male_Villager3_Left_Leg_Part_1
+    4300044: Male_Villager3_Right_Boot
+    4300046: Male_Villager3_Right_Boot_Part
+    4300048: Male_Villager3_Right_Arm_Part_1
+    4300050: Male_Villager3_Right_Arm_Part_2
+    4300052: Male_Villager3_Right_Leg_Part_1
+    4300054: Male_Villager3_Right_Boot
+    4300056: Male_Villager3_Right_Boot_Part
+    4300058: Male_Villager3_Torso
+    4300060: Male_Villager3_Robe
+    4300062: Male_Villager3_Hood
     9500000: //RootNode
   materials:
     importMaterials: 1
