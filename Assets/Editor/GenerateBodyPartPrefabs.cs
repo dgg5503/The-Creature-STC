@@ -30,12 +30,6 @@ class GenerateBodyPartPrefabs : EditorWindow {
     [MenuItem("Body Parts / Body Part Splitter")]
     static void Init()
     {
-        Debug.Log("HI");
-        // set texts to readable
-        //AssetPreview.SetPreviewTextureCacheSize(1);
-        //TextureImporter textureImporter = new TextureImporter();
-        //textureImporter.isReadable = true;
-
         // load data into dictionary when null
         TextAsset textAsset = Resources.Load<TextAsset>("joints");
 
