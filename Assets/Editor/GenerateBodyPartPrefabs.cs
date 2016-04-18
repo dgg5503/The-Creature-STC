@@ -19,7 +19,7 @@ class GenerateBodyPartPrefabs : EditorWindow {
     private static Dictionary<int, string> jointTypeDict = new Dictionary<int, string>();
     private Dictionary<string, GameObject> createdPrefabs;
 
-    
+    [MenuItem("Body Parts / Body Part Splitter")]
     static void Init()
     {
         // set texts to readable
@@ -429,7 +429,7 @@ class GenerateBodyPartPrefabs : EditorWindow {
             TextureImporter importer = AssetImporter.GetAtPath(path + prefab.name + ".png") as TextureImporter;
             if (importer == null)
             {
-                Debug.Log("FAILED " + prefab.name);
+                Debug.LogError("FAILED " + prefab.name);
                 return;
             }
 
@@ -440,12 +440,13 @@ class GenerateBodyPartPrefabs : EditorWindow {
             // save settings and reimport
             importer.SaveAndReimport();
 
-            //
             Debug.Log("Placed " + prefab.name + " in " + path);
 
             Item itemCheck;
             if((itemCheck = prefab.GetComponent<Item>()) != null)
             {
+                Debug.Log(itemCheck.name + " is an item, automatically assigning the sprite!");
+
                 // get the asset
                 Sprite spriteIcon = AssetDatabase.LoadAssetAtPath<Sprite>(path + prefab.name + ".png");
 
