@@ -1,0 +1,369 @@
+fileFormatVersion: 2
+guid: 674ecf178b0722a4ab2812a76550219a
+timeCreated: 1461017812
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: THE_CREATURE_anim_test:Creature_Left_Arm_Part_1
+    100004: THE_CREATURE_anim_test:Creature_Left_Arm_Part_2
+    100006: THE_CREATURE_anim_test:Creature_Left_Boot
+    100008: THE_CREATURE_anim_test:Creature_Left_Leg_Part_1
+    100010: THE_CREATURE_anim_test:Creature_Left_Leg_Part_2
+    100012: THE_CREATURE_anim_test:Creature_Right_Arm_Part_1
+    100014: THE_CREATURE_anim_test:Creature_Right_Arm_Part_2
+    100016: THE_CREATURE_anim_test:Creature_Right_Boot
+    100018: THE_CREATURE_anim_test:Creature_Right_Leg_Part_1
+    100020: THE_CREATURE_anim_test:Creature_Right_Leg_Part_2
+    100022: THE_CREATURE_anim_test:Creature_Torso
+    100024: THE_CREATURE_anim_test:CreatureEyes
+    100026: THE_CREATURE_anim_test:CreatureHead
+    100028: THE_CREATURE_anim_test:CreaturePants
+    100030: THE_CREATURE_anim_test:CreatureShirt
+    100032: THE_CREATURE_anim_test:Head
+    100034: THE_CREATURE_anim_test:HeadScrew
+    100036: THE_CREATURE_anim_test:Left_Arm
+    100038: THE_CREATURE_anim_test:Left_Arm_Part_2
+    100040: THE_CREATURE_anim_test:Left_Leg
+    100042: THE_CREATURE_anim_test:Left_Leg_Part_2
+    100044: THE_CREATURE_anim_test:NeckScrew
+    100046: THE_CREATURE_anim_test:Right_Arm
+    100048: THE_CREATURE_anim_test:Right_Arm_Part_2
+    100050: THE_CREATURE_anim_test:Right_Leg
+    100052: THE_CREATURE_anim_test:Right_Leg_Part_2
+    100054: THE_CREATURE_anim_test:Torso
+    100056: Creature_Left_Arm_Part_1
+    100058: Creature_Left_Arm_Part_2
+    100060: Creature_Left_Boot
+    100062: Creature_Left_Leg_Part_1
+    100064: Creature_Left_Leg_Part_2
+    100066: Creature_Right_Arm_Part_1
+    100068: Creature_Right_Arm_Part_2
+    100070: Creature_Right_Boot
+    100072: Creature_Right_Leg_Part_1
+    100074: Creature_Right_Leg_Part_2
+    100076: Creature_Torso
+    100078: CreatureEyes
+    100080: CreatureHead
+    100082: CreaturePants
+    100084: CreatureShirt
+    100086: Head
+    100088: HeadScrew
+    100090: Left_Arm
+    100092: Left_Arm_Part_2
+    100094: Left_Leg
+    100096: Left_Leg_Part_2
+    100098: NeckScrew
+    100100: Right_Arm
+    100102: Right_Arm_Part_2
+    100104: Right_Leg
+    100106: Right_Leg_Part_2
+    100108: Torso
+    400000: //RootNode
+    400002: THE_CREATURE_anim_test:Creature_Left_Arm_Part_1
+    400004: THE_CREATURE_anim_test:Creature_Left_Arm_Part_2
+    400006: THE_CREATURE_anim_test:Creature_Left_Boot
+    400008: THE_CREATURE_anim_test:Creature_Left_Leg_Part_1
+    400010: THE_CREATURE_anim_test:Creature_Left_Leg_Part_2
+    400012: THE_CREATURE_anim_test:Creature_Right_Arm_Part_1
+    400014: THE_CREATURE_anim_test:Creature_Right_Arm_Part_2
+    400016: THE_CREATURE_anim_test:Creature_Right_Boot
+    400018: THE_CREATURE_anim_test:Creature_Right_Leg_Part_1
+    400020: THE_CREATURE_anim_test:Creature_Right_Leg_Part_2
+    400022: THE_CREATURE_anim_test:Creature_Torso
+    400024: THE_CREATURE_anim_test:CreatureEyes
+    400026: THE_CREATURE_anim_test:CreatureHead
+    400028: THE_CREATURE_anim_test:CreaturePants
+    400030: THE_CREATURE_anim_test:CreatureShirt
+    400032: THE_CREATURE_anim_test:Head
+    400034: THE_CREATURE_anim_test:HeadScrew
+    400036: THE_CREATURE_anim_test:Left_Arm
+    400038: THE_CREATURE_anim_test:Left_Arm_Part_2
+    400040: THE_CREATURE_anim_test:Left_Leg
+    400042: THE_CREATURE_anim_test:Left_Leg_Part_2
+    400044: THE_CREATURE_anim_test:NeckScrew
+    400046: THE_CREATURE_anim_test:Right_Arm
+    400048: THE_CREATURE_anim_test:Right_Arm_Part_2
+    400050: THE_CREATURE_anim_test:Right_Leg
+    400052: THE_CREATURE_anim_test:Right_Leg_Part_2
+    400054: THE_CREATURE_anim_test:Torso
+    400056: Creature_Left_Arm_Part_1
+    400058: Creature_Left_Arm_Part_2
+    400060: Creature_Left_Boot
+    400062: Creature_Left_Leg_Part_1
+    400064: Creature_Left_Leg_Part_2
+    400066: Creature_Right_Arm_Part_1
+    400068: Creature_Right_Arm_Part_2
+    400070: Creature_Right_Boot
+    400072: Creature_Right_Leg_Part_1
+    400074: Creature_Right_Leg_Part_2
+    400076: Creature_Torso
+    400078: CreatureEyes
+    400080: CreatureHead
+    400082: CreaturePants
+    400084: CreatureShirt
+    400086: Head
+    400088: HeadScrew
+    400090: Left_Arm
+    400092: Left_Arm_Part_2
+    400094: Left_Leg
+    400096: Left_Leg_Part_2
+    400098: NeckScrew
+    400100: Right_Arm
+    400102: Right_Arm_Part_2
+    400104: Right_Leg
+    400106: Right_Leg_Part_2
+    400108: Torso
+    2300000: THE_CREATURE_anim_test:Creature_Left_Arm_Part_1
+    2300002: THE_CREATURE_anim_test:Creature_Left_Arm_Part_2
+    2300004: THE_CREATURE_anim_test:Creature_Left_Boot
+    2300006: THE_CREATURE_anim_test:Creature_Left_Leg_Part_1
+    2300008: THE_CREATURE_anim_test:Creature_Left_Leg_Part_2
+    2300010: THE_CREATURE_anim_test:Creature_Right_Arm_Part_1
+    2300012: THE_CREATURE_anim_test:Creature_Right_Arm_Part_2
+    2300014: THE_CREATURE_anim_test:Creature_Right_Boot
+    2300016: THE_CREATURE_anim_test:Creature_Right_Leg_Part_1
+    2300018: THE_CREATURE_anim_test:Creature_Right_Leg_Part_2
+    2300020: THE_CREATURE_anim_test:Creature_Torso
+    2300022: THE_CREATURE_anim_test:CreatureEyes
+    2300024: THE_CREATURE_anim_test:CreatureHead
+    2300026: THE_CREATURE_anim_test:CreaturePants
+    2300028: THE_CREATURE_anim_test:CreatureShirt
+    2300030: THE_CREATURE_anim_test:HeadScrew
+    2300032: THE_CREATURE_anim_test:NeckScrew
+    2300034: Creature_Left_Arm_Part_1
+    2300036: Creature_Left_Arm_Part_2
+    2300038: Creature_Left_Boot
+    2300040: Creature_Left_Leg_Part_1
+    2300042: Creature_Left_Leg_Part_2
+    2300044: Creature_Right_Arm_Part_1
+    2300046: Creature_Right_Arm_Part_2
+    2300048: Creature_Right_Boot
+    2300050: Creature_Right_Leg_Part_1
+    2300052: Creature_Right_Leg_Part_2
+    2300054: Creature_Torso
+    2300056: CreatureEyes
+    2300058: CreatureHead
+    2300060: CreaturePants
+    2300062: CreatureShirt
+    2300064: HeadScrew
+    2300066: NeckScrew
+    3300000: THE_CREATURE_anim_test:Creature_Left_Arm_Part_1
+    3300002: THE_CREATURE_anim_test:Creature_Left_Arm_Part_2
+    3300004: THE_CREATURE_anim_test:Creature_Left_Boot
+    3300006: THE_CREATURE_anim_test:Creature_Left_Leg_Part_1
+    3300008: THE_CREATURE_anim_test:Creature_Left_Leg_Part_2
+    3300010: THE_CREATURE_anim_test:Creature_Right_Arm_Part_1
+    3300012: THE_CREATURE_anim_test:Creature_Right_Arm_Part_2
+    3300014: THE_CREATURE_anim_test:Creature_Right_Boot
+    3300016: THE_CREATURE_anim_test:Creature_Right_Leg_Part_1
+    3300018: THE_CREATURE_anim_test:Creature_Right_Leg_Part_2
+    3300020: THE_CREATURE_anim_test:Creature_Torso
+    3300022: THE_CREATURE_anim_test:CreatureEyes
+    3300024: THE_CREATURE_anim_test:CreatureHead
+    3300026: THE_CREATURE_anim_test:CreaturePants
+    3300028: THE_CREATURE_anim_test:CreatureShirt
+    3300030: THE_CREATURE_anim_test:HeadScrew
+    3300032: THE_CREATURE_anim_test:NeckScrew
+    3300034: Creature_Left_Arm_Part_1
+    3300036: Creature_Left_Arm_Part_2
+    3300038: Creature_Left_Boot
+    3300040: Creature_Left_Leg_Part_1
+    3300042: Creature_Left_Leg_Part_2
+    3300044: Creature_Right_Arm_Part_1
+    3300046: Creature_Right_Arm_Part_2
+    3300048: Creature_Right_Boot
+    3300050: Creature_Right_Leg_Part_1
+    3300052: Creature_Right_Leg_Part_2
+    3300054: Creature_Torso
+    3300056: CreatureEyes
+    3300058: CreatureHead
+    3300060: CreaturePants
+    3300062: CreatureShirt
+    3300064: HeadScrew
+    3300066: NeckScrew
+    4300000: THE_CREATURE_anim_test:Creature_Left_Leg_Part_2
+    4300002: THE_CREATURE_anim_test:Creature_Left_Boot
+    4300004: THE_CREATURE_anim_test:Creature_Left_Leg_Part_1
+    4300006: THE_CREATURE_anim_test:Creature_Right_Leg_Part_2
+    4300008: THE_CREATURE_anim_test:Creature_Right_Boot
+    4300010: THE_CREATURE_anim_test:Creature_Right_Leg_Part_1
+    4300012: THE_CREATURE_anim_test:CreatureHead
+    4300014: THE_CREATURE_anim_test:HeadScrew
+    4300016: THE_CREATURE_anim_test:CreatureEyes
+    4300018: THE_CREATURE_anim_test:Creature_Right_Arm_Part_2
+    4300020: THE_CREATURE_anim_test:Creature_Right_Arm_Part_1
+    4300022: THE_CREATURE_anim_test:Creature_Left_Arm_Part_2
+    4300024: THE_CREATURE_anim_test:Creature_Left_Arm_Part_1
+    4300026: THE_CREATURE_anim_test:Creature_Torso
+    4300028: THE_CREATURE_anim_test:NeckScrew
+    4300030: THE_CREATURE_anim_test:CreatureShirt
+    4300032: THE_CREATURE_anim_test:CreaturePants
+    4300034: Creature_Left_Leg_Part_2
+    4300036: Creature_Left_Boot
+    4300038: Creature_Left_Leg_Part_1
+    4300040: Creature_Right_Leg_Part_2
+    4300042: Creature_Right_Boot
+    4300044: Creature_Right_Leg_Part_1
+    4300046: CreatureHead
+    4300048: HeadScrew
+    4300050: CreatureEyes
+    4300052: Creature_Right_Arm_Part_2
+    4300054: Creature_Right_Arm_Part_1
+    4300056: Creature_Left_Arm_Part_2
+    4300058: Creature_Left_Arm_Part_1
+    4300060: Creature_Torso
+    4300062: NeckScrew
+    4300064: CreatureShirt
+    4300066: CreaturePants
+    7400000: test1
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 0
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: test1
+      takeName: Take 001
+      firstFrame: 1
+      lastFrame: 40
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: CreatureShirt
+        weight: 1
+      - path: CreatureShirt/CreaturePants
+        weight: 1
+      - path: Head
+        weight: 1
+      - path: Head/CreatureHead
+        weight: 1
+      - path: Head/CreatureHead/CreatureEyes
+        weight: 1
+      - path: Head/CreatureHead/HeadScrew
+        weight: 1
+      - path: Left_Arm
+        weight: 1
+      - path: Left_Arm/Creature_Left_Arm_Part_1
+        weight: 1
+      - path: Left_Arm/Left_Arm_Part_2
+        weight: 1
+      - path: Left_Arm/Left_Arm_Part_2/Creature_Left_Arm_Part_2
+        weight: 1
+      - path: Left_Leg
+        weight: 1
+      - path: Left_Leg/Creature_Left_Leg_Part_1
+        weight: 1
+      - path: Left_Leg/Left_Leg_Part_2
+        weight: 1
+      - path: Left_Leg/Left_Leg_Part_2/Creature_Left_Leg_Part_2
+        weight: 1
+      - path: Left_Leg/Left_Leg_Part_2/Creature_Left_Leg_Part_2/Creature_Left_Boot
+        weight: 1
+      - path: Right_Arm
+        weight: 1
+      - path: Right_Arm/Creature_Right_Arm_Part_1
+        weight: 1
+      - path: Right_Arm/Right_Arm_Part_2
+        weight: 1
+      - path: Right_Arm/Right_Arm_Part_2/Creature_Right_Arm_Part_2
+        weight: 1
+      - path: Right_Leg
+        weight: 1
+      - path: Right_Leg/Creature_Right_Leg_Part_1
+        weight: 1
+      - path: Right_Leg/Right_Leg_Part_2
+        weight: 1
+      - path: Right_Leg/Right_Leg_Part_2/Creature_Right_Leg_Part_2
+        weight: 1
+      - path: Right_Leg/Right_Leg_Part_2/Creature_Right_Leg_Part_2/Creature_Right_Boot
+        weight: 1
+      - path: Torso
+        weight: 1
+      - path: Torso/Creature_Torso
+        weight: 1
+      - path: Torso/Creature_Torso/NeckScrew
+        weight: 1
+      maskType: 1
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 1
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
