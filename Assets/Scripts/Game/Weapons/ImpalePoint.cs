@@ -88,7 +88,9 @@ public class ImpalePoint : MonoBehaviour {
 
                 // below float value is dependent on the density of the penetrating object.
                 float currSpeed = Mathf.Lerp(lastVelocity.magnitude, 0, (currentLerpTime / lerpTime) * collidedMass);
-                parentModel.localPosition += (parentRigidBody.transform.up * currSpeed) * Time.fixedDeltaTime;
+                parentRigidBody.MovePosition(parentRigidBody.position + (parentRigidBody.transform.up * currSpeed) * Time.fixedDeltaTime);
+                //parentRigidBody.position += (parentRigidBody.transform.up * currSpeed) * Time.fixedDeltaTime;
+                //parentModel.localPosition += (parentRigidBody.transform.up * currSpeed) * Time.fixedDeltaTime;
                 Debug.Log(lastVelocity.magnitude);
 
                 // go until embedded
@@ -137,8 +139,8 @@ public class ImpalePoint : MonoBehaviour {
             // go kinematic and stop detecting collision
             rigidbody.isKinematic = true;
             parentRigidBody.isKinematic = true;
-            rigidbody.detectCollisions = false;
-            parentRigidBody.detectCollisions = false;
+            //rigidbody.detectCollisions = false;
+            //parentRigidBody.detectCollisions = false;
 
             // set impale state to currently impaling
             impaleState = ImpaleState.Impaling;
