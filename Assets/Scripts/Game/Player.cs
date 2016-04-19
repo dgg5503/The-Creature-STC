@@ -70,12 +70,13 @@ public class Player : Character
     // Update is called once per frame
     protected override void Update()
     {
+        
         if (cheatIWay <= 1)
         {
             CheatWay();
             cheatIWay++;
         }
-
+        
 
         RaycastHit hit;
         Ray ray = playerCamera.ScreenPointToRay(Input.mousePosition);
@@ -216,7 +217,7 @@ public class Player : Character
         return GetRoot(bodyPart.transform.parent.gameObject);
     }
 
-
+    
     private void CheatWay()
     {
         for (int i = 0; i < this.BodyParts.Length; i++)
@@ -228,4 +229,5 @@ public class Player : Character
       //  characterInventory.SetActive(displayCharacterInventory);
       //  Debug.Log("Check Inventory Again: " + characterInventory.active);
     }
+    
 }

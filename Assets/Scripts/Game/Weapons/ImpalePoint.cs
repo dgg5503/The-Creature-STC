@@ -72,48 +72,34 @@ public class ImpalePoint : MonoBehaviour {
 	
     void FixedUpdate()
     {
-        
         // react based on state
         switch(impaleState)
         {
             case ImpaleState.None:
-                Debug.DrawLine(transform.position, transform.position + lastVelocity, Color.black);
                 lastVelocity = parentRigidBody.velocity;
-                //Debug.Log(lastVelocity);
                 break;
 
             case ImpaleState.Impaling:
-                
-                Debug.DrawLine(transform.position, transform.position + lastVelocity, Color.blue);
                 // thanks to: https://chicounity3d.wordpress.com/2014/05/23/how-to-lerp-like-a-pro/
                 //increment timer once per frame
                 currentLerpTime += Time.fixedDeltaTime;
                 if (currentLerpTime > lerpTime)
-                {
                     currentLerpTime = lerpTime;
-                }
-                float perc = currentLerpTime / lerpTime;
 
-
-                // OR DRAG
-                //currentSpeed = Mathf.Lerp(currentSpeed, 0, perc);
-                //Debug.Log("last pos: " + parentModel.localPosition);
-                // TODO: FIX THIS! 
                 // below float value is dependent on the density of the penetrating object.
-                float currSpeed = Mathf.Lerp(lastVelocity.magnitude, 0, perc * 5f);
+                float currSpeed = Mathf.Lerp(lastVelocity.magnitude, 0, (currentLerpTime / lerpTime) * 5f);
                 parentModel.localPosition += (parentRigidBody.transform.up * currSpeed) * Time.fixedDeltaTime;
                 Debug.Log(lastVelocity.magnitude);
-                //Debug.Log("new pos: " + parentModel.localPosition);
+
                 // go until embedded
-
-
-                //parentRigidBody.AddRelativeForce(Vector3.up * -1);
-
                 if (currSpeed <= .05f)
                 {
+                    // reset velocities
                     parentRigidBody.velocity = Vector3.zero;
-                    //parentRigidBody.useGravity = true;
-                    //parentRigidBody.isKinematic = true;
+                    lastVelocity = Vector3.zero;
+
+                    // reset lerp
+                    currentLerpTime = 0;
 
                     // run backwards into enemies at full speed to kill them!
                     parentRigidBody.detectCollisions = true;
@@ -121,9 +107,8 @@ public class ImpalePoint : MonoBehaviour {
                     // call after impale event
                     if (AfterImpale != null)
                         AfterImpale(finalCollision);
-
-                    lastVelocity = Vector3.zero;
-
+                    
+                    // set to embedded
                     impaleState = ImpaleState.Embedded;
                 }
                 break;
@@ -137,33 +122,14 @@ public class ImpalePoint : MonoBehaviour {
     // stop
     void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("collided with " + collision.collider.name);
-        //if((expectedObject = collision.collider.GetComponent<T>()) != null)
         if (IsActive)
         {
             // ignore collision w/ collided
             Physics.IgnoreCollision(collision.collider, GetComponent<Collider>());
             Physics.IgnoreCollision(collision.collider, parentModel.GetComponent<Collider>());
 
-            // set last velocity
-            //parentRigidBody.velocity = lastVelocity;
-
-            // set last velocity forward vector relative to loc space
-            //lastVelocity = parentModel.transform.InverseTransformDirection(lastVelocity);
-
             // set parent
             parentModel.parent = collision.transform;
-
-            // set current speed 
-            //currentSpeed = lastVelocity.magnitude;
-
-            //Debug.Log("Old Mag: " + parentRigidBody.velocity.magnitude);
-            //lastVelocity = parentModel.InverseTransformPoint(parentModel.parent.TransformPoint(parentRigidBody.velocity));
-            //lastVelocity = parentModel.parent.transform.InverseTransformVector(parentModel.transform.TransformVector(parentRigidBody.velocity));
-            //lastVelocity = parentModel.up / Mathf.Abs(parentRigidBody.velocity.z);
-            //Debug.DrawLine(transform.position, transform.position + lastVelocity, Color.blue);
-            //Debug.Log("New Mag: " + lastVelocity.magnitude);
-            //Debug.Log("NEW LV: " + lastVelocity);
 
             // stop checking for OnCollisionEnter
             IsActive = false;
@@ -176,7 +142,6 @@ public class ImpalePoint : MonoBehaviour {
             parentRigidBody.isKinematic = true;
             rigidbody.detectCollisions = false;
             parentRigidBody.detectCollisions = false;
-            //targetPosition = transform.localPosition + (lastVelocity.normalized * 5f);
 
             // set impale state to currently impaling
             impaleState = ImpaleState.Impaling;
