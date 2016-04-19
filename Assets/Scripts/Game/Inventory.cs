@@ -11,25 +11,36 @@ public class Inventory : MonoBehaviour
     static int emptySlot; // Check how many empty slots are there;
     private static Slot moveFromSlot; // reference the slot from which we are moving 
     private static Slot moveToSlot; // reference to the slot to which we are moving
-    private Player playerRef;
+    static Player playerRef;
     private BodyPart bodyRef;
     // public GameObject dropItem;
     private GameObject playerPosition;
+
+
+
     // Use this for initialization
 
 
+    protected virtual void Awake()
+    {
+        if (playerRef == null)
+        {
+            playerRef = GetComponent<Player>();
+        }
+    }
+
     void Start()
     {
+       
         foreach (Transform child in transform)
         {
             GameObject slot = child.gameObject;
             allSlots.Add(slot);
         }
-        playerRef = GetComponent<Player>();
+        
         emptySlot = allSlots.Count;
-
         playerPosition = GameObject.FindGameObjectWithTag("Player");
-
+       
     }
 
     // Update is called once per frame
@@ -97,6 +108,8 @@ public class Inventory : MonoBehaviour
     /// <returns></returns>
     private bool findEmptyAndAdd(Item item)
     {
+        Debug.Log(emptySlot);
+        Debug.Log("Adding Item: " + item);
         if (emptySlot > 0)
         {
             foreach (GameObject slot in allSlots)
@@ -128,6 +141,7 @@ public class Inventory : MonoBehaviour
                                     tempSlot.AddItem(item);
                                     emptySlot--;
                                     return true;
+                                    Debug.Log("Item ADDDED HERE");
                                 } // end of if
                             }
                             break;

@@ -21,14 +21,14 @@ public class Player : Character
     // TMP INVENTORY
     // TMP INVENTORY
     private GameObject characterInventory;
-    private bool displayCharacterInventory = false;
+    private bool displayCharacterInventory = true;
     public Inventory charInventory;
     private GameObject headHealthBar;
     private GameObject leftHandHealthBar;
     private GameObject rightHandHealthBar;
     private GameObject leftLegHealthBar;
     private GameObject rightLegHealthBar;
-
+    private int cheatIWay = 1;
     private string path;
 
     /*
@@ -60,6 +60,9 @@ public class Player : Character
     void Start()
     {
         characterInventory.SetActive(true);
+
+        CheatWay();
+
     }
 
     //int tmpIndex = 0;
@@ -67,6 +70,13 @@ public class Player : Character
     // Update is called once per frame
     protected override void Update()
     {
+        if (cheatIWay <= 1)
+        {
+            CheatWay();
+            cheatIWay++;
+        }
+
+
         RaycastHit hit;
         Ray ray = playerCamera.ScreenPointToRay(Input.mousePosition);
 
@@ -77,6 +87,7 @@ public class Player : Character
                 if (Input.GetMouseButtonDown(1))
                 {
                     Debug.Log(hit.transform.gameObject.GetComponent<Item>().itemName);
+
                     if (hit.transform.gameObject.GetComponent<BodyPart>())
                     {
                         path = "Prefabs/BodyParts/";
@@ -84,12 +95,13 @@ public class Player : Character
                     else if (hit.transform.gameObject.GetComponent<RegularItem>())
                     {
                         path = "Prefabs/Items/";
+                        Destroy(hit.transform.gameObject);
                     }
-                    GameObject itemToAdd = Resources.Load(path + hit.transform.gameObject.GetComponent<Item>().itemName) as GameObject;
+                    GameObject itemToAdd = Resources.Load(path + hit.transform.gameObject.GetComponent<Item>().name) as GameObject;
                     Debug.Log(itemToAdd);
                     Item itemToAddNew = itemToAdd.GetComponent<Item>() as Item;
                     charInventory.AddItem(itemToAddNew);
-                    Destroy(hit.transform.gameObject);
+                   // Destroy(hit.transform.gameObject);
                 }
             }
         }
@@ -122,8 +134,14 @@ public class Player : Character
         // TMP INVENTORY
         if (Input.GetKeyDown("i"))
         {
+            for (int i = 0; i < this.BodyParts.Length; i++)
+            {
+                charInventory.AddItem(this.BodyParts[i]);
+            }
             displayCharacterInventory = !displayCharacterInventory;
+            Debug.Log("Status of the inventory: " + displayCharacterInventory);
             characterInventory.SetActive(displayCharacterInventory);
+            Debug.Log("Check Inventory Again: " + characterInventory.active);
         }
 
         if (Input.GetKeyDown("m"))
@@ -198,4 +216,16 @@ public class Player : Character
         return GetRoot(bodyPart.transform.parent.gameObject);
     }
 
+
+    private void CheatWay()
+    {
+        for (int i = 0; i < this.BodyParts.Length; i++)
+        {
+            charInventory.AddItem(this.BodyParts[i]);
+        }
+     //   displayCharacterInventory = !displayCharacterInventory;
+      //  Debug.Log("Status of the inventory: " + displayCharacterInventory);
+      //  characterInventory.SetActive(displayCharacterInventory);
+      //  Debug.Log("Check Inventory Again: " + characterInventory.active);
+    }
 }
