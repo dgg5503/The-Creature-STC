@@ -25,9 +25,9 @@ public class ImpalePoint : MonoBehaviour {
     private Transform parentModel;
     private Rigidbody parentRigidBody;
     private new Rigidbody rigidbody;
-    //private Vector3 targetPosition;
     private Vector3 lastVelocity;
     private ImpaleState impaleState;
+    private float collidedMass;
     private float currentSpeed;
     private float lerpTime = 1f;
     private float currentLerpTime;
@@ -87,7 +87,7 @@ public class ImpalePoint : MonoBehaviour {
                     currentLerpTime = lerpTime;
 
                 // below float value is dependent on the density of the penetrating object.
-                float currSpeed = Mathf.Lerp(lastVelocity.magnitude, 0, (currentLerpTime / lerpTime) * 5f);
+                float currSpeed = Mathf.Lerp(lastVelocity.magnitude, 0, (currentLerpTime / lerpTime) * collidedMass);
                 parentModel.localPosition += (parentRigidBody.transform.up * currSpeed) * Time.fixedDeltaTime;
                 Debug.Log(lastVelocity.magnitude);
 
@@ -134,9 +134,6 @@ public class ImpalePoint : MonoBehaviour {
             // stop checking for OnCollisionEnter
             IsActive = false;
 
-            // stop using gravity.
-            //parentRigidBody.useGravity = false;
-
             // go kinematic and stop detecting collision
             rigidbody.isKinematic = true;
             parentRigidBody.isKinematic = true;
@@ -149,8 +146,15 @@ public class ImpalePoint : MonoBehaviour {
             // set final collision
             finalCollision = collision;
 
+            // see if collided object has a rigibody attachement.
+            Rigidbody collidedRigidbody;
+            if ((collidedRigidbody = finalCollision.collider.GetComponent<Rigidbody>()) != null)
+                collidedMass = collidedRigidbody.mass;
+            else
+                collidedMass = 100f;
+
             // call on impale event
-            if(OnImpale != null)
+            if (OnImpale != null)
                 OnImpale(finalCollision);
         }
     }

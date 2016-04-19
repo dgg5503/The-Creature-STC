@@ -90,5 +90,5 @@ public abstract class Weapon : RegularItem {
     /// Implement this function in extended file to run instructions after damage has been
     /// successfully applied.
     /// </summary>
-    protected abstract void AfterCollision();
+    //protected abstract void AfterCollision();
 }

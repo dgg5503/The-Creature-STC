@@ -28,7 +28,6 @@ using System.Collections;
 public abstract class Character : MonoBehaviour
 {
     // Body stuff
-    //protected List<BodyPart> bodyParts;
     protected Dictionary<int, CustomJoint> joints;
     protected List<RegularItem> regularItems;
     protected BodyPart root;
@@ -47,6 +46,13 @@ public abstract class Character : MonoBehaviour
     private Vector3 velocity;
     protected new Rigidbody rigidbody;
     protected new CapsuleCollider collider;
+
+    /// <summary>
+    /// The distance between the bottom of the character collider and the ground
+    /// in order to check if grounded or not.
+    /// </summary>
+    [SerializeField]
+    private float groundedContact = .30f;
 
     // States n' Actions
     private bool isAlive;
@@ -78,7 +84,9 @@ public abstract class Character : MonoBehaviour
         }
     }
 
-    // TODO: ONLY GET ONES ATTACHED TO JOINTS IN JOINT DICT
+    /// <summary>
+    /// Gets the body parts currently attached to this character.
+    /// </summary>
     public BodyPart[] BodyParts
     {
         get
@@ -87,15 +95,17 @@ public abstract class Character : MonoBehaviour
         }
     }
 
-    /*
+    /// <summary>
+    /// Gets whether or not this character is currently grounded.
+    /// </summary>
     public bool IsGrounded
     {
         get
         {
-            return Physics.Raycast(transform.position, Vector3.down, collider.bounds.extents.y);
+            //Debug.DrawLine(transform.position + (Vector3.down * collider.bounds.extents.y), transform.position + (Vector3.down * collider.bounds.extents.y) + (Vector3.down * groundedContact), Color.black);
+            return Physics.Raycast(transform.position + (Vector3.down * collider.bounds.extents.y), Vector3.down, groundedContact, GameManager.GroundedLayerMask);
         }
     }
-    */
 
     // actions go here...
 
@@ -107,12 +117,7 @@ public abstract class Character : MonoBehaviour
     {
         // Grab all children with BodyPart scripts and store them for reference
         // Q: Is the head/torso a body part with inf health?
-        
         joints = GetComponentsInChildren<CustomJoint>().ToDictionary(x => x.JointType, x => x);
-        foreach (CustomJoint joint in joints.Values)
-        {
-            //Debug.Log(string.Format("{0}: {1}", joint.JointType, joint.name));
-        }
 
         // get all body parts that are children and set joint relationships ONCE
         // all other joint relationship will be handled in attach and detach
@@ -164,7 +169,7 @@ public abstract class Character : MonoBehaviour
 
     protected virtual void Update ()
     {
-       
+
     }
 
     void FixedUpdate()
@@ -244,7 +249,7 @@ public abstract class Character : MonoBehaviour
 
         // TMP FIX
         //velocity.y = rigidbody.velocity.y;
-        if (velocity != Vector3.zero)
+        if (IsGrounded)
             rigidbody.velocity = velocity;
 
 
@@ -256,9 +261,8 @@ public abstract class Character : MonoBehaviour
     /// Use this function for character specific movement.
     /// i.e. player is controlled via input but AI will move based on rules.
     /// </summary>
-    abstract protected void ProcessMovement();
+    abstract protected void ProcessMovement();    
 
-    
     public bool Attach(BodyPart bodyPartToAttach)
     {
         if (bodyPartToAttach == null || !joints.ContainsKey(bodyPartToAttach.BodyPartType))

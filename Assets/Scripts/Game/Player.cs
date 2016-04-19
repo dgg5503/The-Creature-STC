@@ -19,7 +19,6 @@ public class Player : Character
     private Camera playerCamera = null;
 
     // TMP INVENTORY
-    // TMP INVENTORY
     private GameObject characterInventory;
     private bool displayCharacterInventory = true;
     public Inventory charInventory;
@@ -62,7 +61,6 @@ public class Player : Character
         characterInventory.SetActive(true);
 
         CheatWay();
-
     }
 
     //int tmpIndex = 0;

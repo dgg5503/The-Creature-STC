@@ -6,6 +6,7 @@ public class Spear : Weapon {
     // Fields
     [SerializeField]
     private ImpalePoint impalePoint = null;
+
     private new Rigidbody rigidbody;
 
     protected override void Awake()
@@ -22,7 +23,15 @@ public class Spear : Weapon {
 
     private void ImpalePoint_AfterImpale(Collision expectedObject)
     {
-        AfterCollision();
+        BodyPart collidedBodyPart;
+
+        // make sure what we hit was an ATTACHED body part.
+        if((collidedBodyPart = expectedObject.collider.GetComponent<BodyPart>()) != null &&
+            collidedBodyPart.Joint != null)
+        {
+            // remove health based on damage
+            collidedBodyPart.Health -= damage;
+        }
     }
     
     // Use this for initialization
@@ -35,9 +44,4 @@ public class Spear : Weapon {
 	void Update () {
 	
 	}
-
-    protected override void AfterCollision()
-    {
-        Debug.Log("After Collision!");
-    }
 }
