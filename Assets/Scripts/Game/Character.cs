@@ -111,7 +111,7 @@ public abstract class Character : MonoBehaviour
         joints = GetComponentsInChildren<CustomJoint>().ToDictionary(x => x.JointType, x => x);
         foreach (CustomJoint joint in joints.Values)
         {
-            Debug.Log(string.Format("{0}: {1}", joint.JointType, joint.name));
+            //Debug.Log(string.Format("{0}: {1}", joint.JointType, joint.name));
         }
 
         // get all body parts that are children and set joint relationships ONCE

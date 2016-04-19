@@ -30,6 +30,11 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     // hidding base memebers since these properties are depricated
     private new Rigidbody rigidbody;
     private new Collider collider;
+    
+    // Stats
+    private int currHealth;
+    private int minHealth;
+    private int maxHealth;
 
     // Part specific
     private CustomJoint joint;
@@ -96,10 +101,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         }
     }
 
-    // Stats
-    private int currHealth;
-    private int minHealth;
-    private int maxHealth;
+
 
     // Properties
     /// <summary>
@@ -188,7 +190,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
             {
                 // ignore collision with parent to prevent spazzing of merged bparts
                 Physics.IgnoreCollision(collider, parentCollider);
-                Debug.Log(string.Format("{0} ignores coll with {1}", transform.parent.name, name));
+                //Debug.Log(string.Format("{0} ignores coll with {1}", transform.parent.name, name));
             }
         }
 
