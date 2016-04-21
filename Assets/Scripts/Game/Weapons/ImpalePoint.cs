@@ -28,7 +28,6 @@ public class ImpalePoint : MonoBehaviour {
     private Vector3 lastVelocity;
     private ImpaleState impaleState;
     private float collidedMass;
-    private float currentSpeed;
     private float lerpTime = 1f;
     private float currentLerpTime;
 
@@ -77,6 +76,9 @@ public class ImpalePoint : MonoBehaviour {
         {
             case ImpaleState.None:
                 lastVelocity = parentRigidBody.velocity;
+                //Vector3 projection = Vector3.Project(parentModel.TransformVector(parentRigidBody.velocity), parentModel.right);
+                Debug.DrawLine(parentModel.position, parentModel.position + parentRigidBody.velocity, Color.black);
+                Debug.DrawLine(parentModel.position, parentModel.position + parentModel.right * 10, Color.red);
                 break;
 
             case ImpaleState.Impaling:
@@ -88,7 +90,7 @@ public class ImpalePoint : MonoBehaviour {
 
                 // below float value is dependent on the density of the penetrating object.
                 float currSpeed = Mathf.Lerp(lastVelocity.magnitude, 0, (currentLerpTime / lerpTime) * collidedMass);
-                parentRigidBody.MovePosition(parentRigidBody.position + (parentRigidBody.transform.up * currSpeed) * Time.fixedDeltaTime);
+                parentRigidBody.MovePosition(parentRigidBody.position + (parentRigidBody.transform.right * currSpeed) * Time.fixedDeltaTime);
                 //parentRigidBody.position += (parentRigidBody.transform.up * currSpeed) * Time.fixedDeltaTime;
                 //parentModel.localPosition += (parentRigidBody.transform.up * currSpeed) * Time.fixedDeltaTime;
                 Debug.Log(lastVelocity.magnitude);
@@ -124,8 +126,13 @@ public class ImpalePoint : MonoBehaviour {
     // stop
     void OnCollisionEnter(Collision collision)
     {
-        if (IsActive)
+        if (IsActive && collision.collider.GetComponent<ImpalePoint>() == null)
         {
+            // TO-DO: slow speed? dont let it attach!!
+            // if projected velocity on right isnt a min of ???, ignore.
+           //f (Vector3.Project(parentModel.TransformVector(parentRigidBody.velocity), parentModel.right).sqrMagnitude < 100)
+            //    return;
+
             // ignore collision w/ collided
             Physics.IgnoreCollision(collision.collider, GetComponent<Collider>());
             Physics.IgnoreCollision(collision.collider, parentModel.GetComponent<Collider>());
@@ -159,5 +166,11 @@ public class ImpalePoint : MonoBehaviour {
             if (OnImpale != null)
                 OnImpale(finalCollision);
         }
+    }
+
+    // reset and set active.
+    public void ResetAndSetActive()
+    {
+        IsActive = true;
     }
 }

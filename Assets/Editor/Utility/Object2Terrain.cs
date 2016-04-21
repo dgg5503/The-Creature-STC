@@ -47,6 +47,13 @@ public class Object2Terrain : EditorWindow
     void CreateTerrain()
     {
 
+        if (Selection.activeGameObject.GetComponent<MeshFilter>() == null)
+        {
+            Debug.LogError("ERROR: Please select a game object with a MESH!");
+            return;
+        }
+
+
         //fire up the progress bar
         ShowProgressBar(1, 100);
 
@@ -63,9 +70,7 @@ public class Object2Terrain : EditorWindow
         //Otherwise raycasting doesn't work.
         if (!collider)
         {
-
             collider = Selection.activeGameObject.AddComponent<MeshCollider>();
-            cleanUp = () => DestroyImmediate(collider);
         }
 
         Bounds bounds = collider.bounds;
@@ -129,12 +134,9 @@ public class Object2Terrain : EditorWindow
         terrain.SetHeights(0, 0, heights);
 
         EditorUtility.ClearProgressBar();
-
+        AssetDatabase.CreateAsset(terrain, "Assets/Terrain/GeneratedTerrain.asset");
         if (cleanUp != null)
-        {
-
             cleanUp();
-        }
     }
 
     void ShowProgressBar(float progress, float maxProgress)

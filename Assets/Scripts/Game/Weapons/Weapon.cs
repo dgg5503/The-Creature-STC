@@ -6,6 +6,10 @@ using System.Collections;
 /// </summary>
 [RequireComponent(typeof(Collider))]
 
+/// <summary>
+/// Colliders require rigidbodies.
+/// </summary>
+[RequireComponent(typeof(Rigidbody))]
 public abstract class Weapon : RegularItem {
 
     // Fields

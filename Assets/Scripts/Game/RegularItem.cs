@@ -8,7 +8,7 @@ public enum RegularItemType
     Quest
 };
 
-public class RegularItem : Item  {
+public abstract class RegularItem : Item  {
 
     public RegularItemType type; // Type of the item
     public int amountOfItems; // How many items in one slot
@@ -19,5 +19,9 @@ public class RegularItem : Item  {
         this.amountOfItems = amountOfItems;
 
     }
+
+    public abstract void PrepareToUse();
+
+    public abstract void Use();
     
 }

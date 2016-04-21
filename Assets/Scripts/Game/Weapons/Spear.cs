@@ -37,11 +37,31 @@ public class Spear : Weapon {
     // Use this for initialization
     void Start () {
         // test force
-        rigidbody.AddRelativeForce(Vector3.up * 300);
+        rigidbody.AddRelativeForce(Vector3.right * 300);
     }
 	
 	// Update is called once per frame
 	void Update () {
 	
 	}
+
+    public override void PrepareToUse()
+    {
+        // reset everything.
+
+        throw new NotImplementedException();
+    }
+
+
+    public override void Use()
+    {
+        // set to active and apply force
+        impalePoint.ResetAndSetActive();
+
+        // unparent
+        transform.parent = null;
+
+        // apply force relative
+        rigidbody.AddRelativeForce(Vector3.right * 300);
+    }
 }

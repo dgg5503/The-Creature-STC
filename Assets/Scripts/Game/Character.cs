@@ -261,7 +261,25 @@ public abstract class Character : MonoBehaviour
     /// Use this function for character specific movement.
     /// i.e. player is controlled via input but AI will move based on rules.
     /// </summary>
-    abstract protected void ProcessMovement();    
+    abstract protected void ProcessMovement(); 
+    
+    public bool MountItem(RegularItem itemToMount)
+    {
+        // look for empty mount point
+            // if slots are full, return false!
+
+        // mount it
+
+        // reorientate item to default rotation since itll be parented
+        itemToMount.transform.localPosition = Vector3.zero;
+        itemToMount.transform.localRotation = Quaternion.identity;
+
+        // prepare item (ready to be used)
+        itemToMount.PrepareToUse();
+
+        // return true, we did it reddit!
+        return true;
+    }   
 
     public bool Attach(BodyPart bodyPartToAttach)
     {
@@ -341,6 +359,11 @@ public abstract class Character : MonoBehaviour
     // TODO, ALERRRRRRRT MAKE SURE TO PUT IN CHECKS FOR WHEN RESIZING UP/DOWN, DONT WANNA GO OOB :)))
     private void RecalculateCollisionBounds(ref Bounds currentBounds, GameObject currentBodyPart)
     {
+        // make sure not a regular item (i.e. something that wont be ATTACHED like a bodypart)
+        RegularItem regularItem = currentBodyPart.GetComponent<RegularItem>();
+        if (regularItem != null)
+            return;
+
         // QUICK FIX TODO DELETE
         BodyPart currBPart = currentBodyPart.GetComponent<BodyPart>();
         if (currBPart != null && (currBPart.BodyPartType == 1 || currBPart.BodyPartType == 5))
