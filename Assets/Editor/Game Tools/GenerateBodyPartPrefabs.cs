@@ -20,13 +20,14 @@ class GenerateBodyPartPrefabs : EditorWindow {
     private Dictionary<string, GameObject> createdPrefabs;
 
     // cleanup folders for quick deletion of assets
+    /*
     private static string[] cleanupFolders =
             {
                 "Assets/Resources/Prefabs/Icons",
                 "Assets/Resources/Prefabs/BodyParts",
                 "Assets/Resources/Prefabs/Characters"
             };
-
+            */
     [MenuItem("Body Parts / Body Part Splitter")]
     static void Init()
     {

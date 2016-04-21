@@ -26,13 +26,14 @@ public class ImpalePoint : MonoBehaviour {
     private Rigidbody parentRigidBody;
     private new Rigidbody rigidbody;
     private Vector3 lastVelocity;
-    private Vector3 projection;
+    //private Vector3 projection;
     private ImpaleState impaleState;
     private float minVelocity = 9f;
-    private float impaleDistance = 0f;
+    //private float impaleDistance = 0f;
     private float collidedMass;
     private float lerpTime = 1f;
     private float currentLerpTime;
+    private float currSpeed;
 
     public delegate void Action(Collision collision);
     public event Action OnImpale;
@@ -42,6 +43,11 @@ public class ImpalePoint : MonoBehaviour {
     /// Get or set whether or not this projectile should be looking to respond to collision.
     /// </summary>
     protected bool IsActive { get; set; }
+
+    /// <summary>
+    /// Get the last collision obtained from the impale point.
+    /// </summary>
+    public Collision LastCollision { get { return finalCollision; } }
 
     // Properties
     /// <summary>
@@ -101,19 +107,20 @@ public class ImpalePoint : MonoBehaviour {
                     currentLerpTime = lerpTime;
 
                 // below float value is dependent on the density of the penetrating object.
-                float currSpeed = Mathf.Lerp(lastVelocity.magnitude, 0, (currentLerpTime / lerpTime) * collidedMass);
+                currSpeed = Mathf.Lerp(lastVelocity.magnitude, 0, (currentLerpTime / lerpTime) * collidedMass);
 
                 // newPosition = lerp(contactpoint, contactpoint + (lastVelocity.forward * desiredDistance), currentLerpTime / lerpTime
                 // if position = endPoint
-                    // end action.
+                // end action.
 
                 //parentRigidBody.MovePosition(Vector3.zero);
                 //parentRigidBody.mov
                 //parentRigidBody.position += (parentRigidBody.transform.right * currSpeed) * Time.fixedDeltaTime;
                 // below works
                 //parentModel.localPosition += (parentRigidBody.transform.right * currSpeed) * Time.fixedDeltaTime;
-                parentModel.localPosition += (parentModel.right * currSpeed) * Time.fixedDeltaTime;
-                Debug.Log(currSpeed + " : " + parentRigidBody.position);
+                
+                parentModel.localPosition += (parentModel.parent.InverseTransformDirection(parentModel.right) * currSpeed) * Time.fixedDeltaTime;
+                //Debug.Log(currSpeed + " : " + parentRigidBody.position);
 
                 // go until embedded
                 if (currSpeed <= .05f)
@@ -153,8 +160,11 @@ public class ImpalePoint : MonoBehaviour {
             // if speed is too little to impale, return.
             //if (Vector3.Dot(projection, parentModel.right) < 0 ||
             //    (projection = Vector3.Project(parentRigidBody.velocity, parentModel.TransformDirection(parentModel.right))).sqrMagnitude < 10)
-            if(Vector3.Dot(lastVelocity, parentModel.right) < minVelocity)
+            Debug.Log(parentModel.name + " collided with " + collision.collider.name);
+            if (Vector3.Dot(lastVelocity, parentModel.right) < minVelocity)
+            {
                 return;
+            }
 
             // ignore collision w/ collided
             Physics.IgnoreCollision(collision.collider, GetComponent<Collider>());
@@ -169,6 +179,7 @@ public class ImpalePoint : MonoBehaviour {
             // go kinematic and stop detecting collision
             rigidbody.isKinematic = true;
             parentRigidBody.isKinematic = true;
+            
             //rigidbody.detectCollisions = false;
             //parentRigidBody.detectCollisions = false;
 
@@ -194,6 +205,28 @@ public class ImpalePoint : MonoBehaviour {
     // reset and set active.
     public void ResetAndSetActive()
     {
+        // reset state info
         IsActive = true;
+        impaleState = ImpaleState.None;
+        rigidbody.isKinematic = false;
+        parentRigidBody.isKinematic = false;
+        currentLerpTime = 0;
+
+        // set last velocity back
+        lastVelocity = parentModel.right * currSpeed;
+        parentRigidBody.velocity = lastVelocity;
+        currSpeed = 0;
+        
+        Debug.Log(rigidbody.velocity);
+
+        // if collision info is stored, detection collision again with that object
+        Physics.IgnoreCollision(finalCollision.collider, GetComponent<Collider>());
+        Physics.IgnoreCollision(finalCollision.collider, parentModel.GetComponent<Collider>());
+
+        // unparent
+        parentModel.parent = null;
+
+        // set final collision null
+        finalCollision = null;
     }
 }

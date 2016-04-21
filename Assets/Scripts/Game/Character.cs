@@ -22,6 +22,13 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
 
+enum CharacterState
+{
+    Alive,
+    Dying,
+    Dead
+}
+
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Collider))]
 [RequireComponent(typeof(Inventory))]
@@ -57,6 +64,7 @@ public abstract class Character : MonoBehaviour
 
     // States n' Actions
     private bool isAlive;
+    private CharacterState state;
 
     /// <summary>
     /// Get the inventory of this character.
@@ -80,7 +88,7 @@ public abstract class Character : MonoBehaviour
                 // set all bparts to false kinematics...
                 BodyPart[] allBodyParts = GetComponentsInChildren<BodyPart>();
                 for (int i = 0; i < allBodyParts.Length; ++i)
-                    allBodyParts[i].SetSilly();
+                    allBodyParts[i].SetLimp();
             }
         }
     }
@@ -149,7 +157,8 @@ public abstract class Character : MonoBehaviour
         acceleration = Vector3.zero;
         velocity = Vector3.zero;
         rigidbody = GetComponent<Rigidbody>();
-        rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+        rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+        //rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
         
         // get the overall capsule collider
         collider = GetComponent<CapsuleCollider>();
@@ -160,6 +169,7 @@ public abstract class Character : MonoBehaviour
 
         // always start alive
         isAlive = true;
+        state = CharacterState.Alive;
 
         // set layer of character colliders to 10
         gameObject.layer = 10;
@@ -254,7 +264,10 @@ public abstract class Character : MonoBehaviour
         // TMP FIX
         //velocity.y = rigidbody.velocity.y;
         if (IsGrounded)
+        {
+            //rigidbody.AddRelativeForce(velocity, ForceMode.VelocityChange);
             rigidbody.velocity = velocity;
+        }
 
 
         // set accel to 0
@@ -331,6 +344,17 @@ public abstract class Character : MonoBehaviour
         RecalculateCollisionBounds();
 
         return tmpPart;
+    }
+
+    /// <summary>
+    /// Call this function when the character should be placed into a "death" state.
+    /// </summary>
+    public virtual void Die()
+    {
+        // explode and then destroy the character?
+        state = CharacterState.Dead;
+
+        // unparent the root from this character handler and then remove the character handler.
     }
 
     /// <summary>

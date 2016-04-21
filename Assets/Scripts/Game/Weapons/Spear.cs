@@ -1,37 +1,64 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using System;
 
+/// <summary>
+/// Spear must contain capsule collider for pass through information.
+/// </summary>
+[RequireComponent(typeof(CapsuleCollider))]
 public class Spear : Weapon {
     // Fields
     [SerializeField]
     private ImpalePoint impalePoint = null;
-
-    private new Rigidbody rigidbody;
-
+    private List<GameObject> currColls;
+    private CapsuleCollider passThroughTrigger;
+    private CapsuleCollider capsuleCollider;
+        
     protected override void Awake()
     {
         base.Awake();
 
-        rigidbody = GetComponent<Rigidbody>();
         type = RegularItemType.Weapon;
         amountOfItems = 1;
         damage = 10;
+        capsuleCollider = collider as CapsuleCollider;
+        passThroughTrigger = gameObject.AddComponent<CapsuleCollider>();
+        passThroughTrigger.center = capsuleCollider.center;
+        passThroughTrigger.radius = capsuleCollider.radius;
+        passThroughTrigger.height = capsuleCollider.height;
+        passThroughTrigger.direction = capsuleCollider.direction;
+        passThroughTrigger.isTrigger = true;
+        passThroughTrigger.enabled = false;
 
+        impalePoint.OnImpale += ImpalePoint_OnImpale;
         impalePoint.AfterImpale += ImpalePoint_AfterImpale;
+
+        currColls = new List<GameObject>();
     }
 
-    private void ImpalePoint_AfterImpale(Collision expectedObject)
+    private void ImpalePoint_OnImpale(Collision expectedObject)
     {
-        BodyPart collidedBodyPart;
+        // enable pass through trigger check
+        passThroughTrigger.enabled = true;
+
+        // add the last collision to current collisions
+        currColls.Clear();
+        currColls.Add(expectedObject.gameObject);
 
         // make sure what we hit was an ATTACHED body part.
-        if((collidedBodyPart = expectedObject.collider.GetComponent<BodyPart>()) != null &&
+        BodyPart collidedBodyPart;
+        if ((collidedBodyPart = expectedObject.collider.GetComponent<BodyPart>()) != null &&
             collidedBodyPart.Joint != null)
         {
             // remove health based on damage
             collidedBodyPart.Health -= damage;
         }
+    }
+
+    private void ImpalePoint_AfterImpale(Collision expectedObject)
+    {
+        // disable pass through collision check.
+        passThroughTrigger.enabled = false;
     }
     
     // Use this for initialization
@@ -64,4 +91,32 @@ public class Spear : Weapon {
         // apply force relative
         rigidbody.AddRelativeForce(Vector3.right * 300);
     }
+
+    void FixedUpdate()
+    {
+        // check to see if the impale point original target
+        // is no longer currently colliding
+        if (impalePoint.LastCollision != null &&
+            !currColls.Contains(impalePoint.LastCollision.gameObject))
+        {
+            // if no longer colliding, disable trigger and reset!
+            impalePoint.ResetAndSetActive();
+            passThroughTrigger.enabled = false;
+            currColls.Clear();
+        }
+    }
+
+    public void OnTriggerEnter(Collider collider)
+    {
+        if(collider.gameObject.GetComponent<ImpalePoint>() == null &&
+            !currColls.Contains(collider.gameObject))
+            currColls.Add(collider.gameObject);
+    }
+
+    public void OnTriggerExit(Collider collider)
+    {
+        if (currColls.Contains(collider.gameObject))
+            currColls.Remove(collider.gameObject);
+    }
+
 }

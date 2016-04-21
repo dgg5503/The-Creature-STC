@@ -302,18 +302,18 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     /// <summary>
     /// Set this body part to "limp" but still connected.
     /// </summary>
-    public void SetSilly()
+    public void SetLimp()
     {
         SetupPhysicsJoint();
-        Debug.Log("Set silly: " + name);
+        //Debug.Log("Set silly: " + name);
+
         if (rigidbody != null)
         {
             rigidbody.isKinematic = false;
-            Debug.Log("Set silly OFF: " + name);
+            //Debug.Log("Set silly OFF: " + name);
         }
 
         isControlledByJoint = false;
-        
     }
     /// <summary>
     /// Detaches this body part from whatever parent it's connected to.

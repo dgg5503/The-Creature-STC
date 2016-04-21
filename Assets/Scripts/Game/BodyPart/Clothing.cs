@@ -12,8 +12,7 @@ public class Clothing : MonoBehaviour {
     /// Body part types to add for this clothing.
     /// </summary>
     [SerializeField]
-    private const List<int> bodyPartColliderBindings = null;
-    private List<CapsuleCollider> capsuleColliders;
+    private int[] capsuleColliders = null;
     private Cloth cloth;
     // - set character
     // - parent it
@@ -24,7 +23,7 @@ public class Clothing : MonoBehaviour {
         cloth = GetComponent<Cloth>();
 
         // Can only have up to the same number of expected bpart bindings.
-        capsuleColliders = new List<CapsuleCollider>(bodyPartColliderBindings.Count);
+        //capsuleColliders = new List<CapsuleCollider>(bodyPartColliderBindings.Count);
     }
 
 	// Use this for initialization
@@ -41,11 +40,12 @@ public class Clothing : MonoBehaviour {
     public void SetCapsuleColliders(CapsuleCollider[] capsuleColliders)
     {
         // length check
+        /*
         if(capsuleColliders.Length > bodyPartColliderBindings.Count)
         {
             Debug.LogError("ERROR: Number of provided capsule colliders is larger than the expected number of body parts!");
             return;
-        }
+        }*/
 
         // set it
         cloth.capsuleColliders = capsuleColliders;
@@ -69,7 +69,12 @@ public class Clothing : MonoBehaviour {
     public bool AddBodyPart(BodyPart bodyPart)
     {
         // make sure body part type is in the desired list of things.
-        // bodyPartColliderBindings.
+       /* if(bodyPartColliderBindings.Contains(bodyPart.BodyPartType))
+        {
+            // ensure collider doesnt exist.
+            for(int i = 0; i < )
+        }
+        */
         return false;
 
     }

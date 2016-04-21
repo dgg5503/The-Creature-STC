@@ -17,6 +17,8 @@ public abstract class Weapon : RegularItem {
     //private bool isActive;
     //private BodyPart collidedBodyPart;
     protected int damage;
+    protected new Rigidbody rigidbody;
+    protected new Collider collider;
 
     // Properties
     /// <summary>
@@ -51,9 +53,10 @@ public abstract class Weapon : RegularItem {
     protected override void Awake()
     {
         base.Awake();
-        
+
         //isActive = true;
-        //collider = GetComponent<Collider>();
+        rigidbody = GetComponent<Rigidbody>();
+        collider = GetComponent<Collider>();
         type = RegularItemType.Weapon;
         amountOfItems = 1;
         damage = 0;
