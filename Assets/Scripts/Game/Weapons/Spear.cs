@@ -37,7 +37,7 @@ public class Spear : Weapon {
     // Use this for initialization
     void Start () {
         // test force
-        rigidbody.AddRelativeForce(Vector3.right * 300);
+        rigidbody.AddRelativeForce(Vector3.right * 500);
     }
 	
 	// Update is called once per frame

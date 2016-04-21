@@ -1,0 +1,10 @@
+0	Head
+1	Left_Arm
+2	Left_Arm_Part_2
+3	Left_Leg
+4	Left_Leg_Part_2
+5	Right_Arm
+6	Right_Arm_Part_2
+7	Right_Leg
+8	Right_Leg_Part_2
+9	Torso

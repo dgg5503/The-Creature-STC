@@ -22,7 +22,7 @@ using System;
 [RequireComponent(typeof(Rigidbody))]
 
 // for collision
-[RequireComponent(typeof(Collider))]
+[RequireComponent(typeof(CapsuleCollider))]
 
 public class BodyPart : Item, ISerializationCallbackReceiver
 {

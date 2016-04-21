@@ -26,7 +26,10 @@ public class ImpalePoint : MonoBehaviour {
     private Rigidbody parentRigidBody;
     private new Rigidbody rigidbody;
     private Vector3 lastVelocity;
+    private Vector3 projection;
     private ImpaleState impaleState;
+    private float minVelocity = 9f;
+    private float impaleDistance = 0f;
     private float collidedMass;
     private float lerpTime = 1f;
     private float currentLerpTime;
@@ -50,6 +53,12 @@ public class ImpalePoint : MonoBehaviour {
     {
         IsActive = true;
         rigidbody = GetComponent<Rigidbody>();
+
+        // freeze constraints
+        rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+
+        // dont use gravity
+        rigidbody.useGravity = false;
 
         // Error check to see if parent is null
         if ((parentModel = transform.parent) == null)
@@ -76,9 +85,12 @@ public class ImpalePoint : MonoBehaviour {
         {
             case ImpaleState.None:
                 lastVelocity = parentRigidBody.velocity;
-                //Vector3 projection = Vector3.Project(parentModel.TransformVector(parentRigidBody.velocity), parentModel.right);
-                Debug.DrawLine(parentModel.position, parentModel.position + parentRigidBody.velocity, Color.black);
-                Debug.DrawLine(parentModel.position, parentModel.position + parentModel.right * 10, Color.red);
+                //projection = Vector3.Project(parentRigidBody.velocity, parentModel.TransformDirection(parentModel.right));
+                
+                //Debug.Log(Vector3.Dot(parentRigidBody.velocity, parentModel.right));
+                //Debug.Log(Vector2.Dot(projection.normalized, Vector3.forward));
+                //Debug.DrawLine(parentModel.position, parentModel.position + projection, Color.black);
+                //Debug.DrawLine(parentModel.position, parentModel.position + parentModel.right * 10, Color.red);
                 break;
 
             case ImpaleState.Impaling:
@@ -90,10 +102,18 @@ public class ImpalePoint : MonoBehaviour {
 
                 // below float value is dependent on the density of the penetrating object.
                 float currSpeed = Mathf.Lerp(lastVelocity.magnitude, 0, (currentLerpTime / lerpTime) * collidedMass);
-                parentRigidBody.MovePosition(parentRigidBody.position + (parentRigidBody.transform.right * currSpeed) * Time.fixedDeltaTime);
-                //parentRigidBody.position += (parentRigidBody.transform.up * currSpeed) * Time.fixedDeltaTime;
-                //parentModel.localPosition += (parentRigidBody.transform.up * currSpeed) * Time.fixedDeltaTime;
-                Debug.Log(lastVelocity.magnitude);
+
+                // newPosition = lerp(contactpoint, contactpoint + (lastVelocity.forward * desiredDistance), currentLerpTime / lerpTime
+                // if position = endPoint
+                    // end action.
+
+                //parentRigidBody.MovePosition(Vector3.zero);
+                //parentRigidBody.mov
+                //parentRigidBody.position += (parentRigidBody.transform.right * currSpeed) * Time.fixedDeltaTime;
+                // below works
+                //parentModel.localPosition += (parentRigidBody.transform.right * currSpeed) * Time.fixedDeltaTime;
+                parentModel.localPosition += (parentModel.right * currSpeed) * Time.fixedDeltaTime;
+                Debug.Log(currSpeed + " : " + parentRigidBody.position);
 
                 // go until embedded
                 if (currSpeed <= .05f)
@@ -106,7 +126,7 @@ public class ImpalePoint : MonoBehaviour {
                     currentLerpTime = 0;
 
                     // run backwards into enemies at full speed to kill them!
-                    parentRigidBody.detectCollisions = true;
+                    //parentRigidBody.detectCollisions = true;
 
                     // call after impale event
                     if (AfterImpale != null)
@@ -129,9 +149,12 @@ public class ImpalePoint : MonoBehaviour {
         if (IsActive && collision.collider.GetComponent<ImpalePoint>() == null)
         {
             // TO-DO: slow speed? dont let it attach!!
-            // if projected velocity on right isnt a min of ???, ignore.
-           //f (Vector3.Project(parentModel.TransformVector(parentRigidBody.velocity), parentModel.right).sqrMagnitude < 100)
-            //    return;
+            // if velocity is negative direction of forward, return
+            // if speed is too little to impale, return.
+            //if (Vector3.Dot(projection, parentModel.right) < 0 ||
+            //    (projection = Vector3.Project(parentRigidBody.velocity, parentModel.TransformDirection(parentModel.right))).sqrMagnitude < 10)
+            if(Vector3.Dot(lastVelocity, parentModel.right) < minVelocity)
+                return;
 
             // ignore collision w/ collided
             Physics.IgnoreCollision(collision.collider, GetComponent<Collider>());

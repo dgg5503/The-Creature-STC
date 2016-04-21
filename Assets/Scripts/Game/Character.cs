@@ -29,6 +29,7 @@ public abstract class Character : MonoBehaviour
 {
     // Body stuff
     protected Dictionary<int, CustomJoint> joints;
+    protected Clothing[] clothing;
     protected List<RegularItem> regularItems;
     protected BodyPart root;
 
@@ -118,6 +119,9 @@ public abstract class Character : MonoBehaviour
         // Grab all children with BodyPart scripts and store them for reference
         // Q: Is the head/torso a body part with inf health?
         joints = GetComponentsInChildren<CustomJoint>().ToDictionary(x => x.JointType, x => x);
+
+        // grab all clothing currently on the character
+        clothing = GetComponentsInChildren<Clothing>();
 
         // get all body parts that are children and set joint relationships ONCE
         // all other joint relationship will be handled in attach and detach
@@ -288,6 +292,12 @@ public abstract class Character : MonoBehaviour
 
         if (!bodyPartToAttach.SetSkeleton(joints))
             return false;
+
+        // attempt to add colliders to clothing
+        for(int i = 0; i < clothing.Length; ++i)
+        {
+            //clothing[i].AddBodyPart()
+        }
 
         RecalculateCollisionBounds();
         return true;

@@ -73,6 +73,14 @@ class GenerateBodyPartPrefabs : EditorWindow {
         // add selected
         if (GUILayout.Button("Add Currently Selected Prefabs"))
         {
+            if (EditorUtility.DisplayDialog("Add Prefab",
+                "Once you add this character, all body part prefabs will be created with their current components." +
+                "This means that if you change a body part property on the combined character prefab, you will also have to make that change to the body part prefab as well." +
+                " Are you sure you want to continue?",
+                "Yes",
+                "No"))
+                return;
+
             createdPrefabs = Resources.LoadAll<GameObject>("Prefabs/").ToDictionary(x => x.name, x => x);
             GameObject[] selectedObjects = Selection.gameObjects;
             //Dictionary<string, List<GameObject>> currentConnections = BuildPrefabConnections(); // needed??
@@ -95,6 +103,7 @@ class GenerateBodyPartPrefabs : EditorWindow {
         }
         
         // cleanup
+        /*
         if(GUILayout.Button("Cleanup"))
         {
             if (EditorUtility.DisplayDialog("Delete All Body Part / Character prefabs",
@@ -119,6 +128,8 @@ class GenerateBodyPartPrefabs : EditorWindow {
             // Done
             Debug.Log("CLEANED!");
         }
+        */
+
         // Rebuild all
         /*
         if (GUILayout.Button("Rebuild ALL Body Part Prefabs"))
