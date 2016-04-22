@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 3a1e1378b4c3ec84eb3de50a2ae01c9c
-timeCreated: 1461020577
+timeCreated: 1461290232
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
@@ -88,20 +88,21 @@ ModelImporter:
     3300026: Female_Villager2_Right_Leg_Part_2
     3300028: Female_Villager2_Torso
     4300000: Female_Villager2_Torso
-    4300002: Female_Villager2_Right_Leg_Part_1
-    4300004: Female_Villager2_Right_Leg_Part_2
-    4300006: Female_Villager2_Right_Boot
-    4300008: Female_Villager2_Right_Arm_Part_1
-    4300010: Female_Villager2_Right_Arm_Part_2
-    4300012: Female_Villager2_Left_Leg_Part_1
-    4300014: Female_Villager2_Left_Leg_Part_2
-    4300016: Female_Villager2_Left_Boot
-    4300018: Female_Villager2_Left_Arm_Part_1
-    4300020: Female_Villager2_Left_Arm_Part_2
-    4300022: Female_Villager2_Head
-    4300024: Female_Villager2_Eyes
-    4300026: Dress:Female_Villager2_Dress
-    4300028: Female_Villager2_Hood
+    4300002: Dress:Female_Villager2_Dress
+    4300004: Female_Villager2_Hood
+    4300006: Female_Villager2_Right_Leg_Part_1
+    4300008: Female_Villager2_Right_Leg_Part_2
+    4300010: Female_Villager2_Right_Boot
+    4300012: Female_Villager2_Right_Arm_Part_1
+    4300014: Female_Villager2_Right_Arm_Part_2
+    4300016: Female_Villager2_Left_Leg_Part_1
+    4300018: Female_Villager2_Left_Leg_Part_2
+    4300020: Female_Villager2_Left_Boot
+    4300022: Female_Villager2_Left_Arm_Part_1
+    4300024: Female_Villager2_Left_Arm_Part_2
+    4300026: Female_Villager2_Head
+    4300028: Female_Villager2_Eyes
+    7400000: Take 001
     9500000: //RootNode
   materials:
     importMaterials: 1
