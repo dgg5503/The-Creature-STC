@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 /// <summary>
 /// Clothing requires cloth and a mesh
 /// </summary>
@@ -12,8 +13,10 @@ public class Clothing : MonoBehaviour {
     /// Body part types to add for this clothing.
     /// </summary>
     [SerializeField]
-    private int[] capsuleColliders = null;
+    private int[] expectedBodyPartColliders = null;
+    private List<CapsuleCollider> colliders;
     private Cloth cloth;
+
     // - set character
     // - parent it
     // - look at desired joints, if there is a bpart, add collider
@@ -21,9 +24,11 @@ public class Clothing : MonoBehaviour {
     void Awake()
     {
         cloth = GetComponent<Cloth>();
+        colliders = new List<CapsuleCollider>(cloth.capsuleColliders);
 
-        // Can only have up to the same number of expected bpart bindings.
-        //capsuleColliders = new List<CapsuleCollider>(bodyPartColliderBindings.Count);
+        // init array of capsule colliders.
+        // neeeded???
+        //cloth.capsuleColliders = new CapsuleCollider[expectedBodyPartColliders.Length];
     }
 
 	// Use this for initialization
@@ -36,61 +41,53 @@ public class Clothing : MonoBehaviour {
 	
 	}
 
-    // put on new clothing all together...
-    public void SetCapsuleColliders(CapsuleCollider[] capsuleColliders)
-    {
-        // length check
-        /*
-        if(capsuleColliders.Length > bodyPartColliderBindings.Count)
-        {
-            Debug.LogError("ERROR: Number of provided capsule colliders is larger than the expected number of body parts!");
-            return;
-        }*/
-
-        // set it
-        cloth.capsuleColliders = capsuleColliders;
-    }
-
-    public bool RemoveCollider(CapsuleCollider capsuleCollider)
-    {
-        // find and set to null.
-        int colliderArrayLen = cloth.capsuleColliders.Length;
-        for (int i = 0; i < colliderArrayLen; ++i)
-            if (cloth.capsuleColliders[i] == capsuleCollider) // not sure if this will work...
-            {
-                cloth.capsuleColliders[i] = null;
-                return true;
-            }
-
-        // didnt find
-        return false;
-    }
-
     public bool AddBodyPart(BodyPart bodyPart)
     {
-        // make sure body part type is in the desired list of things.
-       /* if(bodyPartColliderBindings.Contains(bodyPart.BodyPartType))
+        // OPTIMIZE: use list???
+        CapsuleCollider colliderToAdd = bodyPart.GetComponent<CapsuleCollider>();
+        if (!colliders.Contains(colliderToAdd))
         {
-            // ensure collider doesnt exist.
-            for(int i = 0; i < )
-        }
-        */
-        return false;
+            colliders.Add(colliderToAdd);
+            /*
+            int storeIndex = -1;
+            for (int i = 0; i < expectedBodyPartColliders.Length; ++i)
+                if (expectedBodyPartColliders[i] == bodyPart.BodyPartType) // look for space in cloth array, also ensure that same collider isnt in there
+                    for (int z = 0; z < cloth.capsuleColliders.Length; ++z)
+                        if (cloth.capsuleColliders[z] == null)
+                            storeIndex = z;
+                        else if (cloth.capsuleColliders[z] == colliderToAdd)
+                            return false;
 
+            // set collider
+            if (storeIndex == -1)
+                return false;
+                */
+            cloth.capsuleColliders = colliders.ToArray();
+            return true;
+        }
+        return true;
     }
 
-    public bool AddCollider(CapsuleCollider capsuleCollider)
+    public bool RemoveBodyPart(BodyPart bodyPart)
     {
-        // find empty spot and set
-        int colliderArrayLen = cloth.capsuleColliders.Length;
-        for (int i = 0; i < colliderArrayLen; ++i)
-            if (cloth.capsuleColliders[i] == null) // not sure if this will work...
-            {
-                cloth.capsuleColliders[i] = capsuleCollider;
-                return true;
-            }
+        CapsuleCollider colliderToRemove = bodyPart.GetComponent<CapsuleCollider>();
+        if(colliders.Contains(colliderToRemove))
+        {
+            colliders.Remove(colliderToRemove);
 
-        // didnt find
+            /*
+            for (int i = 0; i < cloth.capsuleColliders.Length; ++i)
+                if (cloth.capsuleColliders[i] == colliderToRemove)
+                {
+                    cloth.capsuleColliders[i] = null;
+                    return true;
+                }
+            */
+
+            cloth.capsuleColliders = colliders.ToArray();
+            return true;
+        }
+        
         return false;
     }
 }

@@ -106,7 +106,6 @@ public class Player : Character
         }
 
         /* DEBUG TESTS */
-        
         if (Input.GetMouseButtonDown(0))
         {
             // ray cast
@@ -127,6 +126,20 @@ public class Player : Character
             if (foundBodyPart != null)
                 if (Detach(foundBodyPart.BodyPartType) == null)
                     Attach(foundBodyPart);
+        }
+
+        if(Input.GetKeyDown("k"))
+        {
+            Spear[] spears = GetComponentsInChildren<Spear>();
+            if(spears.Length != 0)
+                MountItem(spears[0]);
+        }
+
+        if(Input.GetKeyDown("j"))
+        {
+            MountPoint[] mountPoints = GetComponentsInChildren<MountPoint>();
+            for (int i = 0; i < mountPoints.Length; ++i)
+                mountPoints[i].UseItem();
         }
 
         /* DEBUG TESTS */

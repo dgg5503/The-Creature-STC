@@ -111,8 +111,9 @@ public abstract class Character : MonoBehaviour
     {
         get
         {
-            //Debug.DrawLine(transform.position + (Vector3.down * collider.bounds.extents.y), transform.position + (Vector3.down * collider.bounds.extents.y) + (Vector3.down * groundedContact), Color.black);
-            return Physics.Raycast(transform.position + (Vector3.down * collider.bounds.extents.y), Vector3.down, groundedContact, GameManager.GroundedLayerMask);
+            Debug.DrawLine(transform.position, transform.position + (Vector3.down * collider.bounds.extents.y) + (Vector3.down * groundedContact), Color.black);
+            Debug.Log(collider.bounds.extents.y);
+            return Physics.Raycast(transform.position, Vector3.down, groundedContact + collider.bounds.extents.y, GameManager.GroundedLayerMask);
         }
     }
 
@@ -283,20 +284,16 @@ public abstract class Character : MonoBehaviour
     public bool MountItem(RegularItem itemToMount)
     {
         // look for empty mount point
-            // if slots are full, return false!
+        MountPoint[] mountPoints = GetComponentsInChildren<MountPoint>();
 
-        // mount it
-
-        // reorientate item to default rotation since itll be parented
-        itemToMount.transform.localPosition = Vector3.zero;
-        itemToMount.transform.localRotation = Quaternion.identity;
-
-        // prepare item (ready to be used)
-        itemToMount.PrepareToUse();
+        // if slots are full, return false!
+        for (int i = 0; i < mountPoints.Length; ++i)
+            if (mountPoints[i].MountItem(itemToMount))
+                return true;
 
         // return true, we did it reddit!
-        return true;
-    }   
+        return false;
+    }
 
     public bool Attach(BodyPart bodyPartToAttach)
     {
@@ -307,9 +304,12 @@ public abstract class Character : MonoBehaviour
             return false;
 
         // attempt to add colliders to clothing
-        for(int i = 0; i < clothing.Length; ++i)
+        for (int i = 0; i < clothing.Length; ++i)
         {
-            //clothing[i].AddBodyPart()
+            // TMP FIX: get all component bparts, do this recursively??
+            BodyPart[] bodyParts = bodyPartToAttach.GetComponentsInChildren<BodyPart>();
+            for (int z = 0; z < bodyParts.Length; ++z)
+                clothing[i].AddBodyPart(bodyParts[z]);
         }
 
         RecalculateCollisionBounds();
@@ -338,10 +338,23 @@ public abstract class Character : MonoBehaviour
             return null;
 
         // set as active in the world.
-        tmpPart.Detach();
+        if (tmpPart.Detach() == null)
+            return null;
 
         // adjust capsule collider pivot to new center and height
         RecalculateCollisionBounds();
+
+        // remove from clothing array
+        // attempt to add colliders to clothing
+        for (int i = 0; i < clothing.Length; ++i)
+        {
+            // TMP FIX: get all component bparts, do this recursively??
+            BodyPart[] bodyParts = tmpPart.GetComponentsInChildren<BodyPart>();
+            for (int z = 0; z < bodyParts.Length; ++z)
+                clothing[i].RemoveBodyPart(bodyParts[z]);
+        }
+
+        
 
         return tmpPart;
     }

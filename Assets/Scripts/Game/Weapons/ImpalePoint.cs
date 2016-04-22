@@ -42,7 +42,7 @@ public class ImpalePoint : MonoBehaviour {
     /// <summary>
     /// Get or set whether or not this projectile should be looking to respond to collision.
     /// </summary>
-    protected bool IsActive { get; set; }
+    public bool IsActive { get; protected set; }
 
     /// <summary>
     /// Get the last collision obtained from the impale point.
@@ -203,13 +203,13 @@ public class ImpalePoint : MonoBehaviour {
     }
 
     // reset and set active.
-    public void ResetAndSetActive()
+    public void Reset()
     {
         // reset state info
         IsActive = true;
         impaleState = ImpaleState.None;
-        rigidbody.isKinematic = false;
-        parentRigidBody.isKinematic = false;
+        rigidbody.isKinematic = true;
+        parentRigidBody.isKinematic = true;
         currentLerpTime = 0;
 
         // set last velocity back
@@ -220,13 +220,20 @@ public class ImpalePoint : MonoBehaviour {
         Debug.Log(rigidbody.velocity);
 
         // if collision info is stored, detection collision again with that object
-        Physics.IgnoreCollision(finalCollision.collider, GetComponent<Collider>());
-        Physics.IgnoreCollision(finalCollision.collider, parentModel.GetComponent<Collider>());
-
-        // unparent
-        parentModel.parent = null;
+        Physics.IgnoreCollision(finalCollision.collider, GetComponent<Collider>(), false);
+        Physics.IgnoreCollision(finalCollision.collider, parentModel.GetComponent<Collider>(), false);
 
         // set final collision null
         finalCollision = null;
+    }
+
+    public void SetActive()
+    {
+        // unparent
+        parentModel.parent = null;
+
+        // enable physics
+        rigidbody.isKinematic = false;
+        parentRigidBody.isKinematic = false;
     }
 }

@@ -74,22 +74,30 @@ public class Spear : Weapon {
 
     public override void PrepareToUse()
     {
-        // reset everything.
-
-        throw new NotImplementedException();
+        if (!impalePoint.IsActive)
+        {
+            //rigidbody.velocity = Vector3.zero;
+            // reset everything.
+            // set to active and apply force
+            transform.localEulerAngles = new Vector3(0, 270, 0);
+            impalePoint.Reset();
+        }
     }
 
 
     public override void Use()
     {
-        // set to active and apply force
-        impalePoint.ResetAndSetActive();
+        if (impalePoint.IsActive)
+        {
+            // set physicsy
+            impalePoint.SetActive();
 
-        // unparent
-        transform.parent = null;
+            // unparent
+            transform.parent = null;
 
-        // apply force relative
-        rigidbody.AddRelativeForce(Vector3.right * 300);
+            // apply force relative
+            rigidbody.AddRelativeForce(Vector3.right * 800);
+        }
     }
 
     void FixedUpdate()
@@ -100,7 +108,8 @@ public class Spear : Weapon {
             !currColls.Contains(impalePoint.LastCollision.gameObject))
         {
             // if no longer colliding, disable trigger and reset!
-            impalePoint.ResetAndSetActive();
+            impalePoint.Reset();
+            impalePoint.SetActive();
             passThroughTrigger.enabled = false;
             currColls.Clear();
         }
