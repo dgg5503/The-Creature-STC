@@ -11,8 +11,7 @@ public class Inventory : MonoBehaviour
     static int emptySlot; // Check how many empty slots are there;
     private static Slot moveFromSlot; // reference the slot from which we are moving 
     private static Slot moveToSlot; // reference to the slot to which we are moving
-    static Player playerRef;
-    private BodyPart bodyRef;
+    private Character characterRef;
     // public GameObject dropItem;
     private GameObject playerPosition;
 
@@ -23,9 +22,9 @@ public class Inventory : MonoBehaviour
 
     protected virtual void Awake()
     {
-        if (playerRef == null)
+        if (characterRef == null)
         {
-            playerRef = GetComponent<Player>();
+            characterRef = GetComponent<Character>();
         }
     }
 
@@ -65,27 +64,27 @@ public class Inventory : MonoBehaviour
                         {
                             case "Head":
                                 {
-                                    playerRef.Detach(0);
+                                    characterRef.Detach(0);
                                     break;
                                 }
                             case "LeftHand":
                                 {
-                                    playerRef.Detach(1);
+                                    characterRef.Detach(1);
                                     break;
                                 }
                             case "RightHand":
                                 {
-                                    playerRef.Detach(5);
+                                    characterRef.Detach(5);
                                     break;
                                 }
                             case "LeftLeg":
                                 {
-                                    playerRef.Detach(3);
+                                    characterRef.Detach(3);
                                     break;
                                 }
                             case "RightLeg":
                                 {
-                                    playerRef.Detach(7);
+                                    characterRef.Detach(7);
                                     break;
                                 }
                         }

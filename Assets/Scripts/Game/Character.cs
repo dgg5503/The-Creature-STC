@@ -269,11 +269,12 @@ public abstract class Character : MonoBehaviour
 
         // TMP FIX
         //velocity.y = rigidbody.velocity.y;
-        if (IsGrounded)
-        {
+        //if (IsGrounded)
+        //{
             //rigidbody.AddRelativeForce(velocity, ForceMode.VelocityChange);
             rigidbody.velocity = new Vector3(velocity.x, rigidbody.velocity.y, velocity.z);
-        }
+            //rigidbody.velocity = velocity;
+        //}
 
 
         // set accel to 0
