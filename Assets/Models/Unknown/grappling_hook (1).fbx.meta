@@ -1,25 +1,22 @@
 fileFormatVersion: 2
-guid: 389d9866521d1984f91e333928a2de0d
-timeCreated: 1460751928
+guid: 5a4173c6bbbdcd64cb3b8f767aa78721
+timeCreated: 1461117580
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
     100000: //RootNode
-    100002: group2
-    100004: group3
-    100006: pCylinder2
-    100008: pCylinder3
-    100010: pCylinder6
+    100002: hook
+    100004: hook 1
     400000: //RootNode
-    400002: group2
-    400004: group3
-    400006: pCylinder2
-    400008: pCylinder3
-    400010: pCylinder6
-    2300000: pCylinder6
-    3300000: pCylinder6
-    4300000: pCylinder6
+    400002: hook
+    400004: hook 1
+    2300000: hook
+    2300002: hook 1
+    3300000: hook
+    3300002: hook 1
+    4300000: hook
+    4300002: hook
     9500000: //RootNode
   materials:
     importMaterials: 1
