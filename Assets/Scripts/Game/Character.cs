@@ -60,7 +60,7 @@ public abstract class Character : MonoBehaviour
     /// in order to check if grounded or not.
     /// </summary>
     [SerializeField]
-    private float groundedContact = .30f;
+    private float groundedContact = .05f;
 
     // States n' Actions
     private bool isAlive;
@@ -88,7 +88,10 @@ public abstract class Character : MonoBehaviour
                 // set all bparts to false kinematics...
                 BodyPart[] allBodyParts = GetComponentsInChildren<BodyPart>();
                 for (int i = 0; i < allBodyParts.Length; ++i)
+                {
                     allBodyParts[i].SetLimp();
+                    allBodyParts[i].gameObject.layer = 0;
+                }
             }
         }
     }
@@ -269,7 +272,7 @@ public abstract class Character : MonoBehaviour
         if (IsGrounded)
         {
             //rigidbody.AddRelativeForce(velocity, ForceMode.VelocityChange);
-            rigidbody.velocity = velocity;
+            rigidbody.velocity = new Vector3(velocity.x, rigidbody.velocity.y, velocity.z);
         }
 
 
@@ -305,14 +308,21 @@ public abstract class Character : MonoBehaviour
         if (!bodyPartToAttach.SetSkeleton(joints))
             return false;
 
+        // get children bparts
+        BodyPart[] bodyParts = bodyPartToAttach.GetComponentsInChildren<BodyPart>();
+
         // attempt to add colliders to clothing
         for (int i = 0; i < clothing.Length; ++i)
         {
             // TMP FIX: get all component bparts, do this recursively??
-            BodyPart[] bodyParts = bodyPartToAttach.GetComponentsInChildren<BodyPart>();
             for (int z = 0; z < bodyParts.Length; ++z)
                 clothing[i].AddBodyPart(bodyParts[z]);
         }
+
+        // set layer to 9 for all bparts
+        for (int i = 0; i < bodyParts.Length; ++i)
+            bodyParts[i].gameObject.layer = 9;
+        
 
         RecalculateCollisionBounds();
         return true;

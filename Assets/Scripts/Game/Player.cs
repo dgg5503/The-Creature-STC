@@ -154,7 +154,7 @@ public class Player : Character
         {
             for (int i = 0; i < this.BodyParts.Length; i++)
             {
-                charInventory.AddItem(this.BodyParts[i]);
+                //charInventory.AddItem(this.BodyParts[i]);
             }
             displayCharacterInventory = !displayCharacterInventory;
             Debug.Log("Status of the inventory: " + displayCharacterInventory);
@@ -244,7 +244,7 @@ public class Player : Character
     {
         for (int i = 0; i < this.BodyParts.Length; i++)
         {
-            charInventory.AddItem(this.BodyParts[i]);
+            //charInventory.AddItem(this.BodyParts[i]);
         }
      //   displayCharacterInventory = !displayCharacterInventory;
       //  Debug.Log("Status of the inventory: " + displayCharacterInventory);
