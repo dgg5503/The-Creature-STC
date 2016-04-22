@@ -155,6 +155,7 @@ public class ImpalePoint : MonoBehaviour {
     {
         if (IsActive && collision.collider.GetComponent<ImpalePoint>() == null)
         {
+            Debug.Log(collision.collider.name);
             // TO-DO: slow speed? dont let it attach!!
             // if velocity is negative direction of forward, return
             // if speed is too little to impale, return.
@@ -205,35 +206,44 @@ public class ImpalePoint : MonoBehaviour {
     // reset and set active.
     public void Reset()
     {
-        // reset state info
-        IsActive = true;
-        impaleState = ImpaleState.None;
-        rigidbody.isKinematic = true;
-        parentRigidBody.isKinematic = true;
-        currentLerpTime = 0;
+        if (impaleState != ImpaleState.Impaling)
+        {
+            // reset state info
+            IsActive = true;
+            impaleState = ImpaleState.None;
+            rigidbody.isKinematic = true;
+            parentRigidBody.isKinematic = true;
+            currentLerpTime = 0;
 
-        // set last velocity back
-        lastVelocity = parentModel.right * currSpeed;
-        parentRigidBody.velocity = lastVelocity;
-        currSpeed = 0;
-        
-        Debug.Log(rigidbody.velocity);
+            // set last velocity back
+            lastVelocity = parentModel.right * currSpeed;
+            parentRigidBody.velocity = lastVelocity;
+            currSpeed = 0;
 
-        // if collision info is stored, detection collision again with that object
-        Physics.IgnoreCollision(finalCollision.collider, GetComponent<Collider>(), false);
-        Physics.IgnoreCollision(finalCollision.collider, parentModel.GetComponent<Collider>(), false);
+            Debug.Log(rigidbody.velocity);
 
-        // set final collision null
-        finalCollision = null;
+            // set final collision null
+            //finalCollision = null;
+        }
     }
 
     public void SetActive()
     {
-        // unparent
-        parentModel.parent = null;
+        if (impaleState != ImpaleState.Impaling)
+        {
+            // if collision info is stored, detection collision again with that object
+            Physics.IgnoreCollision(finalCollision.collider, GetComponent<Collider>());
+            Physics.IgnoreCollision(finalCollision.collider, parentModel.GetComponent<Collider>());
 
-        // enable physics
-        rigidbody.isKinematic = false;
-        parentRigidBody.isKinematic = false;
+            // set final collision null
+            finalCollision = null;
+
+            // unparent
+            parentModel.parent = null;
+
+            // enable physics
+            rigidbody.isKinematic = false;
+            parentRigidBody.isKinematic = false;
+        }
     }
 }

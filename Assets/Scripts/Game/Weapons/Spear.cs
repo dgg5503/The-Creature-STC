@@ -79,7 +79,6 @@ public class Spear : Weapon {
             //rigidbody.velocity = Vector3.zero;
             // reset everything.
             // set to active and apply force
-            transform.localEulerAngles = new Vector3(0, 270, 0);
             impalePoint.Reset();
         }
     }

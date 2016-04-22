@@ -111,9 +111,11 @@ public abstract class Character : MonoBehaviour
     {
         get
         {
-            Debug.DrawLine(transform.position, transform.position + (Vector3.down * collider.bounds.extents.y) + (Vector3.down * groundedContact), Color.black);
-            Debug.Log(collider.bounds.extents.y);
-            return Physics.Raycast(transform.position, Vector3.down, groundedContact + collider.bounds.extents.y, GameManager.GroundedLayerMask);
+           // Debug.DrawLine(transform.position, transform.position + (Vector3.down * collider.bounds.extents.y) + (Vector3.down * groundedContact), Color.black);
+            Debug.DrawLine(collider.bounds.center, collider.bounds.center + (Vector3.down * (collider.bounds.extents.y + groundedContact)), Color.black);
+            //Debug.Log(collider.bounds.extents.y);
+            //return Physics.CheckCapsule(collider.bounds.center, new Vector3(collider.bounds.center.x, collider.bounds.center.y + collider.height / 2, collider.bounds.center.z), collider.radius, GameManager.GroundedLayerMask);
+            return Physics.Raycast(collider.bounds.center, Vector3.down, collider.bounds.extents.y + groundedContact, GameManager.GroundedLayerMask);
         }
     }
 

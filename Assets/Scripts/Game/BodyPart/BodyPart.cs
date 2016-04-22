@@ -32,6 +32,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     private new Collider collider;
     
     // Stats
+    [SerializeField]
     private int currHealth;
     private int minHealth;
     private int maxHealth;

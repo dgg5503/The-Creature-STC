@@ -53,6 +53,16 @@ public class MountPoint : MonoBehaviour {
             item.transform.localPosition = Vector3.zero;
             item.transform.localRotation = Quaternion.identity;
 
+            // ignore collision if parent and child have colliders
+            Collider parentCollider;
+            Collider itemCollider;
+            if ((parentCollider = GetComponentInParent<Collider>()) != null &&
+                (itemCollider = item.GetComponent<Collider>()) != null)
+            {
+                Physics.IgnoreCollision(parentCollider, itemCollider);
+                Debug.Log("coll ignored " + parentCollider.name + " and " + itemCollider.name);
+            }
+
             // return true and we're done
             item.PrepareToUse();
             return true;

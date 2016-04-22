@@ -45,7 +45,8 @@ public class Clothing : MonoBehaviour {
     {
         // OPTIMIZE: use list???
         CapsuleCollider colliderToAdd = bodyPart.GetComponent<CapsuleCollider>();
-        if (!colliders.Contains(colliderToAdd))
+        if (expectedBodyPartColliders.Contains(bodyPart.BodyPartType) &&
+            !colliders.Contains(colliderToAdd))
         {
             colliders.Add(colliderToAdd);
             /*
@@ -63,6 +64,7 @@ public class Clothing : MonoBehaviour {
                 return false;
                 */
             cloth.capsuleColliders = colliders.ToArray();
+            cloth.ClearTransformMotion();
             return true;
         }
         return true;
@@ -71,7 +73,8 @@ public class Clothing : MonoBehaviour {
     public bool RemoveBodyPart(BodyPart bodyPart)
     {
         CapsuleCollider colliderToRemove = bodyPart.GetComponent<CapsuleCollider>();
-        if(colliders.Contains(colliderToRemove))
+        if(expectedBodyPartColliders.Contains(bodyPart.BodyPartType) &&
+            colliders.Contains(colliderToRemove))
         {
             colliders.Remove(colliderToRemove);
 
