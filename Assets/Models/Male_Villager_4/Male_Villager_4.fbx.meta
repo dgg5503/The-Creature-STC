@@ -1,0 +1,175 @@
+fileFormatVersion: 2
+guid: 88bd1a5bf296cda46a274e1b62a10b33
+timeCreated: 1461290233
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Head
+    100002: Left_Arm
+    100004: Left_Arm_Part_2
+    100006: Left_Leg
+    100008: Left_Leg_Part_2
+    100010: Male_Villager4_Eyes
+    100012: Male_Villager4_Hat
+    100014: Male_Villager4_Head
+    100016: Male_Villager4_Left_Arm_Part_1
+    100018: Male_Villager4_Left_Arm_Part_2
+    100020: Male_Villager4_Left_Leg_Part_1
+    100022: Male_Villager4_Pants
+    100024: Male_Villager4_Right_Arm_Part_1
+    100026: Male_Villager4_Right_Arm_Part_2
+    100028: Male_Villager4_Right_Leg_Part_1
+    100030: Male_Villager4_Shirt
+    100032: Male_Villager4_Torso
+    100034: //RootNode
+    100036: Right_Arm
+    100038: Right_Arm_Part_2
+    100040: Right_Leg
+    100042: Right_Leg_Part_2
+    100044: Torso
+    100046: Villager4_Left_Boot
+    100048: Villager4_Left_Leg_Part_2
+    100050: Villager4_Right_Boot
+    100052: Villager4_Right_Leg_Part_2
+    400000: Head
+    400002: Left_Arm
+    400004: Left_Arm_Part_2
+    400006: Left_Leg
+    400008: Left_Leg_Part_2
+    400010: Male_Villager4_Eyes
+    400012: Male_Villager4_Hat
+    400014: Male_Villager4_Head
+    400016: Male_Villager4_Left_Arm_Part_1
+    400018: Male_Villager4_Left_Arm_Part_2
+    400020: Male_Villager4_Left_Leg_Part_1
+    400022: Male_Villager4_Pants
+    400024: Male_Villager4_Right_Arm_Part_1
+    400026: Male_Villager4_Right_Arm_Part_2
+    400028: Male_Villager4_Right_Leg_Part_1
+    400030: Male_Villager4_Shirt
+    400032: Male_Villager4_Torso
+    400034: //RootNode
+    400036: Right_Arm
+    400038: Right_Arm_Part_2
+    400040: Right_Leg
+    400042: Right_Leg_Part_2
+    400044: Torso
+    400046: Villager4_Left_Boot
+    400048: Villager4_Left_Leg_Part_2
+    400050: Villager4_Right_Boot
+    400052: Villager4_Right_Leg_Part_2
+    2300000: Male_Villager4_Eyes
+    2300002: Male_Villager4_Hat
+    2300004: Male_Villager4_Head
+    2300006: Male_Villager4_Left_Arm_Part_1
+    2300008: Male_Villager4_Left_Arm_Part_2
+    2300010: Male_Villager4_Left_Leg_Part_1
+    2300012: Male_Villager4_Pants
+    2300014: Male_Villager4_Right_Arm_Part_1
+    2300016: Male_Villager4_Right_Arm_Part_2
+    2300018: Male_Villager4_Right_Leg_Part_1
+    2300020: Male_Villager4_Shirt
+    2300022: Male_Villager4_Torso
+    2300024: Villager4_Left_Boot
+    2300026: Villager4_Left_Leg_Part_2
+    2300028: Villager4_Right_Boot
+    2300030: Villager4_Right_Leg_Part_2
+    3300000: Male_Villager4_Eyes
+    3300002: Male_Villager4_Hat
+    3300004: Male_Villager4_Head
+    3300006: Male_Villager4_Left_Arm_Part_1
+    3300008: Male_Villager4_Left_Arm_Part_2
+    3300010: Male_Villager4_Left_Leg_Part_1
+    3300012: Male_Villager4_Pants
+    3300014: Male_Villager4_Right_Arm_Part_1
+    3300016: Male_Villager4_Right_Arm_Part_2
+    3300018: Male_Villager4_Right_Leg_Part_1
+    3300020: Male_Villager4_Shirt
+    3300022: Male_Villager4_Torso
+    3300024: Villager4_Left_Boot
+    3300026: Villager4_Left_Leg_Part_2
+    3300028: Villager4_Right_Boot
+    3300030: Villager4_Right_Leg_Part_2
+    4300000: Male_Villager4_Head
+    4300002: Male_Villager4_Eyes
+    4300004: Male_Villager4_Hat
+    4300006: Male_Villager4_Left_Arm_Part_1
+    4300008: Male_Villager4_Left_Arm_Part_2
+    4300010: Male_Villager4_Left_Leg_Part_1
+    4300012: Villager4_Left_Leg_Part_2
+    4300014: Villager4_Left_Boot
+    4300016: Male_Villager4_Right_Arm_Part_1
+    4300018: Male_Villager4_Right_Arm_Part_2
+    4300020: Male_Villager4_Right_Leg_Part_1
+    4300022: Villager4_Right_Leg_Part_2
+    4300024: Villager4_Right_Boot
+    4300026: Male_Villager4_Torso
+    4300028: Male_Villager4_Shirt
+    4300030: Male_Villager4_Pants
+    7400000: Take 001
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleRotations: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -11,7 +11,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
-
+using UnityEngine.SceneManagement;
 public class Player : Character
 {
     // Camera used by this player
@@ -30,6 +30,10 @@ public class Player : Character
     private int cheatIWay = 1;
     private string path;
 
+
+    //TEst
+   // private Canvas getCanvas;
+  //  private Camera passCamera;
     /*
         Use this function as the "constructor" since it occurs at the same time
         as instantiation.
@@ -53,6 +57,8 @@ public class Player : Character
         leftLegHealthBar = GameObject.FindGameObjectWithTag("LLHB");
         rightLegHealthBar = GameObject.FindGameObjectWithTag("RLHB");
         characterInventory.SetActive(false);
+     //   getCanvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+     //   passCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>(); 
     }
 
     // Use this for initialization
@@ -163,6 +169,11 @@ public class Player : Character
             rightHandHealthBar.GetComponent<Image>().fillAmount -= 0.1f;
             leftLegHealthBar.GetComponent<Image>().fillAmount -= 0.1f;
             rightLegHealthBar.GetComponent<Image>().fillAmount -= 0.1f;
+
+           // DontDestroyOnLoad(this.transform.gameObject);
+           // DontDestroyOnLoad(getCanvas);
+          //  DontDestroyOnLoad(passCamera);
+           // SceneManager.LoadScene("TestSceneForTransferObjects");
         }
 
         base.Update();
