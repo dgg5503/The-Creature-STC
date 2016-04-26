@@ -36,7 +36,7 @@ public class MainMenu : MonoBehaviour {
 
     public void newGamePressed()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(1);
     }
 
     public void noOption()
