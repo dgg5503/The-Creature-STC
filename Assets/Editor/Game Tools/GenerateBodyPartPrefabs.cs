@@ -306,12 +306,17 @@ class GenerateBodyPartPrefabs : EditorWindow {
         // copy animator
         Animator animator;
         if ((animator = character.GetComponent<Animator>()) != null)
+        {
+            // set to apply root motion
+            animator.applyRootMotion = true;
+
             if (UnityEditorInternal.ComponentUtility.CopyComponent(animator))
                 if (UnityEditorInternal.ComponentUtility.PasteComponentAsNew(rootJoint.gameObject))
                 {
                     DestroyImmediate(animator);
                     Debug.Log("Copied animator as well...");
                 }
+        }
 
         //      -- joints --
         //      set immediate joints to skeleton gameobject.
@@ -331,7 +336,11 @@ class GenerateBodyPartPrefabs : EditorWindow {
                     capsuleColliders.Add(bodyParts[z].GetComponent<CapsuleCollider>());
             clothing[i].Cloth.capsuleColliders = capsuleColliders.ToArray();
         }
-        
+
+        // set skinned mesh renderer to update offscreen so clothes dont dc
+        SkinnedMeshRenderer skinnedMeshRenderer;
+        if ((skinnedMeshRenderer = character.GetComponent<SkinnedMeshRenderer>()) == null)
+            skinnedMeshRenderer.updateWhenOffscreen = true;
 
         // CREATE PREFABS
         // generate prefabs

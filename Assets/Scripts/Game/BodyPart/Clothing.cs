@@ -40,10 +40,6 @@ public class Clothing : MonoBehaviour {
     {
         cloth = GetComponent<Cloth>();
         colliders = new List<CapsuleCollider>(cloth.capsuleColliders);
-
-        // init array of capsule colliders.
-        // neeeded???
-        //cloth.capsuleColliders = new CapsuleCollider[expectedBodyPartColliders.Length];
     }
 
 	// Use this for initialization
@@ -64,22 +60,8 @@ public class Clothing : MonoBehaviour {
             !colliders.Contains(colliderToAdd))
         {
             colliders.Add(colliderToAdd);
-            /*
-            int storeIndex = -1;
-            for (int i = 0; i < expectedBodyPartColliders.Length; ++i)
-                if (expectedBodyPartColliders[i] == bodyPart.BodyPartType) // look for space in cloth array, also ensure that same collider isnt in there
-                    for (int z = 0; z < cloth.capsuleColliders.Length; ++z)
-                        if (cloth.capsuleColliders[z] == null)
-                            storeIndex = z;
-                        else if (cloth.capsuleColliders[z] == colliderToAdd)
-                            return false;
-
-            // set collider
-            if (storeIndex == -1)
-                return false;
-                */
             cloth.capsuleColliders = colliders.ToArray();
-            cloth.ClearTransformMotion();
+            
             return true;
         }
         return true;
@@ -92,16 +74,6 @@ public class Clothing : MonoBehaviour {
             colliders.Contains(colliderToRemove))
         {
             colliders.Remove(colliderToRemove);
-
-            /*
-            for (int i = 0; i < cloth.capsuleColliders.Length; ++i)
-                if (cloth.capsuleColliders[i] == colliderToRemove)
-                {
-                    cloth.capsuleColliders[i] = null;
-                    return true;
-                }
-            */
-
             cloth.capsuleColliders = colliders.ToArray();
             return true;
         }

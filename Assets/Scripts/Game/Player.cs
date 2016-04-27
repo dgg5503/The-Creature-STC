@@ -30,10 +30,9 @@ public class Player : Character
     private int cheatIWay = 1;
     private string path;
 
-
     //TEst
-   // private Canvas getCanvas;
-  //  private Camera passCamera;
+    // private Canvas getCanvas;
+    //  private Camera passCamera;
     /*
         Use this function as the "constructor" since it occurs at the same time
         as instantiation.
@@ -47,8 +46,8 @@ public class Player : Character
         //playerCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
         playerCamera = Camera.main;
         accelerationScalar = 10f;
-        rotationAccelFactor = 5f;
-        maxSpeed = 5.0f;
+        rotationAccelFactor = 6f;
+        maxSpeed = 2.0f;
 
         characterInventory = GameObject.FindGameObjectWithTag("Inventory");
         headHealthBar = GameObject.FindGameObjectWithTag("HHB");

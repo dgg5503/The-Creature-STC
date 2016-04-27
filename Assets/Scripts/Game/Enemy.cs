@@ -96,7 +96,7 @@ public class Enemy : Character {
 
             case EnemyState.Wonder:
                 animator.speed = navMeshAgent.velocity.magnitude;
-                //animator.Play("walk");
+
                 // if destination reached, go back to idle.
                 // if the path was invalid, just go back to idle.
                 if (!navMeshAgent.pathPending)
@@ -107,7 +107,6 @@ public class Enemy : Character {
                         {
                             ChangeStateTo(EnemyState.Idle);
                         }
-                        ChangeStateTo(EnemyState.Idle);
                     }
                 }
 
@@ -153,14 +152,15 @@ public class Enemy : Character {
                 // set state timer to idle time random
                 stateTimer = Random.Range(minIdleTime, maxIdleTime);
                 animator.speed = 1;
-                animator.Play("transToIdle");
+                //animator.Play("idle");
                 Debug.Log("IDLE!!");
                 break;
 
             case EnemyState.Wonder:
                 // get random direction
                 navMeshAgent.destination = transform.position + (new Vector3(Random.Range(-1.0f, 1.0f), 0, Random.Range(-1.0f, 1.0f)) * 5f);
-                animator.Play("walk");
+                
+                //animator.Play("walk");
                 Debug.Log("WONDER!!");
                 //Debug.Log("Current Pos: " + transform.position);
                 //Debug.Log("Dest set: " + navMeshAgent.destination);
@@ -179,6 +179,9 @@ public class Enemy : Character {
                 break;
 
         }
+
+        // set state in animator
+        animator.SetInteger("characterState", (int)state);
     }
 
     private void ScanForPlayer()

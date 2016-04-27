@@ -24,9 +24,14 @@ using System.Collections;
 
 enum CharacterState
 {
-    Alive,
-    Dying,
-    Dead
+    Idle,
+    Walk,
+    Grapple_Right,
+    Grapple_Left,
+    Fly_Right,
+    Fly_Left,
+    Throw_Left,
+    Throw_Right
 }
 
 [RequireComponent(typeof(Rigidbody))]
@@ -54,6 +59,7 @@ public abstract class Character : MonoBehaviour
     protected Vector3 velocity;
     protected new Rigidbody rigidbody;
     protected new CapsuleCollider collider;
+    protected Animator characterAnimator;
 
     /// <summary>
     /// The distance between the bottom of the character collider and the ground
@@ -176,16 +182,25 @@ public abstract class Character : MonoBehaviour
 
         // always start alive
         isAlive = true;
-        state = CharacterState.Alive;
+        state = CharacterState.Idle;
 
         // set layer of character colliders to 10
         gameObject.layer = 10;
+
+        // get character animator found in skeletal root!
+        characterAnimator = GetComponentInChildren<Animator>();
     }
 
     protected virtual void Update ()
     {
+        // default state
+        //state = CharacterState.Idle;
+
         //Debug.DrawLine(collider.bounds.center, collider.bounds.center + (transform.up * ((collider.height / 2) - collider.radius)), Color.red);
         //Debug.DrawLine(collider.bounds.center, collider.bounds.center - (transform.up * ((collider.height / 2) - collider.radius)), Color.blue);
+        // update animator
+        //characterAnimator.Play("crawl", 1);
+        //characterAnimator.SetInteger("characterState", (int)state);
     }
 
     void FixedUpdate()
@@ -253,7 +268,6 @@ public abstract class Character : MonoBehaviour
         if (velocity != Vector3.zero)
         {
             transform.forward = velocity.normalized;
-            //transform.forward = Vector3.LerpUnclamped(transform.forward, velocity.normalized, Time.deltaTime * (accelerationScalar * 2));
         }
 
 
@@ -269,7 +283,6 @@ public abstract class Character : MonoBehaviour
         {
             //rigidbody.AddRelativeForce(velocity, ForceMode.VelocityChange);
             rigidbody.velocity = new Vector3(velocity.x, rigidbody.velocity.y, velocity.z);
-            //rigidbody.velocity = velocity;
         }
 
 
@@ -402,6 +415,7 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// Call this function when the character should be placed into a "death" state.
     /// </summary>
+    /*
     public virtual void Die()
     {
         // explode and then destroy the character?
@@ -409,6 +423,7 @@ public abstract class Character : MonoBehaviour
 
         // unparent the root from this character handler and then remove the character handler.
     }
+    */
 
     // calculate collision bounds and return 
 
@@ -458,6 +473,10 @@ public abstract class Character : MonoBehaviour
         if (currBPart != null && (currBPart.BodyPartType == 1 || currBPart.BodyPartType == 5))
             return;
 
+        if (currentBodyPart.GetComponent<Cloth>() != null)
+            return;
+        
+        Debug.Log("Added: " + currentBodyPart.name);
         // keep last local rot
         Quaternion currLocalRot = currentBodyPart.transform.localRotation;
         currentBodyPart.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);

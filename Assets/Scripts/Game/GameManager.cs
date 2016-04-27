@@ -1,15 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+public enum GameState
+{
+    MainMenu,
+    InGame,
+    Pause
+}
+
 /// <summary>
 /// This must be in EVERY SCENE otherwise collision and isGrounded wont work!
 /// </summary>
 public class GameManager : MonoBehaviour
-{
-    // Joint name dicitionary
-    // Will be expanded if new joints are added
-    //public static Dictionary<int, string> jointTypeDict;
-    
+{   
     /// <summary>
     /// Get the layer mask used for checking whether or not a character is grounded
     /// </summary>
@@ -25,8 +28,17 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public static LayerMask CharacterLayerMask { get; private set; }
 
+    /// <summary>
+    /// Get or set the current game state.
+    /// </summary>
+    public static GameState GameState { get; set; }
+
     void Awake()
-    { 
+    {
+        // start in MM
+        // TODO: CHANGE THIS WHEN FULL GAME IMPLEMENTED
+        GameState = GameState.InGame;
+
         // Have bparts ignore character colliders
         Physics.IgnoreLayerCollision(9, 10);
 

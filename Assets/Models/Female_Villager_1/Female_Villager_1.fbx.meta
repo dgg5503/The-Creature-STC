@@ -292,8 +292,8 @@ ModelImporter:
     - serializedVersion: 16
       name: fem1_idle
       takeName: Take 001
-      firstFrame: 44
-      lastFrame: 65
+      firstFrame: 45
+      lastFrame: 66
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -372,88 +372,8 @@ ModelImporter:
     - serializedVersion: 16
       name: fem1_throw
       takeName: Take 001
-      firstFrame: 66
+      firstFrame: 70
       lastFrame: 100
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 0
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask:
-      - path: 
-        weight: 1
-      - path: Head
-        weight: 1
-      - path: Head/Female_Villager1_Head
-        weight: 1
-      - path: Head/Female_Villager1_Head/Female_Villager1_Eyes
-        weight: 1
-      - path: Head/Female_Villager1_Head/Female_Villager1_Hair
-        weight: 1
-      - path: Left_Arm
-        weight: 1
-      - path: Left_Arm/Female_Villager1_Left_Arm_Part_1
-        weight: 1
-      - path: Left_Arm/Left_Arm_Part_2
-        weight: 1
-      - path: Left_Arm/Left_Arm_Part_2/Female_Villager1_Left_Arm_Part_2
-        weight: 1
-      - path: Left_Leg
-        weight: 1
-      - path: Left_Leg/Female_Villager1_Left_Leg_Part_1
-        weight: 1
-      - path: Left_Leg/Left_Leg_Part_2
-        weight: 1
-      - path: Left_Leg/Left_Leg_Part_2/Female_Villager1_Left_Leg_Part_2
-        weight: 1
-      - path: Left_Leg/Left_Leg_Part_2/Female_Villager1_Left_Leg_Part_2/Female_Villager1_Left_Boot
-        weight: 1
-      - path: Right_Arm
-        weight: 1
-      - path: Right_Arm/Female_Villager1_Right_Arm_Part_1
-        weight: 1
-      - path: Right_Arm/Right_Arm_Part_2
-        weight: 1
-      - path: Right_Arm/Right_Arm_Part_2/Female_Villager1_Right_Arm_Part_2
-        weight: 1
-      - path: Right_Leg
-        weight: 1
-      - path: Right_Leg/Female_Villager1_Right_Leg_Part_1
-        weight: 1
-      - path: Right_Leg/Right_Leg_Part_2
-        weight: 1
-      - path: Right_Leg/Right_Leg_Part_2/Female_Villager1_Right_Leg_Part_2
-        weight: 1
-      - path: Right_Leg/Right_Leg_Part_2/Female_Villager1_Right_Leg_Part_2/Female_Villager1_Right_Boot
-        weight: 1
-      - path: Torso
-        weight: 1
-      - path: Torso/Female_Villager1_Torso
-        weight: 1
-      - path: Torso/Female_Villager1_Torso/Female_Villager1_Dress
-        weight: 1
-      maskType: 0
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
-    - serializedVersion: 16
-      name: fem1_transWalk
-      takeName: Take 001
-      firstFrame: 40
-      lastFrame: 44
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
