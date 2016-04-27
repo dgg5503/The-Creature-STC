@@ -74,9 +74,35 @@ class GenerateBodyPartPrefabs : EditorWindow {
         // add selected
         if (GUILayout.Button("Add Currently Selected Prefabs"))
         {
+            // load all prefabs in
+            GameObject[] allPrefabs = Resources.LoadAll<GameObject>("Prefabs/");
 
-            createdPrefabs = Resources.LoadAll<GameObject>("Prefabs/").ToDictionary(x => x.name, x => x);
+            // find dupes
+            string[] dupes = allPrefabs.GroupBy(x => x.name) // group by name
+                                    .Where(g => g.Count() > 1) // find strings with a count > 1
+                                    .Select(y => y.Key) // select the key of that value
+                                    .ToArray(); // convert to array
+
+            // print dupes
+            if(dupes.Length > 0)
+            {
+                Debug.LogError("ERROR: Prefabs cant have the same name in different folders!!");
+                for (int i = 0; i < dupes.Length; ++i)
+                    Debug.Log(dupes[i]);
+                return;
+            }
+
+            // convert created prefabs to dict
+            createdPrefabs = allPrefabs.ToDictionary(x => x.name, x => x);
             GameObject[] selectedObjects = Selection.gameObjects;
+
+            for (int i = 0; i < selectedObjects.Length; i++)
+                if (createdPrefabs.ContainsKey(selectedObjects[i].name))
+                {
+                    Debug.LogError("ERROR: Prefab already created!");
+                    return;
+                }
+            
             //Dictionary<string, List<GameObject>> currentConnections = BuildPrefabConnections(); // needed??
             foreach (GameObject go in selectedObjects)
                 AddCharacter(go);
@@ -251,9 +277,14 @@ class GenerateBodyPartPrefabs : EditorWindow {
         //bodyPartRoot.transform.localPosition = Vector3.zero;
         //bodyPartRoot.transform.localRotation = Quaternion.identity;
 
+        //      -- clothing --
+        Clothing[] clothing = character.GetComponentsInChildren<Clothing>();
+        for (int i = 0; i < clothing.Length; ++i)
+            clothing[i].Cloth.capsuleColliders = new CapsuleCollider[clothing[i].ExpectedBodyPartColliders.Length];
+
         //      -- bparts --
         for (int i = 0; i < leafBodyParts.Count; ++i)
-            IsolateBodyPart(leafBodyParts[i], rootBodyPart);
+            IsolateBodyPart(leafBodyParts[i], rootBodyPart, clothing);
         rootBodyPart.transform.localPosition = Vector3.zero;
         // - skeleton (animator)
         //GameObject skeletonRoot = new GameObject("skeleton");
@@ -262,6 +293,7 @@ class GenerateBodyPartPrefabs : EditorWindow {
         rootJoint.transform.localRotation = Quaternion.identity;
 
         //      -- clothing --
+        /*
         Transform clothing = null;
         for (int i = 0; i < character.transform.childCount; ++i)
             if ((clothing = character.transform.GetChild(i)).tag == "clothing")
@@ -269,6 +301,7 @@ class GenerateBodyPartPrefabs : EditorWindow {
                 clothing.localPosition = new Vector3(clothing.localPosition.x, 0, clothing.localPosition.z);
                 break;
             }
+        */
 
         // copy animator
         Animator animator;
@@ -286,6 +319,19 @@ class GenerateBodyPartPrefabs : EditorWindow {
         for (int i = 0; i < childJoints.Length; ++i)
             if (childJoints[i].transform.parent == character.transform)
                 childJoints[i].transform.parent = rootJoint.transform;
+
+        // attempt to add bpart to clothing
+        // TODO: GET RID OF HORRIBLENESS
+        BodyPart[] bodyParts = rootBodyPart.GetComponentsInChildren<BodyPart>();
+        for (int i = 0; i < clothing.Length; ++i)
+        {
+            List<CapsuleCollider> capsuleColliders = new List<CapsuleCollider>();
+            for (int z = 0; z < bodyParts.Length; ++z)     
+                if (clothing[i].ExpectedBodyPartColliders.Contains(bodyParts[z].BodyPartType))
+                    capsuleColliders.Add(bodyParts[z].GetComponent<CapsuleCollider>());
+            clothing[i].Cloth.capsuleColliders = capsuleColliders.ToArray();
+        }
+        
 
         // CREATE PREFABS
         // generate prefabs
@@ -728,7 +774,7 @@ class GenerateBodyPartPrefabs : EditorWindow {
         joint.JointType = jointID;
     }
 
-    void IsolateBodyPart(BodyPart leafBodyPart, BodyPart bodyPartRef)
+    void IsolateBodyPart(BodyPart leafBodyPart, BodyPart bodyPartRef, Clothing[] clothing)
     {
         // Grab the parent joint relative to this bpart
         CustomJoint[] parentJoint;
@@ -755,7 +801,7 @@ class GenerateBodyPartPrefabs : EditorWindow {
                 parentBodyPart.endPoints[leafBodyPart.BodyPartType] = leafBodyPart.transform.localPosition;
                 GeneratePrefab(leafBodyPart.gameObject, "Assets/Resources/Prefabs/BodyParts/", "Assets/Resources/Prefabs/Icons/");
                 //Debug.Log("Root: " + parentBodyPart.name + " Leaf: " + leafBodyPart.name);
-                IsolateBodyPart(parentBodyPart, bodyPartRef);
+                IsolateBodyPart(parentBodyPart, bodyPartRef, clothing);
                 break;
             }
         }

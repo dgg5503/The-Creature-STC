@@ -51,7 +51,7 @@ public abstract class Character : MonoBehaviour
     protected float rotationAccelFactor;
     protected float maxSpeed;
     protected Vector3 acceleration;
-    private Vector3 velocity;
+    protected Vector3 velocity;
     protected new Rigidbody rigidbody;
     protected new CapsuleCollider collider;
 
@@ -109,13 +109,14 @@ public abstract class Character : MonoBehaviour
 
     /// <summary>
     /// Gets whether or not this character is currently grounded.
+    /// NOTE: If this isnt working, it's because there ISNT A GAME MANAGER IN THE SCENE!
     /// </summary>
     public bool IsGrounded
     {
         get
         {
            // Debug.DrawLine(transform.position, transform.position + (Vector3.down * collider.bounds.extents.y) + (Vector3.down * groundedContact), Color.black);
-            Debug.DrawLine(collider.bounds.center, collider.bounds.center + (Vector3.down * (collider.bounds.extents.y + groundedContact)), Color.black);
+            //Debug.DrawLine(collider.bounds.center, collider.bounds.center + (Vector3.down * (collider.bounds.extents.y + groundedContact)), Color.black);
             //Debug.Log(collider.bounds.extents.y);
             //return Physics.CheckCapsule(collider.bounds.center, new Vector3(collider.bounds.center.x, collider.bounds.center.y + collider.height / 2, collider.bounds.center.z), collider.radius, GameManager.GroundedLayerMask);
             return Physics.Raycast(collider.bounds.center, Vector3.down, collider.bounds.extents.y + groundedContact, GameManager.GroundedLayerMask);
@@ -181,15 +182,10 @@ public abstract class Character : MonoBehaviour
         gameObject.layer = 10;
     }
 
-	// Use this for initialization
-	void Start ()
-    {
-        
-    }
-
     protected virtual void Update ()
     {
-
+        //Debug.DrawLine(collider.bounds.center, collider.bounds.center + (transform.up * ((collider.height / 2) - collider.radius)), Color.red);
+        //Debug.DrawLine(collider.bounds.center, collider.bounds.center - (transform.up * ((collider.height / 2) - collider.radius)), Color.blue);
     }
 
     void FixedUpdate()
@@ -201,7 +197,7 @@ public abstract class Character : MonoBehaviour
         if (acceleration != Vector3.zero)
         {
             // TODO: When on slope, apply velocity parallel to slope with slope max.?
-            velocity += acceleration * Time.deltaTime;
+            velocity += acceleration * Time.fixedDeltaTime;
 
             // lerp directional velocity from this objects forward to the accel norm
             // creates rotation effect purely from velocity
@@ -216,7 +212,7 @@ public abstract class Character : MonoBehaviour
             //float speed = 10 * Time.deltaTime;
             //velocity = Vector3.RotateTowards(transform.forward, acceleration.normalized, rotationAccelFactor * (angleBetween / Mathf.PI) * Time.deltaTime, 0) * velocity.magnitude;
 
-            velocity = Vector3.LerpUnclamped(transform.forward, acceleration.normalized, Time.deltaTime * rotationAccelFactor) * velocity.magnitude;
+            velocity = Vector3.LerpUnclamped(transform.forward, acceleration.normalized, Time.fixedDeltaTime * rotationAccelFactor) * velocity.magnitude;
 
             //Debug.Log(string.Format("{0}, {1} : {2}", transform.forward, acceleration.normalized, Time.deltaTime * rotationAccelFactor));
 
@@ -227,7 +223,7 @@ public abstract class Character : MonoBehaviour
         else
         {
             // not sure if this is accurate???
-            velocity = Vector3.LerpUnclamped(velocity, Vector3.zero, Time.deltaTime * accelerationScalar);
+            velocity = Vector3.LerpUnclamped(velocity, Vector3.zero, Time.fixedDeltaTime * accelerationScalar);
 
             // decrease veloctiy if no acceleration
             // TODO: base this on friction of surface?
@@ -287,6 +283,7 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     abstract protected void ProcessMovement(); 
     
+    // TODO: Limit mount point to just right hand?
     public bool MountItem(RegularItem itemToMount)
     {
         // look for empty mount point
@@ -305,7 +302,7 @@ public abstract class Character : MonoBehaviour
     {
         if (bodyPartToAttach == null || !joints.ContainsKey(bodyPartToAttach.BodyPartType))
             return false;
-
+        
         if (!bodyPartToAttach.SetSkeleton(joints))
             return false;
 
@@ -323,9 +320,41 @@ public abstract class Character : MonoBehaviour
         // set layer to 9 for all bparts
         for (int i = 0; i < bodyParts.Length; ++i)
             bodyParts[i].gameObject.layer = 9;
+
+        // store bottom height to get relative height.
+        Vector3 bottomHeight = collider.bounds.center - (transform.up * ((collider.height / 2) - collider.radius));
+
+        // calc new bounds
+        RecalculateCollisionBounds();
+
+        // capsule cast up for possible new height to ensure wont get stuck.
+        /*RaycastHit[] hits = Physics.CapsuleCastAll(collider.bounds.center - (transform.up * ((collider.height / 2) - collider.radius)),
+            collider.bounds.center + (transform.up * ((collider.height / 2) - collider.radius)),
+            collider.radius - .01f,
+            transform.up,
+            collider.radius - .01f,
+            GameManager.GroundedLayerMask);*/
+
+        // height offset of old capsule collider and new one
+
+        // capsule check to see if we can move up.
+        RaycastHit[] hits = Physics.CapsuleCastAll(bottomHeight,
+            bottomHeight + (transform.up * collider.height),
+            collider.radius - .01f,
+            transform.up,
+            collider.radius - .01f,
+            GameManager.GroundedLayerMask);
+
+        // TODO: set up raycast in a place that wont require detachment to be called.
+        // revert if hits found.
+        if (hits.Length != 0)
+        {
+            Detach(bodyPartToAttach.BodyPartType);
+            return false;
+        }
         
 
-        RecalculateCollisionBounds();
+
         return true;
     }
     
@@ -367,8 +396,6 @@ public abstract class Character : MonoBehaviour
                 clothing[i].RemoveBodyPart(bodyParts[z]);
         }
 
-        
-
         return tmpPart;
     }
 
@@ -382,6 +409,8 @@ public abstract class Character : MonoBehaviour
 
         // unparent the root from this character handler and then remove the character handler.
     }
+
+    // calculate collision bounds and return 
 
     /// <summary>
     /// Recalculates the capsule colliders bounds.
@@ -423,7 +452,7 @@ public abstract class Character : MonoBehaviour
         RegularItem regularItem = currentBodyPart.GetComponent<RegularItem>();
         if (regularItem != null)
             return;
-
+        
         // QUICK FIX TODO DELETE
         BodyPart currBPart = currentBodyPart.GetComponent<BodyPart>();
         if (currBPart != null && (currBPart.BodyPartType == 1 || currBPart.BodyPartType == 5))

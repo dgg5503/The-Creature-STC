@@ -1,15 +1,233 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Enemy : MonoBehaviour {
+/*
+ * Enemy
+ * AI
+ * - cast a ray from face up for AIMING AND THROWING
+ * - cast a ray from BOTTOM OF COLLIDER FORWARD to see if he can walk forward, otherwise navigate.
+ * 
+ * Attack
+ * - Periodically equip a spear if none and throw it with X amount of force
+ * - Throw equiped object (from right hand only???)
+ */
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+enum EnemyState
+{
+    Idle, 
+    Wonder,
+    Attack,
+    Flee,
+    Alert
+}
+
+[RequireComponent(typeof(NavMeshAgent))]
+public class Enemy : Character {
+
+    // Fields
+    private float sphereCastRadius = 5f;
+    public float coneAngle = 30;
+    public float maxIdleTime = 5;
+    public float minIdleTime = 1;
+    public float maxWonderTime = 7;
+    public float minWonderTime = 3;
+    public float fleeTime = 4;
+
+    // nav mesh agent info
+    private NavMeshAgent navMeshAgent;
+
+    // raycast fields
+    private Vector3 positionDifference;
+    private float calculatedAngle;
+    private Transform headPoint;
+    private RaycastHit[] raycastHits;
+
+    // state machine
+    private EnemyState enemyState;
+    private float stateTimer;
+
+    // animation handling
+    private Animator animator;
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        navMeshAgent = GetComponent<NavMeshAgent>();
+        animator = GetComponentInChildren<Animator>();
+        animator.Play("idle");
+
+        // reference to head cast position.
+        headPoint = joints[0].BodyPart.transform;
+        calculatedAngle = Mathf.Cos(Mathf.Deg2Rad * coneAngle);
+
+        // start idle
+        enemyState = EnemyState.Idle;
+        stateTimer = Random.Range(minIdleTime, maxIdleTime);
+    }
+
+    /// <summary>
+    /// For debug purposes only, will update calc angle when changed in inspector.
+    /// </summary>
+    void OnValidate()
+    {
+        calculatedAngle = Mathf.Cos(Mathf.Deg2Rad * coneAngle);
+    }
+
+    // Update is called once per frame
+    protected override void Update()
+    {
+        base.Update();
+
+        // scan for the enemy
+        ScanForPlayer();
+
+        // state machine
+        // handle state actions here
+        switch (enemyState)
+        {
+            case EnemyState.Idle:
+                // update internal timer, dont move for a little while
+                stateTimer -= Time.deltaTime;
+                //animator.Play("idle");
+                if (stateTimer <= 0)
+                    ChangeStateTo(EnemyState.Wonder);
+                break;
+
+            case EnemyState.Wonder:
+                animator.speed = navMeshAgent.velocity.magnitude;
+                //animator.Play("walk");
+                // if destination reached, go back to idle.
+                // if the path was invalid, just go back to idle.
+                if (!navMeshAgent.pathPending)
+                {
+                    if (navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
+                    {
+                        if (!navMeshAgent.hasPath || navMeshAgent.velocity.sqrMagnitude == 0f)
+                        {
+                            ChangeStateTo(EnemyState.Idle);
+                        }
+                        ChangeStateTo(EnemyState.Idle);
+                    }
+                }
+
+                /*
+                if (navMeshAgent.pathStatus == NavMeshPathStatus.PathComplete ||
+                    navMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid)
+                    ChangeStateTo(EnemyState.Idle);
+                    */
+                break;
+
+            case EnemyState.Attack:
+                break;
+
+            case EnemyState.Flee:
+                // After fleeing for a while, stay alert.
+                stateTimer -= Time.deltaTime;
+                if (navMeshAgent.pathStatus == NavMeshPathStatus.PathComplete ||
+                    navMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid || 
+                    stateTimer <= 0)
+                    ChangeStateTo(EnemyState.Alert);
+                break;
+
+            case EnemyState.Alert:
+                // stay on alert for a little while
+                stateTimer -= Time.deltaTime;
+                if (stateTimer <= 0)
+                    ChangeStateTo(EnemyState.Wonder);
+                break;
+
+        }
+        
+    }
+
+    private void ChangeStateTo(EnemyState state)
+    {
+        // set state
+        enemyState = state;
+
+        // make changes
+        switch (state)
+        {
+            case EnemyState.Idle:
+                // set state timer to idle time random
+                stateTimer = Random.Range(minIdleTime, maxIdleTime);
+                animator.speed = 1;
+                animator.Play("transToIdle");
+                Debug.Log("IDLE!!");
+                break;
+
+            case EnemyState.Wonder:
+                // get random direction
+                navMeshAgent.destination = transform.position + (new Vector3(Random.Range(-1.0f, 1.0f), 0, Random.Range(-1.0f, 1.0f)) * 5f);
+                animator.Play("walk");
+                Debug.Log("WONDER!!");
+                //Debug.Log("Current Pos: " + transform.position);
+                //Debug.Log("Dest set: " + navMeshAgent.destination);
+                break;
+
+            case EnemyState.Attack:
+                break;
+
+            case EnemyState.Flee:
+                // get destination to that opposite of the creature
+                //navMeshAgent
+                break;
+
+            case EnemyState.Alert:
+                
+                break;
+
+        }
+    }
+
+    private void ScanForPlayer()
+    {
+        // get all objs in vicinty based on head
+        Debug.DrawLine(headPoint.position, headPoint.position + (Vector3.forward * sphereCastRadius));
+
+        // get all hits limited to character mask
+        raycastHits = Physics.SphereCastAll(headPoint.position, sphereCastRadius, Vector3.up, sphereCastRadius, GameManager.CharacterLayerMask);
+
+        // see if we hit the player
+        for (int i = 0; i < raycastHits.Length; ++i)
+        {
+            if (raycastHits[i].collider.CompareTag("Player"))
+            {
+                // grab position difference, check out to see if in cone LOS.
+                positionDifference = (raycastHits[i].collider.transform.position - transform.position).normalized;
+
+                /*
+                 * 1. Project position location of player relative to head on to forward of this guy (dot product)
+                 * 2. Angle of cone is now in 3D space from forward, inside cone is when normalized dot product is larger than the radian angle (our calculated theta)
+                 */
+                if ((Vector3.Dot(transform.forward, positionDifference)) > calculatedAngle)
+                {
+                    // Logical reaction
+                    Debug.DrawLine(headPoint.position, raycastHits[i].collider.transform.position, Color.red);
+                    SeePlayerResponse(raycastHits[i].collider.gameObject);
+                    break;
+                }
+            }
+        }
+    }
+
+    private void SeePlayerResponse(GameObject go)
+    {
+        // set state based on current stats
+        // have a weapon? try to attack
+        // if hasWeapon
+            // changeStateTo Attack
+        // else (has no weapon)
+            // changeStateTo Flee
+
+    }
+
+
+    protected override void ProcessMovement() { }
+
+    void OnDrawGizmos()
+    {
+        //Gizmos.DrawSphere(GameObject.Find("Male_Villager1_Head").transform.position, sphereCastRadius);
+    }
 }

@@ -228,6 +228,8 @@ public class Player : Character
         // this is so we dont add two times the accel scalar 
         // when holding down two direction at the same time.
         acceleration *= accelerationScalar;
+
+        
         #endregion
     }
 

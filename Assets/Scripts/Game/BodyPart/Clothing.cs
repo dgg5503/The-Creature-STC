@@ -17,6 +17,21 @@ public class Clothing : MonoBehaviour {
     private List<CapsuleCollider> colliders;
     private Cloth cloth;
 
+    /// <summary>
+    /// Gets the expected body part colliders for this clothing.
+    /// </summary>
+    public int[] ExpectedBodyPartColliders { get { return expectedBodyPartColliders; } }
+
+    public Cloth Cloth
+    {
+        get
+        {
+            if(cloth == null)
+                cloth = GetComponent<Cloth>();
+            return cloth;
+        }
+    }
+
     // - set character
     // - parent it
     // - look at desired joints, if there is a bpart, add collider
