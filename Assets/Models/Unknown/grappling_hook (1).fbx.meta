@@ -13,10 +13,13 @@ ModelImporter:
     400004: hook 1
     2300000: hook
     2300002: hook 1
+    2300004: //RootNode
     3300000: hook
     3300002: hook 1
+    3300004: //RootNode
     4300000: hook
     4300002: hook
+    4300004: grappling_hook1
     9500000: //RootNode
   materials:
     importMaterials: 1

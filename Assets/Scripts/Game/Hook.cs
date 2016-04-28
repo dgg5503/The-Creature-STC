@@ -16,7 +16,8 @@ public class Hook : MonoBehaviour {
     Vector3 directionToMove;
     public LineRenderer chain;
     private GameObject grapplingPoint;
-
+    private GameObject creature;
+    private bool shoot = false;
 
 
 
@@ -24,6 +25,7 @@ public class Hook : MonoBehaviour {
     {
         chain = GameObject.Find("Chain").GetComponent<LineRenderer>();
         grapplingPoint = GameObject.Find("GrapperPoint");
+        creature = GameObject.Find("The_Creature");
     }
 	// Use this for initialization
 	void Start () {
@@ -31,23 +33,27 @@ public class Hook : MonoBehaviour {
         initialPosition = this.transform.position;
         initialRotation = grapplingPart.transform.rotation;
         initialScaling = grapplingPart.transform.localScale;
-       
-        Debug.Log(chain);
+        Debug.Log("Grappling Hook initial Position:"  + grapplingPart.transform.position);
         chain.enabled = false;
 	} 
 	
 	// Update is called once per frame
 	void Update () {
+        
         initialPosition = this.transform.position;
         chain.SetPosition(0, this.transform.position);
         chain.SetPosition(1, grapplingPoint.transform.position);
         Ray ray = camera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
-        if (grapplingPart.Shoot == false) // WE shoot 
+        if (shoot == false) // WE shoot 
         {
+         
             chain.enabled = true;
-            if (Input.GetButtonDown("Jump") && Input.GetButton("Jump")) // Check if we pressed button (space)
+            if (Input.GetButtonDown("Jump") && Input.GetButton("Jump") && this.transform.root.name == "The_Creature") // Check if we pressed button (space)
             {
+               
+                
+                shoot = true;
                 if (Physics.Raycast(ray, out hit))
                 {
                     chain.enabled = true;
@@ -56,12 +62,10 @@ public class Hook : MonoBehaviour {
                     //Vector3 direction = (hit.point - temp.transform.position).normalized; // get the direction to shoot
                     directionToMove = (hit.point - temp.transform.position).normalized;
                     temp.GetComponent<Rigidbody>().isKinematic = false; // turn off kinematics on the grapper
-                   // temp.GetComponent<Rigidbody>().AddForce(direction * forceToPush); // add force in order to shoot
                     temp.GetComponent<Rigidbody>().AddForce(directionToMove * forceToPush); // add force in order to shoot
 
 
                 }
-                Debug.Log("One Press");
                 timer = Time.time; // get the time since the button was pressed.
             }
         }
@@ -72,11 +76,15 @@ public class Hook : MonoBehaviour {
             {
                 GameObject temp = GameObject.FindGameObjectWithTag("Grapper");// get the Grapper part
                 GameObject tempEnemy = grapplingPart.ColliderObject; // get the object with which it collided
-                Debug.Log(tempEnemy);
-                if (tempEnemy.gameObject.tag == "GrapplingLocation")
+                Debug.Log("Temp Enemy is here" + tempEnemy);
+                Debug.Log("Temp is right here" + temp);
+                if (tempEnemy.gameObject.name == "GrapplingLocation" && tempEnemy != null)
                 {
-                    this.gameObject.transform.position = Vector3.MoveTowards(this.transform.position, temp.gameObject.transform.position, 7 * Time.deltaTime);
-                    var dist = Vector3.Distance(temp.gameObject.transform.position, this.gameObject.transform.position);
+                    Debug.Log("Should Move Creature HERE");
+                   // this.gameObject.transform.position = Vector3.MoveTowards(this.transform.position, temp.gameObject.transform.position, 7 * Time.deltaTime);
+                   // this.gameObject.transform.root.position = Vector3.MoveTowards(this.transform.root.position, temp.gameObject.transform.position, 7 * Time.deltaTime);
+                    creature.gameObject.transform.position = Vector3.MoveTowards(creature.gameObject.transform.position, temp.gameObject.transform.position, 7 * Time.deltaTime);
+                    var dist = Vector3.Distance(temp.gameObject.transform.position, this.gameObject.transform.root.position);
                     if(dist == 0)
                     {
                         temp.gameObject.transform.DetachChildren();
@@ -86,15 +94,15 @@ public class Hook : MonoBehaviour {
                 else
                 {
                     temp.transform.position = Vector3.MoveTowards(temp.transform.position, initialPosition, 7 * Time.deltaTime); // since we attached a collided object to our grappling hook...move grappling hook back
+                    
                 }
                 if (temp.transform.position == initialPosition)
                 {
                     temp.transform.parent = this.transform;
                     GrapplingSettings();
                     tempEnemy.transform.parent = null;
-                    grapplingPart.Shoot = false;
+                    shoot = false;
                 }
-                Debug.Log("Button is Hodling");
             }
         }
         if (Input.GetButtonDown("DetachRope"))
@@ -129,8 +137,8 @@ public class Hook : MonoBehaviour {
         {
             GrapplingSettings();
             detach = false;
-            grapplingPart.Shoot = false;
             initialPosition = this.transform.position + new Vector3(0, 0, 1);
+            shoot = false;
         }
     }
 
@@ -142,29 +150,3 @@ public class Hook : MonoBehaviour {
     }
 
 }
-
-
-/*
-            if (hit.transform.tag == "GrapplingLocation")
-            {
-                hook.GetComponent<Rigidbody>().isKinematic = true; // turn off kinnemetic
-                Vector3 tempDist = hook.transform.position - hit.point; // get the temp position
-                directionOfTheSwing = tempDist.normalized; // get the direction of the swing
-                line.enabled = true; // enable line rendere
-                line.SetPosition(0, hook.transform.position); // set its posistion
-                line.SetPosition(1, hit.point); // set another position
-                // Debug.Log(grapplingHook.GetComponent<Transform>().position);
-                hook.GetComponent<HingeJoint>().connectedBody = hit.rigidbody; // add connection
-                hook.GetComponent<HingeJoint>().anchor = hit.point; // attach joint
-                hook.GetComponent<HingeJoint>().axis = directionOfTheSwing; swint
-                hook.transform.position = Vector3.MoveTowards(hook.transform.position, hit.point, 7 * Time.deltaTime); // move towards
-
-            }
-            else
-            {
-                hook.GetComponent<Rigidbody>().isKinematic = true;
-                line.enabled = false;
-                hook.transform.position = Vector3.MoveTowards(hook.transform.position, initialPosition, 3 * Time.deltaTime);
-                
-            }
-*/
