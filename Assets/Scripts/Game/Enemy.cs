@@ -54,6 +54,9 @@ public class Enemy : Character {
         base.Awake();
 
         navMeshAgent = GetComponent<NavMeshAgent>();
+        navMeshAgent.updatePosition = false;
+        navMeshAgent.updateRotation = false;
+        navMeshAgent.stoppingDistance = .5f;
         animator = GetComponentInChildren<Animator>();
         animator.Play("idle");
 
@@ -89,21 +92,23 @@ public class Enemy : Character {
             case EnemyState.Idle:
                 // update internal timer, dont move for a little while
                 stateTimer -= Time.deltaTime;
+                
                 //animator.Play("idle");
                 if (stateTimer <= 0)
                     ChangeStateTo(EnemyState.Wonder);
                 break;
 
             case EnemyState.Wonder:
-                animator.speed = navMeshAgent.velocity.magnitude;
-
+                animator.speed = navMeshAgent.desiredVelocity.magnitude;
+                Debug.Log(navMeshAgent.pathStatus);
+                
                 // if destination reached, go back to idle.
                 // if the path was invalid, just go back to idle.
                 if (!navMeshAgent.pathPending)
                 {
                     if (navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
                     {
-                        if (!navMeshAgent.hasPath || navMeshAgent.velocity.sqrMagnitude == 0f)
+                        if (!navMeshAgent.hasPath || navMeshAgent.velocity.sqrMagnitude <= .16)
                         {
                             ChangeStateTo(EnemyState.Idle);
                         }
@@ -158,8 +163,8 @@ public class Enemy : Character {
 
             case EnemyState.Wonder:
                 // get random direction
-                navMeshAgent.destination = transform.position + (new Vector3(Random.Range(-1.0f, 1.0f), 0, Random.Range(-1.0f, 1.0f)) * 5f);
-                
+                navMeshAgent.destination = RandomNavSphere(transform.position, 5f, -1); //transform.position + (new Vector3(Random.Range(-1.0f, 1.0f), 0, Random.Range(-1.0f, 1.0f)) * 5f);
+
                 //animator.Play("walk");
                 Debug.Log("WONDER!!");
                 //Debug.Log("Current Pos: " + transform.position);
@@ -226,8 +231,34 @@ public class Enemy : Character {
 
     }
 
+    /// <summary>
+    /// Taken from: http://forum.unity3d.com/threads/solved-random-wander-ai-using-navmesh.327950/
+    /// </summary>
+    /// <param name="origin"></param>
+    /// <param name="dist"></param>
+    /// <param name="layermask"></param>
+    /// <returns></returns>
+    private Vector3 RandomNavSphere(Vector3 origin, float dist, int layermask)
+    {
+        // get random direction in given distance
+        Vector3 randDirection = Random.insideUnitSphere * dist;
 
-    protected override void ProcessMovement() { }
+        // add this to origin (nav mesh)
+        randDirection += origin;
+
+        // sample the nav mesh and return.
+        NavMeshHit navHit;
+
+        NavMesh.SamplePosition(randDirection, out navHit, dist, layermask);
+
+        return navHit.position;
+    }
+
+    protected override void ProcessMovement()
+    {
+        velocity = navMeshAgent.desiredVelocity;
+        navMeshAgent.nextPosition = transform.position;
+    }
 
     void OnDrawGizmos()
     {

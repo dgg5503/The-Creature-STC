@@ -49,8 +49,18 @@ public class Clothing : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+
 	}
+
+    void OnBecameInvisible()
+    {
+        //cloth.enabled = false;
+    }
+
+    void OnBecameVisible()
+    {
+        //cloth.enabled = true;
+    }
 
     public bool AddBodyPart(BodyPart bodyPart)
     {

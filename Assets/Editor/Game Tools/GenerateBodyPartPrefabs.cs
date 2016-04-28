@@ -338,9 +338,10 @@ class GenerateBodyPartPrefabs : EditorWindow {
         }
 
         // set skinned mesh renderer to update offscreen so clothes dont dc
-        SkinnedMeshRenderer skinnedMeshRenderer;
-        if ((skinnedMeshRenderer = character.GetComponent<SkinnedMeshRenderer>()) == null)
-            skinnedMeshRenderer.updateWhenOffscreen = true;
+        SkinnedMeshRenderer[] skinnedMeshRenderers;
+        if ((skinnedMeshRenderers = character.GetComponentsInParent<SkinnedMeshRenderer>()) != null)
+            for (int i = 0; i < skinnedMeshRenderers.Length; i++)
+                skinnedMeshRenderers[i].updateWhenOffscreen = true;
 
         // CREATE PREFABS
         // generate prefabs
