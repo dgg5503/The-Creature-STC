@@ -72,15 +72,20 @@ public class Spear : Weapon {
 	
 	}
 
-    public override void PrepareToUse()
+    public override RegularItem MountTo(MountPoint mountPoint)
     {
+        Debug.Log("Status: " + impalePoint.IsActive);
         if (!impalePoint.IsActive)
         {
             //rigidbody.velocity = Vector3.zero;
             // reset everything.
             // set to active and apply force
             impalePoint.Reset();
+
+            return base.MountTo(mountPoint);
         }
+
+        return null;
     }
 
 

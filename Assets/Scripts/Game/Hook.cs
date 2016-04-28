@@ -82,7 +82,7 @@ public class Hook : MonoBehaviour {
                 GameObject tempEnemy = grapplingPart.ColliderObject; // get the object with which it collided
                 Debug.Log("Temp Enemy is here" + tempEnemy);
                 Debug.Log("Temp is right here" + temp);
-                if (tempEnemy.gameObject.name == "GrapplingLocation" && tempEnemy != null)
+                if (tempEnemy != null && tempEnemy.gameObject.name == "GrapplingLocation")
                 {
                     Debug.Log("Should Move Creature HERE");
                    // this.gameObject.transform.position = Vector3.MoveTowards(this.transform.position, temp.gameObject.transform.position, 7 * Time.deltaTime);
@@ -95,7 +95,7 @@ public class Hook : MonoBehaviour {
                         temp.gameObject.transform.parent = this.transform;
                     }
                 }
-                else  if(tempEnemy.gameObject.name == "Wall" && tempEnemy != null)
+                else  if(tempEnemy != null && tempEnemy.gameObject.name == "Wall")
                 {
                     temp.transform.position = Vector3.MoveTowards(temp.transform.position, initialPosition, 7 * Time.deltaTime); // since we attached a collided object to our grappling hook...move grappling hook back
                     
@@ -109,9 +109,10 @@ public class Hook : MonoBehaviour {
                 }
             }
         }
-        if (Input.GetButtonDown("DetachRope"))
+        if (Input.GetButton("DetachRope"))
         {
             detach = true;
+            
         }
 
         if (detach)
@@ -124,30 +125,33 @@ public class Hook : MonoBehaviour {
 
     private void DetachChain()
     {
-        GameObject temp = GameObject.FindGameObjectWithTag("Grapper");
-        temp.transform.parent = this.transform;
+        GameObject grapple = GameObject.FindGameObjectWithTag("Grapper");
+        grapple.transform.parent = this.transform;
 
 
         if (grapplingPart.ColliderObject != null)
         {
-            Debug.Log("NAME OF THE STUFF IS: " + grapplingPart.ColliderObject.name);
+           // Debug.Log("NAME OF THE STUFF IS: " + grapplingPart.ColliderObject.name);
             if (grapplingPart.ColliderObject.name == "Wall" || grapplingPart.ColliderObject.name == "GrapplingLocation")
             {
-               
+
                 GameObject tempEnemy = grapplingPart.ColliderObject;
                 tempEnemy.transform.parent = null;
+                
             }
 
         }
 
-
-        temp.transform.position = Vector3.MoveTowards(temp.transform.position, initialPosition, 7 * Time.deltaTime);
-        if (temp.transform.position == initialPosition)
+        grapple.transform.position = Vector3.MoveTowards(grapple.transform.position, initialPosition, 7 * Time.deltaTime);  
+        if (grapple.transform.position == initialPosition)
         {
+
+            Debug.Log("done");
             GrapplingSettings();
             detach = false;
-            initialPosition = this.transform.position + new Vector3(0, 0, 1);
+           // initialPosition = this.transform.position + new Vector3(0, 0, 1);
             shoot = false;
+            grapplingPart.ColliderObject = null;
         }
     }
 
@@ -157,7 +161,7 @@ public class Hook : MonoBehaviour {
      //   temp.transform.rotation = initialRotation;
 
         temp.transform.rotation = initialRotationForTheHook;
-        Debug.Log("Rotation Should BE THIS: " + temp.transform.rotation);
+        //Debug.Log("Rotation Should BE THIS: " + temp.transform.rotation);
        // temp.transform.localScale = initialScaling;
     }
 

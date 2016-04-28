@@ -113,12 +113,6 @@ public class Enemy : Character {
                         }
                     }
                 }
-
-                /*
-                if (navMeshAgent.pathStatus == NavMeshPathStatus.PathComplete ||
-                    navMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid)
-                    ChangeStateTo(EnemyState.Idle);
-                    */
                 break;
 
             case EnemyState.Attack:
@@ -157,7 +151,7 @@ public class Enemy : Character {
                 stateTimer = Random.Range(minIdleTime, maxIdleTime);
                 animator.speed = 1;
                 //animator.Play("idle");
-                Debug.Log("IDLE!!");
+                //Debug.Log("IDLE!!");
                 break;
 
             case EnemyState.Wonder:
@@ -165,7 +159,7 @@ public class Enemy : Character {
                 navMeshAgent.destination = RandomNavSphere(transform.position, 5f, -1); //transform.position + (new Vector3(Random.Range(-1.0f, 1.0f), 0, Random.Range(-1.0f, 1.0f)) * 5f);
 
                 //animator.Play("walk");
-                Debug.Log("WONDER!!");
+                //Debug.Log("WONDER!!");
                 //Debug.Log("Current Pos: " + transform.position);
                 //Debug.Log("Dest set: " + navMeshAgent.destination);
                 break;

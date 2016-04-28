@@ -135,7 +135,9 @@ public class Player : Character
 
         if(Input.GetKeyDown("k"))
         {
-            Spear[] spears = GetComponentsInChildren<Spear>();
+            Weapon[] spears = GetComponentsInChildren<Weapon>().Where(x => x.CurrentMountPoint == null).ToArray();
+
+            // if weapon is already mounted, dont mount again!
             if(spears.Length != 0)
                 MountItem(spears[0]);
         }
@@ -143,8 +145,10 @@ public class Player : Character
         if(Input.GetKeyDown("j"))
         {
             MountPoint[] mountPoints = GetComponentsInChildren<MountPoint>();
+            //state = CharacterState.Throw_Right;
             for (int i = 0; i < mountPoints.Length; ++i)
                 mountPoints[i].UseItem();
+            //characterAnimator.SetInteger("characterState", (int)state);
         }
 
         /* DEBUG TESTS */
@@ -230,6 +234,17 @@ public class Player : Character
 
         
         #endregion
+    }
+
+    private void UseItem()
+    {
+        // fire animation with event?
+    }
+    
+    private void throwSpear()
+    {
+        Debug.Log("hi");
+        state = CharacterState.Idle;
     }
 
     // TODO REMOVE THIS FUNCTION AND ADD ACTUAL TREE DATA STRUCTURE

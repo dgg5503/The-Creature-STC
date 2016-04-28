@@ -22,17 +22,18 @@ public class Grap : MonoBehaviour {
     {
         if (col.gameObject.name == "Wall")
         {
-            this.GetComponent<Rigidbody>().isKinematic = true;
             col.gameObject.transform.parent = this.transform;
             ColliderObject = col.gameObject;
-            
+
         }
         else if (col.gameObject.name == "GrapplingLocation")
         {
-            this.GetComponent<Rigidbody>().isKinematic = true;
+
             this.transform.parent = col.gameObject.transform.parent;
             ColliderObject = col.gameObject;
         }
-        ColliderObject = col.gameObject;
+
+        this.GetComponent<Rigidbody>().isKinematic = true;
+        //ColliderObject = col.gameObject;
     }
 }

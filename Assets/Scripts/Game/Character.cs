@@ -22,16 +22,16 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
 
-enum CharacterState
+public enum CharacterState
 {
     Idle,
     Walk,
+    Throw_Right,
+    Throw_Left,
     Grapple_Right,
     Grapple_Left,
     Fly_Right,
-    Fly_Left,
-    Throw_Left,
-    Throw_Right
+    Fly_Left
 }
 
 [RequireComponent(typeof(Rigidbody))]
@@ -70,7 +70,7 @@ public abstract class Character : MonoBehaviour
 
     // States n' Actions
     private bool isAlive;
-    private CharacterState state;
+    protected CharacterState state;
 
     /// <summary>
     /// Get the inventory of this character.
@@ -304,7 +304,7 @@ public abstract class Character : MonoBehaviour
 
         // if slots are full, return false!
         for (int i = 0; i < mountPoints.Length; ++i)
-            if (mountPoints[i].MountItem(itemToMount))
+            if (itemToMount.MountTo(mountPoints[i]))
                 return true;
 
         // return true, we did it reddit!
@@ -352,16 +352,22 @@ public abstract class Character : MonoBehaviour
 
         // capsule check to see if we can move up.
         RaycastHit[] hits = Physics.CapsuleCastAll(bottomHeight,
-            bottomHeight + (transform.up * collider.height),
-            collider.radius - .01f,
+            bottomHeight + (transform.up * (collider.height - (collider.radius * 2))),
+            collider.radius - .1f,
             transform.up,
-            collider.radius - .01f,
+            collider.radius - .1f,
             GameManager.GroundedLayerMask);
 
         // TODO: set up raycast in a place that wont require detachment to be called.
         // revert if hits found.
         if (hits.Length != 0)
         {
+            /*
+            foreach (RaycastHit hit in hits)
+                Debug.Log(hit.transform.name);
+            Debug.DrawLine(bottomHeight, bottomHeight + (transform.up * (collider.height - (collider.radius * 2))));
+            Debug.Break();
+            */
             Detach(bodyPartToAttach.BodyPartType);
             return false;
         }
@@ -370,7 +376,6 @@ public abstract class Character : MonoBehaviour
 
         return true;
     }
-    
 
     /// <summary>
     /// Detaches a body part based on its index within the list of body parts.

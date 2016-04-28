@@ -138,8 +138,9 @@ public class ImpalePoint : MonoBehaviour {
                     // call after impale event
                     if (AfterImpale != null)
                         AfterImpale(finalCollision);
-                    
+
                     // set to embedded
+                    Debug.Log(transform.parent.name + " is impaled.");
                     impaleState = ImpaleState.Embedded;
                 }
                 break;
@@ -220,7 +221,7 @@ public class ImpalePoint : MonoBehaviour {
             parentRigidBody.velocity = lastVelocity;
             currSpeed = 0;
 
-            Debug.Log(rigidbody.velocity);
+            //Debug.Log(rigidbody.velocity);
 
             // set final collision null
             //finalCollision = null;
@@ -231,6 +232,8 @@ public class ImpalePoint : MonoBehaviour {
     {
         if (impaleState != ImpaleState.Impaling)
         {
+            Debug.Log("SetActive called on " + transform.parent.name);
+
             // if collision info is stored, detection collision again with that object
             Physics.IgnoreCollision(finalCollision.collider, GetComponent<Collider>());
             Physics.IgnoreCollision(finalCollision.collider, parentModel.GetComponent<Collider>());
