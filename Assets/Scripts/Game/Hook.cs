@@ -28,6 +28,7 @@ public class Hook : MonoBehaviour {
         creature = GameObject.Find("The_Creature");
         grapplingHookHand = GameObject.Find("grappling_hook_Right_Arm 1");
         grapper = GameObject.FindGameObjectWithTag("Grapper");
+        gameObject.layer = 11;
     }
 	// Use this for initialization
 	void Start () {

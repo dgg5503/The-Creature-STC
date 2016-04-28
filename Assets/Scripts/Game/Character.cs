@@ -362,12 +362,12 @@ public abstract class Character : MonoBehaviour
         // revert if hits found.
         if (hits.Length != 0)
         {
-            /*
+            
             foreach (RaycastHit hit in hits)
                 Debug.Log(hit.transform.name);
             Debug.DrawLine(bottomHeight, bottomHeight + (transform.up * (collider.height - (collider.radius * 2))));
             Debug.Break();
-            */
+            
             Detach(bodyPartToAttach.BodyPartType);
             return false;
         }

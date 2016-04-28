@@ -20,6 +20,7 @@ public class Grap : MonoBehaviour {
 
     void OnCollisionEnter(Collision col)
     {
+        Debug.Log(col.collider.name);
         if (col.gameObject.name == "Wall")
         {
             col.gameObject.transform.parent = this.transform;
@@ -33,6 +34,7 @@ public class Grap : MonoBehaviour {
             ColliderObject = col.gameObject;
         }
 
+        
         this.GetComponent<Rigidbody>().isKinematic = true;
         //ColliderObject = col.gameObject;
     }

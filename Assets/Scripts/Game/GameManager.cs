@@ -41,11 +41,12 @@ public class GameManager : MonoBehaviour
 
         // Have bparts ignore character colliders
         Physics.IgnoreLayerCollision(9, 10);
+        Physics.IgnoreLayerCollision(9, 11);
 
         // http://answers.unity3d.com/questions/416919/making-raycast-ignore-multiple-layers.html
         // ignore layers 9 and 10 as they are not considered to be "ground"
-        GroundedLayerMask = ~((1 << 9) | (1 << 10));
-        BodyPartLayerMask = ~(1 << 9);
+        GroundedLayerMask = ~((1 << 9) | (1 << 10) | (1 << 11));
+        BodyPartLayerMask = ~((1 << 9) | (1 << 11));
         CharacterLayerMask = (1 << 10);
 
     }
