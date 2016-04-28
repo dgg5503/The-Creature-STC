@@ -100,7 +100,6 @@ public class Enemy : Character {
 
             case EnemyState.Wonder:
                 animator.speed = navMeshAgent.desiredVelocity.magnitude;
-                Debug.Log(navMeshAgent.pathStatus);
                 
                 // if destination reached, go back to idle.
                 // if the path was invalid, just go back to idle.
