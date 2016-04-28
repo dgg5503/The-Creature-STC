@@ -30,12 +30,9 @@ public class Grap : MonoBehaviour {
         else if (col.gameObject.name == "GrapplingLocation")
         {
             this.GetComponent<Rigidbody>().isKinematic = true;
-          //  player.transform.parent = col.gameObject.transform.parent;
-           // col.gameObject.transform.parent = this.transform;
-          this.transform.parent = col.gameObject.transform.parent;
+            this.transform.parent = col.gameObject.transform.parent;
             ColliderObject = col.gameObject;
         }
-
         ColliderObject = col.gameObject;
     }
 }

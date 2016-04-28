@@ -18,23 +18,27 @@ public class Hook : MonoBehaviour {
     private GameObject grapplingPoint;
     private GameObject creature;
     private bool shoot = false;
-
-
-
+    private Quaternion initialRotationForTheHook = new Quaternion(0,0,0,0);
+    private GameObject grapplingHookHand;
+    private GameObject grapper;
     void Awake()
     {
         chain = GameObject.Find("Chain").GetComponent<LineRenderer>();
         grapplingPoint = GameObject.Find("GrapperPoint");
         creature = GameObject.Find("The_Creature");
+        grapplingHookHand = GameObject.Find("grappling_hook_Right_Arm 1");
+        grapper = GameObject.FindGameObjectWithTag("Grapper");
     }
 	// Use this for initialization
 	void Start () {
         grapplingPart = GameObject.FindGameObjectWithTag("Grapper").GetComponent<Grap>();
         initialPosition = this.transform.position;
-        initialRotation = grapplingPart.transform.rotation;
+       // initialRotation = grapplingPart.transform.rotation;
         initialScaling = grapplingPart.transform.localScale;
         Debug.Log("Grappling Hook initial Position:"  + grapplingPart.transform.position);
         chain.enabled = false;
+        Physics.IgnoreCollision(grapplingHookHand.GetComponent<Collider>(), grapper.GetComponent<Collider>());
+        
 	} 
 	
 	// Update is called once per frame
@@ -91,7 +95,7 @@ public class Hook : MonoBehaviour {
                         temp.gameObject.transform.parent = this.transform;
                     }
                 }
-                else
+                else  if(tempEnemy.gameObject.name == "Wall" && tempEnemy != null)
                 {
                     temp.transform.position = Vector3.MoveTowards(temp.transform.position, initialPosition, 7 * Time.deltaTime); // since we attached a collided object to our grappling hook...move grappling hook back
                     
@@ -126,9 +130,14 @@ public class Hook : MonoBehaviour {
 
         if (grapplingPart.ColliderObject != null)
         {
-            GameObject tempEnemy = grapplingPart.ColliderObject;
+            Debug.Log("NAME OF THE STUFF IS: " + grapplingPart.ColliderObject.name);
+            if (grapplingPart.ColliderObject.name == "Wall" || grapplingPart.ColliderObject.name == "GrapplingLocation")
+            {
+               
+                GameObject tempEnemy = grapplingPart.ColliderObject;
+                tempEnemy.transform.parent = null;
+            }
 
-            tempEnemy.transform.parent = null;
         }
 
 
@@ -145,7 +154,10 @@ public class Hook : MonoBehaviour {
     private void GrapplingSettings()
     {
         GameObject temp = GameObject.FindGameObjectWithTag("Grapper");
-        temp.transform.rotation = initialRotation;
+     //   temp.transform.rotation = initialRotation;
+
+        temp.transform.rotation = initialRotationForTheHook;
+        Debug.Log("Rotation Should BE THIS: " + temp.transform.rotation);
        // temp.transform.localScale = initialScaling;
     }
 
