@@ -53,6 +53,8 @@ public class Enemy : Character {
     {
         base.Awake();
 
+        
+
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.updatePosition = false;
         navMeshAgent.updateRotation = false;
@@ -67,6 +69,14 @@ public class Enemy : Character {
         // start idle
         enemyState = EnemyState.Idle;
         stateTimer = Random.Range(minIdleTime, maxIdleTime);
+    }
+
+    void Start()
+    {
+        // DEBUG EQUIP.
+        RegularItem tmpItem = (Instantiate(GameManager.PrefabDictionary["spear"]) as GameObject).GetComponent<RegularItem>();
+        if (!MountItem(tmpItem))
+            Debug.LogError("ERROR: Error mounting spear on " + name);
     }
 
     /// <summary>
@@ -103,7 +113,8 @@ public class Enemy : Character {
                 
                 // if destination reached, go back to idle.
                 // if the path was invalid, just go back to idle.
-                if (!navMeshAgent.pathPending)
+                
+                if (navMeshAgent.isOnNavMesh && !navMeshAgent.pathPending)
                 {
                     if (navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
                     {
@@ -116,6 +127,8 @@ public class Enemy : Character {
                 break;
 
             case EnemyState.Attack:
+                // stop moving and throw a spear!
+                
                 break;
 
             case EnemyState.Flee:
@@ -156,7 +169,8 @@ public class Enemy : Character {
 
             case EnemyState.Wonder:
                 // get random direction
-                navMeshAgent.destination = RandomNavSphere(transform.position, 5f, -1); //transform.position + (new Vector3(Random.Range(-1.0f, 1.0f), 0, Random.Range(-1.0f, 1.0f)) * 5f);
+                if(navMeshAgent.isOnNavMesh)
+                    navMeshAgent.destination = RandomNavSphere(transform.position, 5f, -1); //transform.position + (new Vector3(Random.Range(-1.0f, 1.0f), 0, Random.Range(-1.0f, 1.0f)) * 5f);
 
                 //animator.Play("walk");
                 //Debug.Log("WONDER!!");
@@ -165,6 +179,7 @@ public class Enemy : Character {
                 break;
 
             case EnemyState.Attack:
+                
                 break;
 
             case EnemyState.Flee:
@@ -242,9 +257,10 @@ public class Enemy : Character {
         // sample the nav mesh and return.
         NavMeshHit navHit;
 
-        NavMesh.SamplePosition(randDirection, out navHit, dist, layermask);
+        if (NavMesh.SamplePosition(randDirection, out navHit, dist, layermask))
+            return navHit.position;
 
-        return navHit.position;
+        return transform.position;
     }
 
     protected override void ProcessMovement()

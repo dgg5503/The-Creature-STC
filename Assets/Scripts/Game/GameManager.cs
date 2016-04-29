@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 public enum GameState
 {
@@ -12,7 +13,9 @@ public enum GameState
 /// This must be in EVERY SCENE otherwise collision and isGrounded wont work!
 /// </summary>
 public class GameManager : MonoBehaviour
-{   
+{
+    private static Dictionary<string, Object> prefabDictionary;
+
     /// <summary>
     /// Get the layer mask used for checking whether or not a character is grounded
     /// </summary>
@@ -33,6 +36,17 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public static GameState GameState { get; set; }
 
+    /// <summary>
+    /// Get all prefabs from the game.
+    /// </summary>
+    public static Dictionary<string, Object> PrefabDictionary
+    {
+        get
+        {
+            return prefabDictionary;
+        }
+    }
+
     void Awake()
     {
         // start in MM
@@ -49,6 +63,14 @@ public class GameManager : MonoBehaviour
         BodyPartLayerMask = ~((1 << 9) | (1 << 11));
         CharacterLayerMask = (1 << 10);
 
+        // load all prefabs!
+        prefabDictionary = Resources.LoadAll("Prefabs/Items").ToDictionary(x => x.name, x => x);
+
+        // DEBUG LOOK
+        /*
+        foreach (KeyValuePair<string, Object> kvp in prefabDictionary)
+            Debug.Log(kvp.Key);
+        */
     }
 
     // Use this for initialization

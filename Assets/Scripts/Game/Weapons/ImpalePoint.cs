@@ -2,7 +2,7 @@
 using System.Collections;
 using System;
 
-enum ImpaleState
+public enum ImpaleState
 {
     None, // flying through air, sitting on the ground, etc...
     Impaling, // currently sinking into an object
@@ -49,6 +49,8 @@ public class ImpalePoint : MonoBehaviour {
     /// </summary>
     public Collision LastCollision { get { return finalCollision; } }
 
+    public ImpaleState ImpaleState { get { return impaleState; } }
+
     // Properties
     /// <summary>
     /// Get or set the distance you want this object to sink into after contact.
@@ -57,7 +59,7 @@ public class ImpalePoint : MonoBehaviour {
 
     void Awake()
     {
-        IsActive = true;
+        IsActive = true; // WAS TRUE!
         rigidbody = GetComponent<Rigidbody>();
 
         // freeze constraints
