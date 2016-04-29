@@ -108,7 +108,8 @@ public abstract class RegularItem : Item  {
         if ((parentCollider = CurrentMountPoint.GetComponentInParent<Collider>()) != null &&
             (itemCollider = GetComponent<Collider>()) != null)
         {
-            Physics.IgnoreCollision(parentCollider, itemCollider, false);
+            // TODO: TMP FIX FOR SPEARS
+            //Physics.IgnoreCollision(parentCollider, itemCollider, false);
             Debug.Log("coll unignored " + parentCollider.name + " and " + itemCollider.name);
         }
 

@@ -81,7 +81,8 @@ public class Spear : Weapon {
             impalePoint.SetActive();
 
             // unparent
-            transform.parent = null;
+            //transform.parent = null;
+            Unmount();
 
             // apply force relative
             rigidbody.AddRelativeForce(Vector3.right * 800);

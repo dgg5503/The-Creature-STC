@@ -238,8 +238,11 @@ public class ImpalePoint : MonoBehaviour {
             Debug.Log("SetActive called on " + transform.parent.name);
 
             // if collision info is stored, detection collision again with that object
-            Physics.IgnoreCollision(finalCollision.collider, GetComponent<Collider>());
-            Physics.IgnoreCollision(finalCollision.collider, parentModel.GetComponent<Collider>());
+            if (finalCollision != null)
+            {
+                Physics.IgnoreCollision(finalCollision.collider, GetComponent<Collider>(), false);
+                Physics.IgnoreCollision(finalCollision.collider, parentModel.GetComponent<Collider>(), false);
+            }
 
             // set final collision null
             finalCollision = null;

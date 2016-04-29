@@ -42,7 +42,7 @@ public class FreezeScale : EditorWindow {
                 {
                     Undo.RecordObject(meshFilter, "Mesh Filter Modified");
                     Undo.RecordObject(meshFilter.sharedMesh, "Shared Mesh Modified");
-                    Undo.DestroyObjectImmediate(gameObjects[i].GetComponent<Collider>());
+                    Undo.RecordObject(gameObjects[i].GetComponent<Collider>(), "Collider bounds modified");
                     Undo.RecordObject(gameObjects[i].transform, "Transform Modified");
 
                     // grab current scale
@@ -59,21 +59,21 @@ public class FreezeScale : EditorWindow {
 
                     // mult each component by relative componenet
                     for (int z = 0; z < verts.Length; ++z)
+                    {
                         verts[z] = new Vector3(verts[z].x * currScale.x, verts[z].y * currScale.y, verts[z].z * currScale.z);
+                    }
 
                     // set verts
                     sharedMesh.vertices = verts;
 
                     // recalc bounds
                     sharedMesh.RecalculateBounds();
-                    
-                    // readd the collider
-                    // TODO!
-
-                    //AddToStaticList(sharedMesh);
 
                     // set GO to 1,1,1 scale
-                    gameObjects[i].transform.localScale = Vector3.one; 
+                    gameObjects[i].transform.localScale = Vector3.one;
+
+                    //gameObjects[i].GetComponent<Collider>().SendMessage("Reset", SendMessageOptions.DontRequireReceiver);
+
                 }   
             }
             Undo.CollapseUndoOperations(group);

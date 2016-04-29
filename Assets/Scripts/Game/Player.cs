@@ -123,14 +123,24 @@ public class Player : Character
 
             // Get first body part
             BodyPart foundBodyPart = null;
+            RegularItem foundItem = null;
             foreach (RaycastHit obj in allhit)
+            {
                 if ((foundBodyPart = obj.collider.GetComponent<BodyPart>()) != null)
+                {
+                    if (Detach(foundBodyPart.BodyPartType) == null)
+                        Attach(foundBodyPart);
                     break;
+                }
 
-            // Detach if parented
-            if (foundBodyPart != null)
-                if (Detach(foundBodyPart.BodyPartType) == null)
-                    Attach(foundBodyPart);
+                if ((foundItem = obj.collider.GetComponent<RegularItem>()) != null)
+                {
+                    // attempt to mount
+                    MountItem(foundItem);
+                    break;
+                }
+                    
+            }
         }
 
         /* DEBUG WEAPON TEST */
