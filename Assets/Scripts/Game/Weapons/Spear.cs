@@ -32,7 +32,7 @@ public class Spear : Weapon {
 
         impalePoint.OnImpale += ImpalePoint_OnImpale;
         impalePoint.AfterImpale += ImpalePoint_AfterImpale;
-
+        
         currColls = new List<GameObject>();
     }
 
@@ -64,7 +64,8 @@ public class Spear : Weapon {
     // Use this for initialization
     void Start () {
         // test force
-        rigidbody.AddRelativeForce(Vector3.right * 2000);
+        //rigidbody.AddRelativeForce(Vector3.right * 2000);
+        //impalePoint.Reset();
     }
 	
 	// Update is called once per frame
@@ -74,7 +75,7 @@ public class Spear : Weapon {
 
     public override void Use()
     {
-        if (impalePoint.IsActive)
+        if (impalePoint.ImpaleState != ImpaleState.Impaling)
         {
             // set physicsy
             impalePoint.SetActive();
@@ -117,9 +118,9 @@ public class Spear : Weapon {
 
     protected override bool MountCheck()
     {
-        if (!impalePoint.IsActive)
+        if (impalePoint.ImpaleState != ImpaleState.Impaling)
         {
-            Debug.Log("checking " + name);
+            //Debug.Log("checking " + name);
             //rigidbody.velocity = Vector3.zero;
             // reset everything.
             // set to active and apply force

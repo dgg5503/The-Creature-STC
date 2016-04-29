@@ -482,7 +482,7 @@ public abstract class Character : MonoBehaviour
         if (currentBodyPart.GetComponent<Cloth>() != null)
             return;
         
-        Debug.Log("Added: " + currentBodyPart.name);
+        //Debug.Log("Added: " + currentBodyPart.name);
         // keep last local rot
         Quaternion currLocalRot = currentBodyPart.transform.localRotation;
         currentBodyPart.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
