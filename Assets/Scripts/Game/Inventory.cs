@@ -60,34 +60,7 @@ public class Inventory : MonoBehaviour
                     }
                     else
                     {
-                        switch (moveFromSlot.name)
-                        {
-                            case "Head":
-                                {
-                                    characterRef.Detach(0);
-                                    break;
-                                }
-                            case "LeftHand":
-                                {
-                                    characterRef.Detach(1);
-                                    break;
-                                }
-                            case "RightHand":
-                                {
-                                    characterRef.Detach(5);
-                                    break;
-                                }
-                            case "LeftLeg":
-                                {
-                                    characterRef.Detach(3);
-                                    break;
-                                }
-                            case "RightLeg":
-                                {
-                                    characterRef.Detach(7);
-                                    break;
-                                }
-                        }
+                        DetachBodyParts(moveFromSlot.name);
                     }
 
                 }
@@ -293,5 +266,38 @@ public class Inventory : MonoBehaviour
             }
         }
 
+    }
+
+
+    public virtual void DetachBodyParts(string Name)
+    {
+        switch (Name)
+         {
+            case "Head":
+            {
+               characterRef.Detach(0);
+               break;
+            }
+            case "LeftHand":
+            {
+                characterRef.Detach(1);
+             break;
+            }
+            case "RightHand":
+            {
+               characterRef.Detach(5);
+               break;
+            }
+            case "LeftLeg":
+            {
+                characterRef.Detach(3);
+                 break;
+            }
+            case "RightLeg":
+            {
+                characterRef.Detach(7);
+                break;
+            }
+         }
     }
 }
