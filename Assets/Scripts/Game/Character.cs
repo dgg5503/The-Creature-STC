@@ -304,8 +304,9 @@ public abstract class Character : MonoBehaviour
 
         // if slots are full, return false!
         for (int i = 0; i < mountPoints.Length; ++i)
-            if (itemToMount.MountTo(mountPoints[i]))
+            if (itemToMount.MountTo(mountPoints[i]) != null)
                 return true;
+           
 
         // return true, we did it reddit!
         return false;

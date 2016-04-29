@@ -64,30 +64,13 @@ public class Spear : Weapon {
     // Use this for initialization
     void Start () {
         // test force
-        rigidbody.AddRelativeForce(Vector3.right * 500);
+        rigidbody.AddRelativeForce(Vector3.right * 2000);
     }
 	
 	// Update is called once per frame
 	void Update () {
 	
 	}
-
-    public override RegularItem MountTo(MountPoint mountPoint)
-    {
-        Debug.Log("Status: " + impalePoint.IsActive);
-        if (!impalePoint.IsActive)
-        {
-            //rigidbody.velocity = Vector3.zero;
-            // reset everything.
-            // set to active and apply force
-            impalePoint.Reset();
-
-            return base.MountTo(mountPoint);
-        }
-
-        return null;
-    }
-
 
     public override void Use()
     {
@@ -132,4 +115,17 @@ public class Spear : Weapon {
             currColls.Remove(collider.gameObject);
     }
 
+    protected override bool MountCheck()
+    {
+        if (!impalePoint.IsActive)
+        {
+            Debug.Log("checking " + name);
+            //rigidbody.velocity = Vector3.zero;
+            // reset everything.
+            // set to active and apply force
+            impalePoint.Reset();
+            return true;
+        }
+        return false;
+    }
 }

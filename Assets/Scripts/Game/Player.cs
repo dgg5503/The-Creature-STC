@@ -133,6 +133,7 @@ public class Player : Character
                     Attach(foundBodyPart);
         }
 
+        /* DEBUG WEAPON TEST */
         if(Input.GetKeyDown("k"))
         {
             Weapon[] spears = GetComponentsInChildren<Weapon>().Where(x => x.CurrentMountPoint == null).ToArray();
@@ -142,12 +143,17 @@ public class Player : Character
                 MountItem(spears[0]);
         }
 
-        if(Input.GetKeyDown("j"))
+        /* DEBUG WEAPON TEST */
+        if (Input.GetKeyDown("j"))
         {
             MountPoint[] mountPoints = GetComponentsInChildren<MountPoint>();
             //state = CharacterState.Throw_Right;
             for (int i = 0; i < mountPoints.Length; ++i)
-                mountPoints[i].UseItem();
+                if (mountPoints[i].MountedItem != null)
+                {
+                    mountPoints[i].UseItem();
+                    break;
+                }
             //characterAnimator.SetInteger("characterState", (int)state);
         }
 
