@@ -2,26 +2,23 @@
 using System.Collections;
 
 public class Grap : MonoBehaviour {
-    private bool shoot = false;
     private GameObject collideWith;
-    private GameObject player;
-
-
-
-    void Start() {
-        player = GameObject.FindGameObjectWithTag("Player");
-    
-    }
+    private Hook hookScript;
 
     public GameObject ColliderObject {
         get { return collideWith; }
         set { collideWith = value; }
     }
 
+    void Awake()
+    {
+        hookScript = GameObject.Find("HookPoint").GetComponent<Hook>();
+    }
+
     void OnCollisionEnter(Collision col)
     {
         Debug.Log(col.collider.name);
-        if (col.gameObject.name == "Wall")
+        if (col.gameObject.name.Contains("Villager"))
         {
             col.gameObject.transform.parent = this.transform;
             ColliderObject = col.gameObject;
@@ -33,9 +30,11 @@ public class Grap : MonoBehaviour {
             this.transform.parent = col.gameObject.transform.parent;
             ColliderObject = col.gameObject;
         }
-
-        
+        else
+        {
+            hookScript.Detach = true;
+        }
         this.GetComponent<Rigidbody>().isKinematic = true;
-        //ColliderObject = col.gameObject;
+
     }
 }
