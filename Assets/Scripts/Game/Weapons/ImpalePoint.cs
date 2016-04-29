@@ -140,7 +140,7 @@ public class ImpalePoint : MonoBehaviour {
                         AfterImpale(finalCollision);
 
                     // set to embedded
-                    Debug.Log(transform.parent.name + " is impaled.");
+                    //Debug.Log(transform.parent.name + " is impaled.");
                     impaleState = ImpaleState.Embedded;
                 }
                 break;
@@ -154,19 +154,20 @@ public class ImpalePoint : MonoBehaviour {
     // stop
     void OnCollisionEnter(Collision collision)
     {
+        
         if (IsActive && collision.collider.GetComponent<ImpalePoint>() == null)
         {
-            Debug.Log(collision.collider.name);
             // TO-DO: slow speed? dont let it attach!!
             // if velocity is negative direction of forward, return
             // if speed is too little to impale, return.
             //if (Vector3.Dot(projection, parentModel.right) < 0 ||
             //    (projection = Vector3.Project(parentRigidBody.velocity, parentModel.TransformDirection(parentModel.right))).sqrMagnitude < 10)
-            Debug.Log(parentModel.name + " collided with " + collision.collider.name);
+           
             if (Vector3.Dot(lastVelocity, parentModel.right) < minVelocity)
             {
                 return;
             }
+            Debug.Log(parentModel.name + " collided with " + collision.collider.name);
 
             // ignore collision w/ collided
             Physics.IgnoreCollision(collision.collider, GetComponent<Collider>());
@@ -177,7 +178,7 @@ public class ImpalePoint : MonoBehaviour {
 
             // stop checking for OnCollisionEnter
             IsActive = false;
-
+            Debug.Log(transform.parent.name + " is active: " + IsActive);
             // go kinematic and stop detecting collision
             rigidbody.isKinematic = true;
             parentRigidBody.isKinematic = true;
@@ -196,7 +197,7 @@ public class ImpalePoint : MonoBehaviour {
             if ((collidedRigidbody = finalCollision.collider.GetComponent<Rigidbody>()) != null)
                 collidedMass = collidedRigidbody.mass;
             else
-                collidedMass = 100f;
+                collidedMass = 50f;
 
             // call on impale event
             if (OnImpale != null)

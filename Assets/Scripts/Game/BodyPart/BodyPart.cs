@@ -120,6 +120,12 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         {
             // TODO CHECK TO SEE IF SHOULD DETACH.
             currHealth = value;
+
+            /*
+             * if(transform.root.getComponenet<playerinventory>() != null)
+             *      playerinventory.recalculateHealth(bodypartID, value);
+             */
+
             if (currHealth <= minHealth)
                 Detach();
         }

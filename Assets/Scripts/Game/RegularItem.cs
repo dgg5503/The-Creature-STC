@@ -60,6 +60,12 @@ public abstract class RegularItem : Item  {
             newMount.MountedItem != null)
             return null;
 
+        if (!MountCheck())
+        {
+            Debug.Log(transform.name + " cant attach!");
+            return null;
+        }
+
         // see if we're mounted to something, if so, unmount first
         //if (MountPoint != null)
         //    Unmount();
@@ -114,6 +120,12 @@ public abstract class RegularItem : Item  {
 
         return this;    
     }
+
+    /// <summary>
+    /// Optionally call this function 
+    /// </summary>
+    /// <returns></returns>
+    protected abstract bool MountCheck();
 
     public abstract void Use();
     
