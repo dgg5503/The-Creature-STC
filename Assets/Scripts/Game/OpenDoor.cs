@@ -11,7 +11,7 @@ public class OpenDoor : MonoBehaviour {
     private float neededHeight = 2.0f;
 
     void Awake () {
-        player = GameObject.FindGameObjectWithTag("Player");
+        player = GameObject.Find("The_Creature");
         pulled = false;
         liftVal = 4.8f / 200.0f;
         currentLift = 0.0f;
@@ -20,7 +20,7 @@ public class OpenDoor : MonoBehaviour {
 
     void OnTriggerStay(Collider colWith)
     {
-        if (colWith.tag == "Player")
+        if (colWith.name == "The_Creature")
         {
             if (Input.GetKeyDown("p") && player.GetComponent<CapsuleCollider>().height >= neededHeight)
             {
