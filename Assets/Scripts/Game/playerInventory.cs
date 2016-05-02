@@ -49,7 +49,7 @@ public class playerInventory : Inventory {
                     }
                     else
                     {
-                        DetachBodyParts(moveFromSlot.name);
+                        DetachBodyParts(moveFromSlot.name, playerRef);
                     }
 
                 }
@@ -62,33 +62,33 @@ public class playerInventory : Inventory {
         }
 	}
 
-    public override void DetachBodyParts(string Name)
+    public void DetachBodyParts(string Name, Player playerReference)
     {
         switch (Name)
         {
             case "Head":
                 {
-                    playerRef.Detach(0);
+                    playerReference.Detach(0);
                     break;
                 }
             case "LeftHand":
                 {
-                    playerRef.Detach(1);
+                    playerReference.Detach(1);
                     break;
                 }
             case "RightHand":
                 {
-                    playerRef.Detach(5);
+                    playerReference.Detach(5);
                     break;
                 }
             case "LeftLeg":
                 {
-                    playerRef.Detach(3);
+                    playerReference.Detach(3);
                     break;
                 }
             case "RightLeg":
                 {
-                    playerRef.Detach(7);
+                    playerReference.Detach(7);
                     break;
                 }
         }
