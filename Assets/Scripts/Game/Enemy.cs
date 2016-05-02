@@ -47,20 +47,16 @@ public class Enemy : Character {
     private float stateTimer;
 
     // animation handling
-    private Animator animator;
+    //private Animator animator;
 
     protected override void Awake()
     {
         base.Awake();
 
-        
-
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.updatePosition = false;
         navMeshAgent.updateRotation = false;
         navMeshAgent.stoppingDistance = .5f;
-        animator = GetComponentInChildren<Animator>();
-        animator.Play("idle");
 
         // reference to head cast position.
         headPoint = joints[0].BodyPart.transform;
@@ -109,7 +105,7 @@ public class Enemy : Character {
                 break;
 
             case EnemyState.Wonder:
-                animator.speed = navMeshAgent.desiredVelocity.magnitude;
+                //animator.speed = navMeshAgent.desiredVelocity.magnitude;
                 
                 // if destination reached, go back to idle.
                 // if the path was invalid, just go back to idle.
@@ -127,8 +123,6 @@ public class Enemy : Character {
                 break;
 
             case EnemyState.Attack:
-                // stop moving and throw a spear!
-                
                 break;
 
             case EnemyState.Flee:
@@ -153,6 +147,10 @@ public class Enemy : Character {
 
     private void ChangeStateTo(EnemyState state)
     {
+        // if already set, just return
+        if (state == enemyState)
+            return;
+
         // set state
         enemyState = state;
 
@@ -162,7 +160,7 @@ public class Enemy : Character {
             case EnemyState.Idle:
                 // set state timer to idle time random
                 stateTimer = Random.Range(minIdleTime, maxIdleTime);
-                animator.speed = 1;
+                //animator.speed = 1;
                 //animator.Play("idle");
                 //Debug.Log("IDLE!!");
                 break;
@@ -194,7 +192,7 @@ public class Enemy : Character {
         }
 
         // set state in animator
-        animator.SetInteger("characterState", (int)state);
+        //animator.SetInteger("characterState", (int)state);
     }
 
     private void ScanForPlayer()

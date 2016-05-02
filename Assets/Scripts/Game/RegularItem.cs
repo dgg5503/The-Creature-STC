@@ -8,6 +8,15 @@ public enum RegularItemType
     Quest
 };
 
+public enum ItemState
+{
+    Idle,
+    Aim,
+    Executing,
+    Success,
+    Failure
+}
+
 public abstract class RegularItem : Item  {
 
     /// <summary>
@@ -22,9 +31,9 @@ public abstract class RegularItem : Item  {
     public bool IsUsableWhileNotMounted { get; private set; }
 
     /// <summary>
-    /// Gets whether or not this item is currently mounted.
+    /// Get or set the current state of the item that is being used.
     /// </summary>
-    //public bool IsMounted { get; private set; }
+    public ItemState ItemState { get; protected set;}
 
     protected override void Awake()
     {

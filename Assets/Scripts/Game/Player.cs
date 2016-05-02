@@ -71,6 +71,7 @@ public class Player : Character
     //int tmpIndex = 0;
     //BodyPart tmpBodyPart = null;
     // Update is called once per frame
+    
     protected override void Update()
     {
         
@@ -164,7 +165,6 @@ public class Player : Character
                     mountPoints[i].UseItem();
                     break;
                 }
-            //characterAnimator.SetInteger("characterState", (int)state);
         }
 
         /* DEBUG TESTS */
@@ -196,6 +196,7 @@ public class Player : Character
         }
 
         base.Update();
+        
     }
 
     /// <summary>
@@ -241,13 +242,13 @@ public class Player : Character
 
             acceleration.x += cameraRight.x;
             acceleration.z += cameraRight.z;
+
         }
 
         // apply accel scalar AFTER getting direction
         // this is so we dont add two times the accel scalar 
         // when holding down two direction at the same time.
         acceleration *= accelerationScalar;
-
         
         #endregion
     }
@@ -255,12 +256,6 @@ public class Player : Character
     private void UseItem()
     {
         // fire animation with event?
-    }
-    
-    private void throwSpear()
-    {
-        Debug.Log("hi");
-        state = CharacterState.Idle;
     }
 
     // TODO REMOVE THIS FUNCTION AND ADD ACTUAL TREE DATA STRUCTURE

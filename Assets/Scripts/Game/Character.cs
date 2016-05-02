@@ -24,14 +24,26 @@ using System.Collections;
 
 public enum CharacterState
 {
+    None,
     Idle,
     Walk,
-    Throw_Right,
-    Throw_Left,
+    Fall
+}
+
+public enum GrappleState
+{
+    None,
     Grapple_Right,
     Grapple_Left,
     Fly_Right,
     Fly_Left
+}
+
+public enum ThrowState
+{
+    None,
+    Throw_Left,
+    Throw_Right
 }
 
 [RequireComponent(typeof(Rigidbody))]
@@ -59,7 +71,7 @@ public abstract class Character : MonoBehaviour
     protected Vector3 velocity;
     protected new Rigidbody rigidbody;
     protected new CapsuleCollider collider;
-    protected Animator characterAnimator;
+    private Animator characterAnimator;
 
     /// <summary>
     /// The distance between the bottom of the character collider and the ground
@@ -70,7 +82,7 @@ public abstract class Character : MonoBehaviour
 
     // States n' Actions
     private bool isAlive;
-    protected CharacterState state;
+    private CharacterState characterState;
 
     /// <summary>
     /// Get the inventory of this character.
@@ -182,25 +194,64 @@ public abstract class Character : MonoBehaviour
 
         // always start alive
         isAlive = true;
-        state = CharacterState.Idle;
+        characterState = CharacterState.Idle;
 
         // set layer of character colliders to 10
         gameObject.layer = 10;
 
         // get character animator found in skeletal root!
         characterAnimator = GetComponentInChildren<Animator>();
+        characterAnimator.SetInteger("characterState", (int)characterState);
+    }
+
+    private void ChangeStateTo(CharacterState state)
+    {
+        // if already set, just return
+        if (state == characterState)
+            return;
+
+        // set state
+        characterState = state;
+
+        // make changes
+        switch (state)
+        {
+            case CharacterState.None:
+                break;
+
+            case CharacterState.Idle:
+                characterAnimator.SetFloat("walkSpeed", 0f);
+                break;
+
+            case CharacterState.Walk:
+                break;
+
+            case CharacterState.Fall:
+                break;
+        }
+
+        // set state in animator
+        characterAnimator.SetInteger("characterState", (int)characterState);
     }
 
     protected virtual void Update ()
     {
-        // default state
-        //state = CharacterState.Idle;
+        // apply character state actions.
+        switch (characterState)
+        {
+            case CharacterState.None:
+                break;
 
-        //Debug.DrawLine(collider.bounds.center, collider.bounds.center + (transform.up * ((collider.height / 2) - collider.radius)), Color.red);
-        //Debug.DrawLine(collider.bounds.center, collider.bounds.center - (transform.up * ((collider.height / 2) - collider.radius)), Color.blue);
-        // update animator
-        //characterAnimator.Play("crawl", 1);
-        //characterAnimator.SetInteger("characterState", (int)state);
+            case CharacterState.Idle:
+                break;
+
+            case CharacterState.Walk:
+                characterAnimator.SetFloat("walkSpeed", rigidbody.velocity.magnitude);
+                break;
+
+            case CharacterState.Fall:
+                break;
+        }
     }
 
     void FixedUpdate()
@@ -217,48 +268,14 @@ public abstract class Character : MonoBehaviour
             // lerp directional velocity from this objects forward to the accel norm
             // creates rotation effect purely from velocity
             // TODO: looks smooth when not performing a 180
-            //float forwardAngle = Mathf.Atan2(transform.forward.x, transform.forward.z);
-            //float accelAngle = Mathf.Atan2(acceleration.normalized.x, acceleration.normalized.z);
-            //float angleBetween = Vector3.Angle(transform.forward, acceleration.normalized) * Mathf.Deg2Rad;
-            //Vector3 facingDir = transform.forward;
-            //Vector3 desiredDir = acceleration.normalized;
-
-            //rotate velocity based on turnspeed uniformly
-            //float speed = 10 * Time.deltaTime;
-            //velocity = Vector3.RotateTowards(transform.forward, acceleration.normalized, rotationAccelFactor * (angleBetween / Mathf.PI) * Time.deltaTime, 0) * velocity.magnitude;
-
+            //velocity = Vector3.MoveTowards(transform.forward, acceleration.normalized, Time.fixedDeltaTime * rotationAccelFactor) * velocity.magnitude;
             velocity = Vector3.LerpUnclamped(transform.forward, acceleration.normalized, Time.fixedDeltaTime * rotationAccelFactor) * velocity.magnitude;
-
-            //Debug.Log(string.Format("{0}, {1} : {2}", transform.forward, acceleration.normalized, Time.deltaTime * rotationAccelFactor));
-
-            //Debug.Log(string.Format("FWD: {0} ACC: {1}", forwardAngle, accelAngle));
-
-            //Debug.DrawLine(transform.position, transform.position + (transform.forward + acceleration.normalized) * 10.0f, Color.black);
         }
         else
         {
             // not sure if this is accurate???
-            velocity = Vector3.LerpUnclamped(velocity, Vector3.zero, Time.fixedDeltaTime * accelerationScalar);
-
-            // decrease veloctiy if no acceleration
-            // TODO: base this on friction of surface?
-            // deaccel until velocity is oppposite dir of forward
-            // opposite dir of stopping forward.
-            /*
-            if (velocity.magnitude > .00001)
-            {
-                //Debug.Log(velocity.magnitude);
-                //Debug.DrawLine(transform.position, transform.position + velocity.normalized * 10, Color.black);
-                //Debug.DrawLine(transform.position, transform.position + transform.forward * 10, Color.blue);
-                velocity *= (1 / accelerationScalar) * Time.deltaTime;
-                //velocity += transform.forward * -accelerationScalar * Time.deltaTime;
-            }
-            else
-            {
-                
-                velocity = Vector3.zero;
-            }
-            // */
+            //velocity = Vector3.LerpUnclamped(velocity, Vector3.zero, Time.fixedDeltaTime * accelerationScalar);
+            velocity = Vector3.MoveTowards(velocity, Vector3.zero, Time.fixedDeltaTime * accelerationScalar);
         }
 
         // clamp to this characters max velocity.
@@ -266,25 +283,19 @@ public abstract class Character : MonoBehaviour
 
         // makes character face velocity.
         if (velocity != Vector3.zero)
-        {
             transform.forward = velocity.normalized;
-        }
 
-
-        // move the character based on velocity
-        //transform.position += (velocity * Time.deltaTime);
-
-        // TODO: perhaps use addforce to rid of this check?
-        // or just use the RB velocity overall.
-
-        // TMP FIX
-        //velocity.y = rigidbody.velocity.y;
+        // grounded check
         if (IsGrounded)
         {
-            //rigidbody.AddRelativeForce(velocity, ForceMode.VelocityChange);
             rigidbody.velocity = new Vector3(velocity.x, rigidbody.velocity.y, velocity.z);
+            if (velocity.sqrMagnitude > .16f)
+                ChangeStateTo(CharacterState.Walk);
+            else
+                ChangeStateTo(CharacterState.Idle);
         }
-
+        else
+            ChangeStateTo(CharacterState.Fall);
 
         // set accel to 0
         acceleration = Vector3.zero;
@@ -306,7 +317,6 @@ public abstract class Character : MonoBehaviour
         for (int i = 0; i < mountPoints.Length; ++i)
             if (itemToMount.MountTo(mountPoints[i]) != null)
                 return true;
-           
 
         // return true, we did it reddit!
         return false;
@@ -372,8 +382,8 @@ public abstract class Character : MonoBehaviour
             Detach(bodyPartToAttach.BodyPartType);
             return false;
         }
-        
 
+        CrawlCheck();
 
         return true;
     }
@@ -414,6 +424,8 @@ public abstract class Character : MonoBehaviour
             for (int z = 0; z < bodyParts.Length; ++z)
                 clothing[i].RemoveBodyPart(bodyParts[z]);
         }
+
+        CrawlCheck();
 
         return tmpPart;
     }
@@ -510,5 +522,17 @@ public abstract class Character : MonoBehaviour
 
         // put back rotation after all have been processed?
         currentBodyPart.transform.localRotation = currLocalRot;
+    }
+
+    /// <summary>
+    /// Checks to see if the character is missing enough legs to crawl!
+    /// </summary>
+    private void CrawlCheck()
+    {
+        // determine if player should crawl, check to see if 3 and 7 are on the player.
+        if (joints[3].BodyPart == null && joints[7].BodyPart == null)
+            characterAnimator.SetBool("isCrawling", true);
+        else
+            characterAnimator.SetBool("isCrawling", false);
     }
 }

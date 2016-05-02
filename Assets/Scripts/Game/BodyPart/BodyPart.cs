@@ -47,13 +47,15 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     [SerializeField]
     private bool isDetachable = true;
 
-    private bool isControlledByJoint;
+    //private bool IsControlledByJoint;
 
     // Holds joint bodypart endpoint connections
     [Header("End Points")]
     public List<int> _keys = new List<int>();
     public List<Vector3> _values = new List<Vector3>();
     public Dictionary<int, Vector3> endPoints = new Dictionary<int, Vector3>();
+
+    public bool IsControlledByJoint { get; set; }
 
     /// <summary>
     /// Get the body part type integer of this body part. Body part types should always matched with their
@@ -88,7 +90,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
             {
                 joint = value;
                 joint.BodyPart = this;
-                isControlledByJoint = true;
+                IsControlledByJoint = true;
             }
             else
             {
@@ -96,7 +98,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
                 {
                     joint.BodyPart = null;
                     joint = null;
-                    isControlledByJoint = false;
+                    IsControlledByJoint = false;
                 }
             }
         }
@@ -171,7 +173,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         currHealth = maxHealth;
 
         // Control determined later
-        isControlledByJoint = true;
+        IsControlledByJoint = true;
     }
 
     // Use this for initialization
@@ -210,7 +212,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     /// </summary>
     void LateUpdate()
     {
-        if (joint != null && isControlledByJoint)
+        if (joint != null && IsControlledByJoint)
             transform.localRotation = joint.transform.localRotation;
     }
 
@@ -320,7 +322,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
             //Debug.Log("Set silly OFF: " + name);
         }
 
-        isControlledByJoint = false;
+        IsControlledByJoint = false;
     }
     /// <summary>
     /// Detaches this body part from whatever parent it's connected to.

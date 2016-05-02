@@ -113,8 +113,8 @@ ModelImporter:
     4300030: CreatureShirt
     4300032: CreaturePants
     7400000: cre_walk
-    7400002: cre_throw_right
-    7400004: cre_throw_left
+    7400002: cre_aim_right
+    7400004: cre_aim_left
     7400006: cre_grapple_right
     7400008: cre_fly_right
     7400010: cre_grapple_left
@@ -122,6 +122,8 @@ ModelImporter:
     7400014: cre_crawl
     7400016: cre_idle
     7400018: cre_crawl_idle
+    7400020: cre_throw_right
+    7400022: cre_throw_left
     9500000: //RootNode
   materials:
     importMaterials: 1
@@ -132,7 +134,7 @@ ModelImporter:
     bakeSimulation: 0
     resampleRotations: 1
     optimizeGameObjects: 0
-    motionNodeName: 
+    motionNodeName: Torso
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -229,10 +231,10 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 1
     - serializedVersion: 16
-      name: cre_throw_right
+      name: cre_aim_right
       takeName: Take 001
       firstFrame: 40
-      lastFrame: 60
+      lastFrame: 48
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -313,10 +315,10 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 1
     - serializedVersion: 16
-      name: cre_throw_left
+      name: cre_aim_left
       takeName: Take 001
       firstFrame: 70
-      lastFrame: 90
+      lastFrame: 78
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -905,6 +907,174 @@ ModelImporter:
       takeName: Take 001
       firstFrame: 187
       lastFrame: 187
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: CreaturePants
+        weight: 1
+      - path: CreatureShirt
+        weight: 1
+      - path: Head
+        weight: 1
+      - path: Head/CreatureHead
+        weight: 1
+      - path: Head/CreatureHead/CreatureEyes
+        weight: 1
+      - path: Head/CreatureHead/HeadScrew
+        weight: 1
+      - path: Left_Arm
+        weight: 1
+      - path: Left_Arm/Creature_Left_Arm_Part_1
+        weight: 1
+      - path: Left_Arm/Left_Arm_Part_2
+        weight: 1
+      - path: Left_Arm/Left_Arm_Part_2/Creature_Left_Arm_Part_2
+        weight: 1
+      - path: Left_Leg
+        weight: 1
+      - path: Left_Leg/Creature_Left_Leg_Part_1
+        weight: 1
+      - path: Left_Leg/Left_Leg_Part_2
+        weight: 1
+      - path: Left_Leg/Left_Leg_Part_2/Creature_Left_Leg_Part_2
+        weight: 1
+      - path: Left_Leg/Left_Leg_Part_2/Creature_Left_Leg_Part_2/Creature_Left_Boot
+        weight: 1
+      - path: Right_Arm
+        weight: 1
+      - path: Right_Arm/Creature_Right_Arm_Part_1
+        weight: 1
+      - path: Right_Arm/Right_Arm_Part_2
+        weight: 1
+      - path: Right_Arm/Right_Arm_Part_2/Creature_Right_Arm_Part_2
+        weight: 1
+      - path: Right_Leg
+        weight: 1
+      - path: Right_Leg/Creature_Right_Leg_Part_1
+        weight: 1
+      - path: Right_Leg/Right_Leg_Part_2
+        weight: 1
+      - path: Right_Leg/Right_Leg_Part_2/Creature_Right_Leg_Part_2
+        weight: 1
+      - path: Right_Leg/Right_Leg_Part_2/Creature_Right_Leg_Part_2/Creature_Right_Boot
+        weight: 1
+      - path: Torso
+        weight: 1
+      - path: Torso/Creature_Torso
+        weight: 1
+      - path: Torso/Creature_Torso/NeckScrew
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 1
+    - serializedVersion: 16
+      name: cre_throw_right
+      takeName: Take 001
+      firstFrame: 48
+      lastFrame: 60
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: CreaturePants
+        weight: 1
+      - path: CreatureShirt
+        weight: 1
+      - path: Head
+        weight: 1
+      - path: Head/CreatureHead
+        weight: 1
+      - path: Head/CreatureHead/CreatureEyes
+        weight: 1
+      - path: Head/CreatureHead/HeadScrew
+        weight: 1
+      - path: Left_Arm
+        weight: 1
+      - path: Left_Arm/Creature_Left_Arm_Part_1
+        weight: 1
+      - path: Left_Arm/Left_Arm_Part_2
+        weight: 1
+      - path: Left_Arm/Left_Arm_Part_2/Creature_Left_Arm_Part_2
+        weight: 1
+      - path: Left_Leg
+        weight: 1
+      - path: Left_Leg/Creature_Left_Leg_Part_1
+        weight: 1
+      - path: Left_Leg/Left_Leg_Part_2
+        weight: 1
+      - path: Left_Leg/Left_Leg_Part_2/Creature_Left_Leg_Part_2
+        weight: 1
+      - path: Left_Leg/Left_Leg_Part_2/Creature_Left_Leg_Part_2/Creature_Left_Boot
+        weight: 1
+      - path: Right_Arm
+        weight: 1
+      - path: Right_Arm/Creature_Right_Arm_Part_1
+        weight: 1
+      - path: Right_Arm/Right_Arm_Part_2
+        weight: 1
+      - path: Right_Arm/Right_Arm_Part_2/Creature_Right_Arm_Part_2
+        weight: 1
+      - path: Right_Leg
+        weight: 1
+      - path: Right_Leg/Creature_Right_Leg_Part_1
+        weight: 1
+      - path: Right_Leg/Right_Leg_Part_2
+        weight: 1
+      - path: Right_Leg/Right_Leg_Part_2/Creature_Right_Leg_Part_2
+        weight: 1
+      - path: Right_Leg/Right_Leg_Part_2/Creature_Right_Leg_Part_2/Creature_Right_Boot
+        weight: 1
+      - path: Torso
+        weight: 1
+      - path: Torso/Creature_Torso
+        weight: 1
+      - path: Torso/Creature_Torso/NeckScrew
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 1
+    - serializedVersion: 16
+      name: cre_throw_left
+      takeName: Take 001
+      firstFrame: 78
+      lastFrame: 90
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

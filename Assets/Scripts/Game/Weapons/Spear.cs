@@ -18,6 +18,7 @@ public class Spear : Weapon {
     {
         base.Awake();
 
+        ItemState = ItemState.Idle;
         type = RegularItemType.Weapon;
         amountOfItems = 1;
         damage = 10;
@@ -59,6 +60,7 @@ public class Spear : Weapon {
     {
         // disable pass through collision check.
         passThroughTrigger.enabled = false;
+        
     }
     
     // Use this for initialization
@@ -86,6 +88,9 @@ public class Spear : Weapon {
 
             // apply force relative
             rigidbody.AddRelativeForce(Vector3.right * 800);
+
+            // set to executing the item
+            ItemState = ItemState.Executing;
         }
     }
 
@@ -121,6 +126,9 @@ public class Spear : Weapon {
     {
         if (impalePoint.ImpaleState != ImpaleState.Impaling)
         {
+            // reset item state
+            ItemState = ItemState.Idle;
+
             //Debug.Log("checking " + name);
             //rigidbody.velocity = Vector3.zero;
             // reset everything.
