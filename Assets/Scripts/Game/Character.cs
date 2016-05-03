@@ -85,7 +85,7 @@ public abstract class Character : MonoBehaviour
     private float groundedContact = .05f;
 
     // States n' Actions
-    private bool isAlive;
+    //private bool isAlive;
     private CharacterState characterState;
 
     /// <summary>
@@ -97,9 +97,11 @@ public abstract class Character : MonoBehaviour
     {
         get
         {
-            return isAlive;
+            if(characterState != CharacterState.None)
+                return true;
+            return false;
         }
-
+        /*
         set
         {
             isAlive = value;
@@ -116,6 +118,7 @@ public abstract class Character : MonoBehaviour
                 }
             }
         }
+        */
     }
 
     /// <summary>
@@ -197,7 +200,7 @@ public abstract class Character : MonoBehaviour
         RecalculateCollisionBounds();
 
         // always start alive
-        isAlive = true;
+        //isAlive = true;
         isCrawling = false; // assume not crawling until crawl check
         characterState = CharacterState.Idle;
 
@@ -277,6 +280,10 @@ public abstract class Character : MonoBehaviour
 
     void FixedUpdate()
     {
+        // if state is none, assume dead
+        if (characterState == CharacterState.None)
+            return;
+
         // calculate movement
         ProcessMovement();
 
@@ -370,7 +377,10 @@ public abstract class Character : MonoBehaviour
 
     public bool Attach(BodyPart bodyPartToAttach)
     {
-        if (bodyPartToAttach == null || !joints.ContainsKey(bodyPartToAttach.BodyPartType))
+        // make sure part isnt null, exists in joint dictionary and player isnt dead
+        if (bodyPartToAttach == null ||
+            !joints.ContainsKey(bodyPartToAttach.BodyPartType) ||
+            characterState == CharacterState.None)
             return false;
         
         if (!bodyPartToAttach.SetSkeleton(joints))
@@ -424,6 +434,42 @@ public abstract class Character : MonoBehaviour
         return true;
     }
 
+    /*
+    * 1. Execute individual states based on conditions
+    *  a. Idle - not hitting button (REQUIRED)
+    *  b. Aim - button held down (optional)
+    *  c. Executing - button let go (REQUIRED)
+    *  d. Success - item hit target (REQUIRED)
+    *  e. Failure - item failed to hit target (optional)
+    * 2. Get item state name from item itself.
+    * 3. Get item independent state and transition / apply animation.
+    *  
+    */
+    public void UseItem(RegularItem item)
+    {
+        // check to see if item state already set
+        switch (item.ItemState)
+        {
+            case ItemState.Idle:
+                break;
+
+            case ItemState.Aim:
+                break;
+
+            case ItemState.Executing:
+                break;
+
+            case ItemState.Success:
+                break;
+
+            case ItemState.Failure:
+                break;
+        }
+
+        characterAnimator.SetInteger(item.ItemStateTag, (int)item.ItemState);
+    }
+
+
     /// <summary>
     /// Detaches a body part based on its index within the list of body parts.
     /// </summary>
@@ -434,7 +480,7 @@ public abstract class Character : MonoBehaviour
         // see if part exists
         if (!joints.ContainsKey(bodyPartID))
         {
-            Debug.Log("Failed: " + joints[bodyPartID].name);
+            //Debug.Log("Failed: " + joints[bodyPartID].name);
             return null;
         }
 
@@ -469,16 +515,18 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// Call this function when the character should be placed into a "death" state.
     /// </summary>
-    /*
-    public virtual void Die()
+    protected virtual void Die()
     {
-        // explode and then destroy the character?
-        state = CharacterState.Dead;
+        characterState = CharacterState.None;
 
-        // unparent the root from this character handler and then remove the character handler.
+        // place in ragdoll mode.
+        rigidbody.isKinematic = false;
+        collider.enabled = false;
+        accelerationScalar = 0;
+        rotationAccelFactor = 0;
+        maxSpeed = 0;
+
     }
-    */
-
     /// <summary>
     /// Recalculates the capsule colliders bounds.
     /// TODO: IGNORE HANDS

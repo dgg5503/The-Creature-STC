@@ -22,13 +22,6 @@ public class Corpse : Character
         // Initiate parent first THEN move on to this classes stuff.
         base.Awake();
 
-        // place in ragdoll mode.
-        rigidbody.isKinematic = false;
-        collider.enabled = false;
-        accelerationScalar = 0;
-        rotationAccelFactor = 0;
-        maxSpeed = 0;
-        
         // tag as corpse for easy mouse detection
         tag = "Corpse";
     }
@@ -36,13 +29,27 @@ public class Corpse : Character
     // Use this for initialization
     protected override void Start()
     {
-        IsAlive = false;
+        //IsAlive = false;
+        Die();
     }
 
     // Update is called once per frame
     protected override void Update()
     { 
         base.Update();
+    }
+
+    protected override void Die()
+    {
+        base.Die();
+
+        // set all bparts to false kinematics...
+        BodyPart[] allBodyParts = GetComponentsInChildren<BodyPart>();
+        for (int i = 0; i < allBodyParts.Length; ++i)
+        {
+            allBodyParts[i].SetLimp();
+            allBodyParts[i].gameObject.layer = 0;
+        }
     }
 
     /// <summary>

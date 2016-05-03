@@ -18,6 +18,8 @@ public class Spear : Weapon {
     {
         base.Awake();
 
+        ItemStateTag = "throwState";
+
         ItemState = ItemState.Idle;
         type = RegularItemType.Weapon;
         amountOfItems = 1;

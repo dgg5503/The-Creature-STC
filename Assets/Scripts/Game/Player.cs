@@ -253,11 +253,6 @@ public class Player : Character
         #endregion
     }
 
-    private void UseItem()
-    {
-        // fire animation with event?
-    }
-
     // TODO REMOVE THIS FUNCTION AND ADD ACTUAL TREE DATA STRUCTURE
     private GameObject GetRoot(GameObject bodyPart)
     {

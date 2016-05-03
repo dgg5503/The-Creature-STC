@@ -35,9 +35,16 @@ public abstract class RegularItem : Item  {
     /// </summary>
     public ItemState ItemState { get; protected set;}
 
+    /// <summary>
+    /// Get or set the item state tag used with character animators.
+    /// </summary>
+    public string ItemStateTag { get; protected set; }
+
     protected override void Awake()
     {
         base.Awake();
+
+        ItemStateTag = "null";
 
         // see if we're already a child of a mountpoint!
         // if so, remount, ignores collision!
