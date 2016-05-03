@@ -223,11 +223,6 @@ public class ImpalePoint : MonoBehaviour {
             lastVelocity = parentModel.right * currSpeed;
             parentRigidBody.velocity = lastVelocity;
             currSpeed = 0;
-
-            //Debug.Log(rigidbody.velocity);
-
-            // set final collision null
-            //finalCollision = null;
         }
     }
 

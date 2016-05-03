@@ -72,6 +72,10 @@ public abstract class Character : MonoBehaviour
     protected new Rigidbody rigidbody;
     protected new CapsuleCollider collider;
     private Animator characterAnimator;
+    private CrawlRootAnim crawlController;
+    private Quaternion crawlAngle;
+    private float leanForwardAngle = 35f;
+    private bool isCrawling;
 
     /// <summary>
     /// The distance between the bottom of the character collider and the ground
@@ -194,6 +198,7 @@ public abstract class Character : MonoBehaviour
 
         // always start alive
         isAlive = true;
+        isCrawling = false; // assume not crawling until crawl check
         characterState = CharacterState.Idle;
 
         // set layer of character colliders to 10
@@ -202,6 +207,14 @@ public abstract class Character : MonoBehaviour
         // get character animator found in skeletal root!
         characterAnimator = GetComponentInChildren<Animator>();
         characterAnimator.SetInteger("characterState", (int)characterState);
+        crawlController = GetComponentInChildren<CrawlRootAnim>();
+        crawlAngle = Quaternion.Euler(leanForwardAngle, 0, 0);
+    }
+
+    protected virtual void Start()
+    {
+        // check to see if we should start as crawling.
+        CrawlCheck();
     }
 
     private void ChangeStateTo(CharacterState state)
@@ -220,10 +233,18 @@ public abstract class Character : MonoBehaviour
                 break;
 
             case CharacterState.Idle:
+                // set walk speed to 0
                 characterAnimator.SetFloat("walkSpeed", 0f);
+
+                // return to 0 angle.
+                if (crawlController != null)
+                    crawlController.SetCrawlingAngle(Quaternion.identity);
                 break;
 
             case CharacterState.Walk:
+                // return to crawl angle if crawling!
+                if (crawlController != null && isCrawling)
+                    crawlController.SetCrawlingAngle(crawlAngle);
                 break;
 
             case CharacterState.Fall:
@@ -307,7 +328,11 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     abstract protected void ProcessMovement(); 
     
-    // TODO: Limit mount point to just right hand?
+    /// <summary>
+    /// Mounts an item to the first open mount point.
+    /// </summary>
+    /// <param name="itemToMount">Item to mount to this character.</param>
+    /// <returns>True if the item mounted successfully, otherwise false.</returns>
     public bool MountItem(RegularItem itemToMount)
     {
         // look for empty mount point
@@ -317,6 +342,27 @@ public abstract class Character : MonoBehaviour
         for (int i = 0; i < mountPoints.Length; ++i)
             if (itemToMount.MountTo(mountPoints[i]) != null)
                 return true;
+
+        // return true, we did it reddit!
+        return false;
+    }
+
+    /// <summary>
+    /// Mounts a given item to a provided body part type if that joint's mount
+    /// point is empty.
+    /// </summary>
+    /// <param name="itemToMount">Item to mount to this character.</param>
+    /// <param name="bodyPartType">Body part ID to mount this item to.</param>
+    /// <returns>True if the item mounted successfully, otherwise false.</returns>
+    public bool MountItem(RegularItem itemToMount, int bodyPartType)
+    {
+        // look for empty mount point
+        MountPoint[] mountPoints = GetComponentsInChildren<MountPoint>();
+
+        // if slots are full, return false!
+        for (int i = 0; i < mountPoints.Length; ++i)
+            if (mountPoints[i].BodyPartType == bodyPartType)
+                return itemToMount.MountTo(mountPoints[i]) ? true : false;
 
         // return true, we did it reddit!
         return false;
@@ -351,16 +397,6 @@ public abstract class Character : MonoBehaviour
         // calc new bounds
         RecalculateCollisionBounds();
 
-        // capsule cast up for possible new height to ensure wont get stuck.
-        /*RaycastHit[] hits = Physics.CapsuleCastAll(collider.bounds.center - (transform.up * ((collider.height / 2) - collider.radius)),
-            collider.bounds.center + (transform.up * ((collider.height / 2) - collider.radius)),
-            collider.radius - .01f,
-            transform.up,
-            collider.radius - .01f,
-            GameManager.GroundedLayerMask);*/
-
-        // height offset of old capsule collider and new one
-
         // capsule check to see if we can move up.
         RaycastHit[] hits = Physics.CapsuleCastAll(bottomHeight,
             bottomHeight + (transform.up * (collider.height - (collider.radius * 2))),
@@ -373,12 +409,12 @@ public abstract class Character : MonoBehaviour
         // revert if hits found.
         if (hits.Length != 0)
         {
-            
+            /*
             foreach (RaycastHit hit in hits)
                 Debug.Log(hit.transform.name);
             Debug.DrawLine(bottomHeight, bottomHeight + (transform.up * (collider.height - (collider.radius * 2))));
             Debug.Break();
-            
+            */
             Detach(bodyPartToAttach.BodyPartType);
             return false;
         }
@@ -443,8 +479,6 @@ public abstract class Character : MonoBehaviour
     }
     */
 
-    // calculate collision bounds and return 
-
     /// <summary>
     /// Recalculates the capsule colliders bounds.
     /// TODO: IGNORE HANDS
@@ -472,13 +506,6 @@ public abstract class Character : MonoBehaviour
         //transform.localRotation = currLocalRot;
     }
 
-    // still broken....
-    // TODO, FIX STRANGE ANOMLY WHERE BODY PARTS SLOWLY MOVE AWAY FROM ORIGIN LOCATIONS.
-    // TODO, MAKE SURE THIS IS CALLED IN FIXED UPDATE (BEFORE PHYSICS ARE CALCd)
-    // PERHAPS VELOCITY JUST NEEDS TO BE IN FIXED UPDATE?
-    // REIMPLEMENT ROTATION TO IDENTITY (OR DEFAULT POSE)
-    // YIELD FIXED UPDATE?
-    // TODO, ALERRRRRRRT MAKE SURE TO PUT IN CHECKS FOR WHEN RESIZING UP/DOWN, DONT WANNA GO OOB :)))
     private void RecalculateCollisionBounds(ref Bounds currentBounds, GameObject currentBodyPart)
     {
         // make sure not a regular item (i.e. something that wont be ATTACHED like a bodypart)
@@ -498,7 +525,6 @@ public abstract class Character : MonoBehaviour
         // keep last local rot
         Quaternion currLocalRot = currentBodyPart.transform.localRotation;
         currentBodyPart.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-
         if (currentBodyPart.transform.childCount != 0)
             foreach (Transform child in currentBodyPart.transform) 
                 RecalculateCollisionBounds(ref currentBounds, child.gameObject);
@@ -530,9 +556,23 @@ public abstract class Character : MonoBehaviour
     private void CrawlCheck()
     {
         // determine if player should crawl, check to see if 3 and 7 are on the player.
-        if (joints[3].BodyPart == null && joints[7].BodyPart == null)
-            characterAnimator.SetBool("isCrawling", true);
+        if (joints[3].BodyPart == null &&
+            joints[7].BodyPart == null)
+        {
+            isCrawling = true;
+            characterAnimator.SetBool("isCrawling", isCrawling);
+            if(crawlController != null)
+                crawlController.SetCrawlingAngle(crawlAngle);
+        }
         else
-            characterAnimator.SetBool("isCrawling", false);
+        {
+            if (isCrawling)
+            {
+                isCrawling = false;
+                characterAnimator.SetBool("isCrawling", isCrawling);
+                if (crawlController != null)
+                    crawlController.SetCrawlingAngle(Quaternion.identity);
+            }
+        }
     }
 }

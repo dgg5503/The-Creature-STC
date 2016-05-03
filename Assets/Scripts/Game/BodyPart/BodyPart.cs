@@ -47,6 +47,9 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     [SerializeField]
     private bool isDetachable = true;
 
+    [SerializeField]
+    private bool isControlledByJoint;
+
     //private bool IsControlledByJoint;
 
     // Holds joint bodypart endpoint connections
@@ -54,8 +57,19 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     public List<int> _keys = new List<int>();
     public List<Vector3> _values = new List<Vector3>();
     public Dictionary<int, Vector3> endPoints = new Dictionary<int, Vector3>();
+    
+    public bool IsControlledByJoint
+    {
+        get
+        {
+            return isControlledByJoint;
+        }
 
-    public bool IsControlledByJoint { get; set; }
+        set
+        {
+            isControlledByJoint = value;
+        }
+    }
 
     /// <summary>
     /// Get the body part type integer of this body part. Body part types should always matched with their
@@ -120,15 +134,20 @@ public class BodyPart : Item, ISerializationCallbackReceiver
 
         set
         {
-            // TODO CHECK TO SEE IF SHOULD DETACH.
-            currHealth = value;
+            // ensure we never get negative health.
+            if (value >= 0)
+                currHealth = value;
+            else
+                currHealth = 0;
 
             /*
              * if(transform.root.getComponenet<playerinventory>() != null)
              *      playerinventory.recalculateHealth(bodypartID, value);
              */
 
-            if (currHealth <= minHealth)
+            // non detachable bodyparts cannot fall off.
+            if (currHealth <= minHealth &&
+                !isDetachable)
                 Detach();
         }
     }
