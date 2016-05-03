@@ -819,13 +819,15 @@ class GenerateBodyPartPrefabs : EditorWindow {
 
     void OnDestroy()
     {
-        // save dictionary to text asset
-        string finalFile = "";
-        foreach (KeyValuePair<int, string> kvp in jointTypeDict)
-            finalFile += kvp.Key + "\t" + kvp.Value + "\n";
+        // save dictionary to text asset test
+        if (jointTypeDict.Count != 0)
+        {
+            string finalFile = "";
+            foreach (KeyValuePair<int, string> kvp in jointTypeDict)
+                finalFile += kvp.Key + "\t" + kvp.Value + "\n";
 
-        File.WriteAllText(Application.dataPath + "/Resources/joints.txt", finalFile);
-        AssetDatabase.SaveAssets();
-        
+            File.WriteAllText(Application.dataPath + "/Resources/joints.txt", finalFile);
+            AssetDatabase.SaveAssets();
+        }
     }
 }

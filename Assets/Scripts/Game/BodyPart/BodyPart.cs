@@ -39,6 +39,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
 
     // Part specific
     private CustomJoint joint;
+    private MountPoint mountPoint;
 
     // Serialized to store body part type.
     [SerializeField]
@@ -170,6 +171,17 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         }
     }
 
+    /// <summary>
+    /// Gets the mount point found on this bodypart (if it exists).
+    /// </summary>
+    public MountPoint MountPoint
+    {
+        get
+        {
+            return mountPoint;
+        }
+    }
+
     /*
         Use this function as the "constructor" since it occurs at the same time
         as instantiation.
@@ -193,6 +205,9 @@ public class BodyPart : Item, ISerializationCallbackReceiver
 
         // Control determined later
         IsControlledByJoint = true;
+
+        // get mount point if it exists
+        mountPoint = GetComponentInChildren<MountPoint>();
     }
 
     // Use this for initialization

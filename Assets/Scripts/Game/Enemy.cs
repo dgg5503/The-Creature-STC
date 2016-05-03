@@ -32,6 +32,8 @@ public class Enemy : Character {
     public float maxWonderTime = 7;
     public float minWonderTime = 3;
     public float fleeTime = 4;
+    public float equipTime = 5;
+    public float aimTime = 5;
 
     // nav mesh agent info
     private NavMeshAgent navMeshAgent;
@@ -41,6 +43,7 @@ public class Enemy : Character {
     private float calculatedAngle;
     private Transform headPoint;
     private RaycastHit[] raycastHits;
+    private Character targetedCharacter;
 
     // state machine
     private EnemyState enemyState;
@@ -61,6 +64,7 @@ public class Enemy : Character {
         // reference to head cast position.
         headPoint = joints[0].BodyPart.transform;
         calculatedAngle = Mathf.Cos(Mathf.Deg2Rad * coneAngle);
+        targetedCharacter = null;
 
         // start idle
         enemyState = EnemyState.Idle;
@@ -89,7 +93,8 @@ public class Enemy : Character {
         base.Update();
 
         // scan for the enemy
-        ScanForPlayer();
+        if(targetedCharacter == null)
+            ScanForPlayer();
 
         // state machine
         // handle state actions here
@@ -123,6 +128,25 @@ public class Enemy : Character {
                 break;
 
             case EnemyState.Attack:
+                stateTimer -= Time.deltaTime;
+
+                // draw line
+                Debug.DrawLine(headPoint.position, targetedCharacter.transform.position, Color.red);
+
+                // look at target and use item.
+                Vector3 targetVector = targetedCharacter.transform.position - headPoint.transform.position;
+                Vector3 lookDirection = targetVector.normalized;
+                lookDirection.y = 0;
+                transform.forward = lookDirection;
+
+                if(stateTimer <= 0)
+                {
+                    BodyPart bodyPart;
+                    if ((bodyPart = joints[(int)CreatureBodyBones.Left_Arm_Part_2].BodyPart) != null)
+                        bodyPart.MountPoint.UseItem();
+                    stateTimer = aimTime;
+                }
+
                 break;
 
             case EnemyState.Flee:
@@ -153,7 +177,7 @@ public class Enemy : Character {
 
         // set state
         enemyState = state;
-
+        
         // make changes
         switch (state)
         {
@@ -177,7 +201,10 @@ public class Enemy : Character {
                 break;
 
             case EnemyState.Attack:
-                
+                // stop moving for now
+                navMeshAgent.Stop();
+
+                stateTimer = aimTime;
                 break;
 
             case EnemyState.Flee:
@@ -218,22 +245,24 @@ public class Enemy : Character {
                 if ((Vector3.Dot(transform.forward, positionDifference)) > calculatedAngle)
                 {
                     // Logical reaction
-                    Debug.DrawLine(headPoint.position, raycastHits[i].collider.transform.position, Color.red);
-                    SeePlayerResponse(raycastHits[i].collider.gameObject);
+                    //Debug.DrawLine(headPoint.position, raycastHits[i].collider.transform.position, Color.red);
+                    SeePlayerResponse(raycastHits[i].collider.GetComponent<Character>());
                     break;
                 }
             }
         }
     }
 
-    private void SeePlayerResponse(GameObject go)
+    private void SeePlayerResponse(Character character)
     {
+        targetedCharacter = character;
+        ChangeStateTo(EnemyState.Attack);
         // set state based on current stats
         // have a weapon? try to attack
         // if hasWeapon
-            // changeStateTo Attack
+        // changeStateTo Attack
         // else (has no weapon)
-            // changeStateTo Flee
+        // changeStateTo Flee
 
     }
 
