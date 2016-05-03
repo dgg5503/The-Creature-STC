@@ -61,7 +61,7 @@ public class Player : Character
     }
 
     // Use this for initialization
-    void Start()
+    protected override void Start()
     {
         characterInventory.SetActive(true);
 

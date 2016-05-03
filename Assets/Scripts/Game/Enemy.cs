@@ -67,7 +67,7 @@ public class Enemy : Character {
         stateTimer = Random.Range(minIdleTime, maxIdleTime);
     }
 
-    void Start()
+    protected override void Start()
     {
         // DEBUG EQUIP.
         RegularItem tmpItem = (Instantiate(GameManager.PrefabDictionary["spear"]) as GameObject).GetComponent<RegularItem>();
