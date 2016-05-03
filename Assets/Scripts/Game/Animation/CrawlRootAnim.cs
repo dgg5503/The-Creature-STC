@@ -5,17 +5,14 @@ using System.Collections;
 public class CrawlRootAnim : MonoBehaviour {
 
     // Fields
-    private Animator animator;
     private Quaternion crawlAngle;
     private WaitForEndOfFrame waitEOF; // save in var so we dont create a new one in coroutine.
 
     [SerializeField]
     private float transitionTime = 0.05f;
-    private float standTallTime = 0.25f;
 
     void Awake()
     {
-        animator = GetComponent<Animator>();
         waitEOF = new WaitForEndOfFrame();
     }
 

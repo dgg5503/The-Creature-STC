@@ -515,7 +515,9 @@ public abstract class Character : MonoBehaviour
         
         // QUICK FIX TODO DELETE
         BodyPart currBPart = currentBodyPart.GetComponent<BodyPart>();
-        if (currBPart != null && (currBPart.BodyPartType == 1 || currBPart.BodyPartType == 5))
+        if (currBPart != null &&
+            (currBPart.BodyPartType == CreatureBodyBones.Left_Arm ||
+             currBPart.BodyPartType == CreatureBodyBones.Right_Arm))
             return;
 
         if (currentBodyPart.GetComponent<Cloth>() != null)
@@ -556,8 +558,8 @@ public abstract class Character : MonoBehaviour
     private void CrawlCheck()
     {
         // determine if player should crawl, check to see if 3 and 7 are on the player.
-        if (joints[3].BodyPart == null &&
-            joints[7].BodyPart == null)
+        if (joints[CreatureBodyBones.Left_Leg].BodyPart == null &&
+            joints[CreatureBodyBones.Right_Leg].BodyPart == null)
         {
             isCrawling = true;
             characterAnimator.SetBool("isCrawling", isCrawling);

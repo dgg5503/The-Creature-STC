@@ -142,7 +142,7 @@ public class Enemy : Character {
                 if(stateTimer <= 0)
                 {
                     BodyPart bodyPart;
-                    if ((bodyPart = joints[(int)CreatureBodyBones.Left_Arm_Part_2].BodyPart) != null)
+                    if ((bodyPart = joints[CreatureBodyBones.Left_Arm_Part_2].BodyPart) != null)
                         bodyPart.MountPoint.UseItem();
                     stateTimer = aimTime;
                 }

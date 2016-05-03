@@ -9,10 +9,10 @@
                .Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries)
                .Select(part => part.Split('\t'))
                .ToDictionary(split => int.Parse(split[0]), split => split[1]); #>
-public enum CreatureBodyBones
+public static class CreatureBodyBones
 {
 <# foreach(KeyValuePair<int, string> kvp in bParts)
 { #>
-	<#= kvp.Value #> = <#= kvp.Key#>,
+	public const int <#= kvp.Value #> = <#= kvp.Key#>;
 <# } #>
 }

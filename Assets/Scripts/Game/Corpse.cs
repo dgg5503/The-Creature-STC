@@ -34,7 +34,7 @@ public class Corpse : Character
     }
 
     // Use this for initialization
-    void Start()
+    protected override void Start()
     {
         IsAlive = false;
     }
