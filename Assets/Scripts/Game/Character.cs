@@ -561,8 +561,9 @@ public abstract class Character : MonoBehaviour
         {
             isCrawling = true;
             characterAnimator.SetBool("isCrawling", isCrawling);
+            /*
             if(crawlController != null)
-                crawlController.SetCrawlingAngle(crawlAngle);
+                crawlController.SetCrawlingAngle(crawlAngle);*/
         }
         else
         {
