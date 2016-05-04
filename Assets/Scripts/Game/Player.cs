@@ -29,7 +29,7 @@ public class Player : Character
     private GameObject rightLegHealthBar;
     private int cheatIWay = 1;
     private string path;
-
+    private BodyPart testingBodyPart;
     //TEst
     // private Canvas getCanvas;
     //  private Camera passCamera;
@@ -56,6 +56,8 @@ public class Player : Character
         leftLegHealthBar = GameObject.FindGameObjectWithTag("LLHB");
         rightLegHealthBar = GameObject.FindGameObjectWithTag("RLHB");
         characterInventory.SetActive(false);
+
+        testingBodyPart = GameObject.Find("CreatureHead").GetComponent<BodyPart>();
      //   getCanvas = GameObject.Find("Canvas").GetComponent<Canvas>();
      //   passCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>(); 
     }
@@ -106,7 +108,6 @@ public class Player : Character
                     Debug.Log(itemToAdd);
                     Item itemToAddNew = itemToAdd.GetComponent<Item>() as Item;
                     charInventory.AddItem(itemToAddNew);
-                   // Destroy(hit.transform.gameObject);
                 }
             }
         }
@@ -131,6 +132,7 @@ public class Player : Character
                 {
                     if (Detach(foundBodyPart.BodyPartType) == null)
                         Attach(foundBodyPart);
+                    charInventory.reduceHealthImproved(foundBodyPart.BodyPartType, foundBodyPart.Health);
                     break;
                 }
 
@@ -183,12 +185,7 @@ public class Player : Character
 
         if (Input.GetKeyDown("m"))
         {
-            headHealthBar.GetComponent<Image>().fillAmount -= 0.1f;
-            leftHandHealthBar.GetComponent<Image>().fillAmount -= 0.1f;
-            rightHandHealthBar.GetComponent<Image>().fillAmount -= 0.1f;
-            leftLegHealthBar.GetComponent<Image>().fillAmount -= 0.1f;
-            rightLegHealthBar.GetComponent<Image>().fillAmount -= 0.1f;
-
+            testingBodyPart.Health = 20;
            // DontDestroyOnLoad(this.transform.gameObject);
            // DontDestroyOnLoad(getCanvas);
           //  DontDestroyOnLoad(passCamera);

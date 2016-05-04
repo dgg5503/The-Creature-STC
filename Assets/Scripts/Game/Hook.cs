@@ -33,7 +33,7 @@ public class Hook : MonoBehaviour {
     {
         chain = GameObject.Find("Chain").GetComponent<LineRenderer>();
         grapplingPoint = GameObject.Find("GrapperPoint");
-        creature = GameObject.Find("The_Creature");
+        creature = GameObject.FindGameObjectWithTag("Player");
         grapplingHookHand = GameObject.Find("grappling_hook_Right_Arm 1");
         grapper = GameObject.FindGameObjectWithTag("Grapper");
         gameObject.layer = 11;
@@ -62,7 +62,7 @@ public class Hook : MonoBehaviour {
         {
          
             chain.enabled = true;
-            if (Input.GetButtonDown("Jump") && Input.GetButton("Jump") && this.transform.root.name == "The_Creature") // Check if we pressed button (space)
+            if (Input.GetButtonDown("Jump") && Input.GetButton("Jump") && this.transform.root.name == "The_Creature 1") // Check if we pressed button (space)
             {
                 shoot = true;
                 if (Physics.Raycast(ray, out hit))
