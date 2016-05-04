@@ -16,10 +16,11 @@ public class CrawlRootAnim : MonoBehaviour {
         waitEOF = new WaitForEndOfFrame();
     }
 
+    /*
     void OnAnimatorMove()
     {
     }
-
+    */
     public void SetCrawlingAngle(Quaternion angle)
     {
         crawlAngle = angle;
