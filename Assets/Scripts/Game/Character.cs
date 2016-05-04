@@ -434,40 +434,7 @@ public abstract class Character : MonoBehaviour
         return true;
     }
 
-    /*
-    * 1. Execute individual states based on conditions
-    *  a. Idle - not hitting button (REQUIRED)
-    *  b. Aim - button held down (optional)
-    *  c. Executing - button let go (REQUIRED)
-    *  d. Success - item hit target (REQUIRED)
-    *  e. Failure - item failed to hit target (optional)
-    * 2. Get item state name from item itself.
-    * 3. Get item independent state and transition / apply animation.
-    *  
-    */
-    public void UseItem(RegularItem item)
-    {
-        // check to see if item state already set
-        switch (item.ItemState)
-        {
-            case ItemState.Idle:
-                break;
-
-            case ItemState.Aim:
-                break;
-
-            case ItemState.Executing:
-                break;
-
-            case ItemState.Success:
-                break;
-
-            case ItemState.Failure:
-                break;
-        }
-
-        characterAnimator.SetInteger(item.ItemStateTag, (int)item.ItemState);
-    }
+    
 
 
     /// <summary>
@@ -525,8 +492,8 @@ public abstract class Character : MonoBehaviour
         accelerationScalar = 0;
         rotationAccelFactor = 0;
         maxSpeed = 0;
-
     }
+
     /// <summary>
     /// Recalculates the capsule colliders bounds.
     /// TODO: IGNORE HANDS

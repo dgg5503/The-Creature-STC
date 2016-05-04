@@ -199,6 +199,44 @@ public class Player : Character
         
     }
 
+    /*
+    * 1. Execute individual states based on conditions
+    *  a. Idle - not hitting button (REQUIRED)
+    *  b. Aim - button held down (optional)
+    *  c. Executing - button let go (REQUIRED)
+    *  d. Success - item hit target (REQUIRED)
+    *  e. Failure - item failed to hit target (optional)
+    * 2. Get item state name from current mount point ID
+    * 3. Set the item ID in animator
+    * 4. Set the item state in animator
+    *  
+    */
+    /*
+    public void UseItem(RegularItem item)
+    {
+        // check to see if item state already set
+        switch (item.ItemState)
+        {
+            case ItemState.Idle: // no keys
+                break;
+
+            case ItemState.Aim: // key held down
+                break;
+
+            case ItemState.Executing: // key let go
+                break;
+
+            case ItemState.Success: // item finished its action successfully
+                break;
+
+            case ItemState.Failure: // item failed to finish its action.
+                break;
+        }
+
+        characterAnimator.SetInteger(item.ItemStateTag, (int)item.ItemState);
+    }
+    */
+
     /// <summary>
     /// Processes movement for the player specifically. Called before applying
     /// changes in acceleration.

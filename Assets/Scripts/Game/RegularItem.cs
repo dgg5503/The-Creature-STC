@@ -12,9 +12,7 @@ public enum ItemState
 {
     Idle,
     Aim,
-    Executing,
-    Success,
-    Failure
+    Executing
 }
 
 public abstract class RegularItem : Item  {
@@ -43,6 +41,8 @@ public abstract class RegularItem : Item  {
     protected override void Awake()
     {
         base.Awake();
+
+        ItemState = ItemState.Idle;
 
         ItemStateTag = "null";
 
@@ -144,6 +144,19 @@ public abstract class RegularItem : Item  {
     /// <returns></returns>
     protected abstract bool MountCheck();
 
-    public abstract void Use();
-    
+    /// <summary>
+    /// Suggested to override this function. State set for animation.
+    /// </summary>
+    public virtual void Use()
+    {
+        ItemState = ItemState.Executing;
+    }
+
+    /// <summary>
+    /// Suggested to override this function. State set for animation.
+    /// </summary>
+    public virtual void Aim()
+    {
+        ItemState = ItemState.Aim;
+    }
 }
