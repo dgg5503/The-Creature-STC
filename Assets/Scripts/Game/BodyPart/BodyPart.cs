@@ -17,6 +17,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
 using System;
+using UnityEngine.UI;
 
 // for physics and collision
 [RequireComponent(typeof(Rigidbody))]
@@ -52,7 +53,8 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     private bool isControlledByJoint;
 
     //private bool IsControlledByJoint;
-
+    //Health Bars for body parts
+    private Inventory creatureInventory;
     // Holds joint bodypart endpoint connections
     [Header("End Points")]
     public List<int> _keys = new List<int>();
@@ -137,7 +139,13 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         {
             // ensure we never get negative health.
             if (value >= 0)
+            {
                 currHealth = value;
+                if(transform.root.name.Contains("Creature"))
+                {
+                    creatureInventory.reduceHealthImproved(this.bodyPartType, currHealth);
+                }
+            }
             else
                 currHealth = 0;
 
@@ -208,6 +216,10 @@ public class BodyPart : Item, ISerializationCallbackReceiver
 
         // get mount point if it exists
         mountPoint = GetComponentInChildren<MountPoint>();
+
+
+        creatureInventory = GameObject.FindGameObjectWithTag("Inventory").GetComponent<Inventory>();
+
     }
 
     // Use this for initialization

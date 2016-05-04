@@ -12,9 +12,17 @@ public class Inventory : MonoBehaviour
     private static Slot moveFromSlot; // reference the slot from which we are moving 
     private static Slot moveToSlot; // reference to the slot to which we are moving
     private Character characterRef;
+    private Player playerRef;
     // public GameObject dropItem;
     private GameObject playerPosition;
 
+
+    //Health Bars for the creature body parts
+    private GameObject headHealthBar;
+    private GameObject leftHandHealthBar;
+    private GameObject rightHandHealthBar;
+    private GameObject leftLegHealthBar;
+    private GameObject rightLegHealthBar;
 
 
     // Use this for initialization
@@ -26,6 +34,18 @@ public class Inventory : MonoBehaviour
         {
             characterRef = GetComponent<Character>();
         }
+
+        if (playerRef == null)
+        {
+            playerRef = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        }
+
+        //Health Bar
+        headHealthBar = GameObject.FindGameObjectWithTag("HHB");
+        leftHandHealthBar = GameObject.FindGameObjectWithTag("LHHB");
+        rightHandHealthBar = GameObject.FindGameObjectWithTag("RHHB");
+        leftLegHealthBar = GameObject.FindGameObjectWithTag("LLHB");
+        rightLegHealthBar = GameObject.FindGameObjectWithTag("RLHB");
     }
 
     void Start()
@@ -275,29 +295,225 @@ public class Inventory : MonoBehaviour
          {
             case "Head":
             {
-               characterRef.Detach(0);
+               playerRef.Detach(0);
                break;
             }
             case "LeftHand":
             {
-                characterRef.Detach(1);
+                playerRef.Detach(1);
              break;
             }
             case "RightHand":
             {
-               characterRef.Detach(5);
+               playerRef.Detach(5);
                break;
             }
             case "LeftLeg":
             {
-                characterRef.Detach(3);
+                playerRef.Detach(3);
                  break;
             }
             case "RightLeg":
             {
-                characterRef.Detach(7);
+                playerRef.Detach(7);
                 break;
             }
          }
     }
+
+
+    public void reduceHealthImproved(int id, float value)
+    {
+        float convertedValue = helperFunctionBodyPartHealth(id, value);
+
+        switch (id)
+        {
+            case 0: //Head
+                {
+                    headHealthBar.GetComponent<Image>().fillAmount = convertedValue;
+                    break;
+                }
+            case 1: // Left Arm Part 1
+                {
+                    leftHandHealthBar.GetComponent<Image>().fillAmount = convertedValue;
+                    break;
+                }
+            case 2: // Left Arm Part 2
+                {
+                    leftHandHealthBar.GetComponent<Image>().fillAmount = convertedValue;
+                    break;
+                }
+            case 3: // Left Leg part 1
+                {
+                    leftLegHealthBar.GetComponent<Image>().fillAmount = convertedValue;
+                    break;
+                }
+            case 4: // Left Leg part 2
+                {
+                    leftLegHealthBar.GetComponent<Image>().fillAmount = convertedValue;
+                    break;
+                }
+            case 5: // Right Arm part 1
+                {
+                    rightHandHealthBar.GetComponent<Image>().fillAmount = convertedValue;
+                    break;
+                }
+            case 6: // Right Arm part 2
+                {
+                    rightHandHealthBar.GetComponent<Image>().fillAmount = convertedValue;
+                    break;
+                }
+            case 7: // Right Arm part 2
+                {
+                    rightLegHealthBar.GetComponent<Image>().fillAmount = convertedValue;
+                    break;
+                }
+            case 8: // Right Leg
+                {
+                    rightLegHealthBar.GetComponent<Image>().fillAmount = convertedValue;
+                    break;
+                }
+        }
+    }
+    public float helperFunctionBodyPartHealth(int id, float healthValue) {
+        float convertedValue = 0.0f;
+        for (int i = 0; i < playerRef.BodyParts.Length; i++)
+        {
+            if (id == 1)
+            {
+                if (playerRef.BodyParts[i].BodyPartType == 2)
+                {
+                    convertedValue = (healthValue + playerRef.BodyParts[i].Health) / 2;
+                    convertedValue /= 100;
+                    break;
+                }
+                else
+                {
+                    convertedValue = healthValue / 100;
+                }
+            }
+            else if (id == 2)
+            {
+                if (playerRef.BodyParts[i].BodyPartType == 1)
+                {
+                    convertedValue = (healthValue + playerRef.BodyParts[i].Health) / 2;
+                    convertedValue /= 100;
+                    break;
+                }
+                else
+                {
+                    convertedValue = healthValue / 100;
+                }
+            }
+            else if (id == 3)
+            {
+                if (playerRef.BodyParts[i].BodyPartType == 4)
+                {
+                    convertedValue = (healthValue + playerRef.BodyParts[i].Health) / 2;
+                    convertedValue /= 100;
+                    break;
+                }
+                else
+                {
+                    convertedValue = healthValue / 100;
+                }
+            }
+            else if (id == 4)
+            {
+                if (playerRef.BodyParts[i].BodyPartType == 3)
+                {
+                    convertedValue = (healthValue + playerRef.BodyParts[i].Health) / 2;
+                    convertedValue /= 100;
+                    break;
+                }
+                else
+                {
+                    convertedValue = healthValue / 100;
+                }
+            }
+            else if (id == 5)
+            {
+                if (playerRef.BodyParts[i].BodyPartType == 6)
+                {
+                    convertedValue = (healthValue + playerRef.BodyParts[i].Health) / 2;
+                    convertedValue /= 100;
+                    break;
+                }
+                else
+                {
+                    convertedValue = healthValue / 100;
+                }
+            }
+            else if (id == 6)
+            {
+                if (playerRef.BodyParts[i].BodyPartType == 5)
+                {
+                    convertedValue = (healthValue + playerRef.BodyParts[i].Health) / 2;
+                    convertedValue /= 100;
+                    break;
+                }
+                else
+                {
+                    convertedValue = healthValue / 100;
+                }
+            }
+            else if (id == 7)
+            {
+                if (playerRef.BodyParts[i].BodyPartType == 8)
+                {
+                    convertedValue = (healthValue + playerRef.BodyParts[i].Health) / 2;
+                    convertedValue /= 100;
+                    break;
+                }
+                else
+                {
+                    convertedValue = healthValue / 100;
+                }
+            }
+            else if (id == 8)
+            {
+                if (playerRef.BodyParts[i].BodyPartType == 7)
+                {
+                    convertedValue = (healthValue + playerRef.BodyParts[i].Health) / 2;
+                    convertedValue /= 100;
+                    break;
+                }
+                else
+                {
+                    convertedValue = healthValue / 100;
+                }
+            }
+        }
+
+        Debug.Log("Converted Value Should be here: " + convertedValue);
+        return convertedValue;
+    }
+
+/*
+    public void reduceHealth(BodyPart part, float value)
+    {
+        float convertedValue = value / 100;
+
+        if (part.name.Contains("Head"))
+        {
+            headHealthBar.GetComponent<Image>().fillAmount = convertedValue;
+        }
+        else if (part.name.Contains("Left_Arm"))
+        {
+            leftHandHealthBar.GetComponent<Image>().fillAmount = convertedValue;
+        }
+        else if (part.name.Contains("Right_Arm"))
+        {
+            rightHandHealthBar.GetComponent<Image>().fillAmount = convertedValue;
+        }
+        else if (part.name.Contains("Left_Leg"))
+        {
+            leftLegHealthBar.GetComponent<Image>().fillAmount = convertedValue;
+        }
+        else if (part.name.Contains("Right_Leg"))
+        {
+            rightLegHealthBar.GetComponent<Image>().fillAmount = convertedValue;
+        }
+    }
+*/
 }
