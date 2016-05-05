@@ -83,6 +83,7 @@ public class Inventory : MonoBehaviour
                     else
                     {
                         DetachBodyParts(moveFromSlot.name);
+                        toggleHealthBars();
                     }
 
                 }
@@ -102,8 +103,6 @@ public class Inventory : MonoBehaviour
     /// <returns></returns>
     private bool findEmptyAndAdd(Item item)
     {
-        Debug.Log(emptySlot);
-        Debug.Log("Adding Item: " + item);
         if (emptySlot > 0)
         {
             foreach (GameObject slot in allSlots)
@@ -135,7 +134,6 @@ public class Inventory : MonoBehaviour
                                     tempSlot.AddItem(item);
                                     emptySlot--;
                                     return true;
-                                    Debug.Log("Item ADDDED HERE");
                                 } // end of if
                             }
                             break;
@@ -248,7 +246,6 @@ public class Inventory : MonoBehaviour
 
     public void move(GameObject slotClicked)
     {
-        Debug.Log("I'm here");
         if (moveFromSlot == null) // This is the first slot that we clicked
         {
             if (slotClicked.GetComponent<Slot>().IsEmptySlot() != true) // if slot is not empty 
@@ -259,7 +256,6 @@ public class Inventory : MonoBehaviour
         }
         else if (moveToSlot == null)
         {
-            Debug.Log("Second SLOT");
             moveToSlot = slotClicked.GetComponent<Slot>();
         }
 
@@ -491,6 +487,34 @@ public class Inventory : MonoBehaviour
         return convertedValue;
     }
 
+
+    public void toggleHealthBars() {
+        bool leftHandHealthBarCondition = (playerRef.IsJointOccupied(1) || playerRef.IsJointOccupied(2)) ? true : false;
+        leftHandHealthBar.SetActive(leftHandHealthBarCondition);
+        bool rightHandHealthBarCondition = (playerRef.IsJointOccupied(5) || playerRef.IsJointOccupied(6)) ? true : false;
+        rightHandHealthBar.SetActive(rightHandHealthBarCondition);
+        bool leftLegHealthBarCondition = (playerRef.IsJointOccupied(3) || playerRef.IsJointOccupied(4)) ? true : false;
+        leftLegHealthBar.SetActive(leftLegHealthBarCondition);
+        bool rightLegHealthBarCondition = (playerRef.IsJointOccupied(7) || playerRef.IsJointOccupied(8)) ? true : false;
+        rightLegHealthBar.SetActive(rightLegHealthBarCondition);
+    }
+
+
+
+    public void toggleBodyPartsIcons() { 
+        // Have to call Slotname .clearItemSlot
+        bool leftHand = (playerRef.IsJointOccupied(1) || playerRef.IsJointOccupied(2)) ? true : false;
+        bool rightHand= (playerRef.IsJointOccupied(5) || playerRef.IsJointOccupied(6)) ? true : false;
+        bool leftLeg = (playerRef.IsJointOccupied(3) || playerRef.IsJointOccupied(4)) ? true : false;
+        bool rightLeg = (playerRef.IsJointOccupied(7) || playerRef.IsJointOccupied(8)) ? true : false;
+        foreach (GameObject slot in allSlots)
+        {
+            if (slot.name == "LeftHand" && leftHand == false)
+            {
+                slot.GetComponent<Slot>().clearItemSlot();
+            }
+        }
+    }
 /*
     public void reduceHealth(BodyPart part, float value)
     {

@@ -73,6 +73,7 @@ public class Player : Character
         characterInventory.SetActive(true);
 
         CheatWay();
+        charInventory.toggleHealthBars();
     }
 
     protected override void Update()
@@ -94,8 +95,6 @@ public class Player : Character
             {
                 if (Input.GetMouseButtonDown(1))
                 {
-                    Debug.Log(hit.transform.gameObject.GetComponent<Item>().name);
-
                     if (hit.transform.gameObject.GetComponent<BodyPart>())
                     {
                         path = "Prefabs/BodyParts/";
@@ -118,11 +117,7 @@ public class Player : Character
                     {
                         newItemName = pickUpItemName;
                     }
-
-
-
                     GameObject itemToAdd = Resources.Load(path + newItemName) as GameObject;
-                    Debug.Log(itemToAdd);
                     Item itemToAddNew = itemToAdd.GetComponent<Item>() as Item;
                     charInventory.AddItem(itemToAddNew);
                 }
@@ -148,8 +143,14 @@ public class Player : Character
                 if ((foundBodyPart = obj.collider.GetComponent<BodyPart>()) != null)
                 {
                     if (Detach(foundBodyPart.BodyPartType) == null)
+                    {
                         Attach(foundBodyPart);
+                        charInventory.toggleBodyPartsIcons();
+                       // CheatWay();
+                    }
                     charInventory.reduceHealthImproved(foundBodyPart.BodyPartType, foundBodyPart.Health);
+                    charInventory.toggleHealthBars();
+                    CheatWay();
                     break;
                 }
 
@@ -368,9 +369,7 @@ public class Player : Character
                 charInventory.AddItem(this.BodyParts[i]);
             }
             displayCharacterInventory = !displayCharacterInventory;
-            Debug.Log("Status of the inventory: " + displayCharacterInventory);
             characterInventory.SetActive(displayCharacterInventory);
-            Debug.Log("Check Inventory Again: " + characterInventory.active);
         }
     }
 
