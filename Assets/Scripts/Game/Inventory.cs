@@ -59,7 +59,8 @@ public class Inventory : MonoBehaviour
         
         emptySlot = allSlots.Count;
         playerPosition = GameObject.FindGameObjectWithTag("Player");
-       
+  
+        headHealthBar.SetActive(false);
     }
 
     // Update is called once per frame

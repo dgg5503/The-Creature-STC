@@ -110,11 +110,15 @@ public class Player : Character
                     {
                         newItemName = pickUpItemName.Remove(pickUpItemName.IndexOf(' '));
                     }
+                    else if (pickUpItemName.Contains('('))
+                    {
+                        newItemName = pickUpItemName.Remove(pickUpItemName.IndexOf('('));
+                    }
                     else
                     {
                         newItemName = pickUpItemName;
                     }
-                    Debug.Log("ITEM NAME IS HERE " + newItemName);
+
 
 
                     GameObject itemToAdd = Resources.Load(path + newItemName) as GameObject;
