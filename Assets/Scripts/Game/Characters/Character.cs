@@ -359,7 +359,7 @@ public abstract class Character : MonoBehaviour
         RegularItem item;
         if ((item = attachedBodyPart.MountPoint.MountedItem) == null)
             return;
-        Debug.LogError("called it");
+        //Debug.LogError("called it");
         animationCoroutines[bodyPartID] = StartCoroutine(BeginItemExeuction(item, bodyPartID, (success) =>
         {
             animationCoroutines[bodyPartID] = null;
