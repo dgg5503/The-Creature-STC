@@ -36,6 +36,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public static GameState GameState { get; set; }
 
+    public static InputManager InputManager { get; private set; }
+
     /// <summary>
     /// Get all prefabs from the game.
     /// </summary>
@@ -71,17 +73,6 @@ public class GameManager : MonoBehaviour
         foreach (KeyValuePair<string, Object> kvp in prefabDictionary)
             Debug.Log(kvp.Key);
         */
-    }
-
-    // Use this for initialization
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        InputManager = GetComponent<InputManager>();
     }
 }

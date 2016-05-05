@@ -13,14 +13,24 @@ public class Spear : Weapon {
     private List<GameObject> currColls;
     private CapsuleCollider passThroughTrigger;
     private CapsuleCollider capsuleCollider;
-        
+
+    private static ItemAnimationInfo leftHand = new ItemAnimationInfo(
+        "leftHandItemState",
+        "equipSpearLeft",
+        "throwing_left");
+
+    private static ItemAnimationInfo rightHand = new ItemAnimationInfo(
+        "rightHandItemState",
+        "equipSpearRight",
+        "throwing_right");
+
     protected override void Awake()
     {
         base.Awake();
 
-        ItemStateTag = "throwState";
+        ItemAnimation[CreatureBodyBones.Left_Arm_Part_2] = rightHand;
+        ItemAnimation[CreatureBodyBones.Right_Arm_Part_2] = leftHand;
 
-        ItemState = ItemState.Idle;
         type = RegularItemType.Weapon;
         amountOfItems = 1;
         damage = 10;
@@ -90,9 +100,6 @@ public class Spear : Weapon {
 
             // apply force relative
             rigidbody.AddRelativeForce(Vector3.right * 800);
-
-            // set to executing the item
-            ItemState = ItemState.Executing;
         }
     }
 
@@ -128,9 +135,6 @@ public class Spear : Weapon {
     {
         if (impalePoint.ImpaleState != ImpaleState.Impaling)
         {
-            // reset item state
-            ItemState = ItemState.Idle;
-
             //Debug.Log("checking " + name);
             //rigidbody.velocity = Vector3.zero;
             // reset everything.

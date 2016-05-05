@@ -121,6 +121,10 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         }
     }
 
+    /// <summary>
+    /// Get whether or not this body part is detachable.
+    /// </summary>
+    public bool IsDetachable { get { return isDetachable; } }
 
 
     // Properties
@@ -156,7 +160,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
 
             // non detachable bodyparts cannot fall off.
             if (currHealth <= minHealth &&
-                !isDetachable)
+                isDetachable)
                 Detach();
         }
     }

@@ -30,20 +30,20 @@ public enum CharacterState
     Fall
 }
 
+public enum ItemState
+{
+    Idle,
+    Aim,
+    Executing
+}
+
 public enum GrappleState
 {
-    None,
+    Idle,
     Grapple_Right,
     Grapple_Left,
     Fly_Right,
     Fly_Left
-}
-
-public enum ThrowState
-{
-    None,
-    Throw_Left,
-    Throw_Right
 }
 
 [RequireComponent(typeof(Rigidbody))]
@@ -87,6 +87,11 @@ public abstract class Character : MonoBehaviour
     // States n' Actions
     //private bool isAlive;
     private CharacterState characterState;
+    private Dictionary<int, ItemState> bodyPartItemState;
+    private Dictionary<int, Coroutine> animationCoroutines;
+
+    //private ItemState leftHandItemState;
+    //private ItemState rightHandItemState;
 
     /// <summary>
     /// Get the inventory of this character.
@@ -101,24 +106,6 @@ public abstract class Character : MonoBehaviour
                 return true;
             return false;
         }
-        /*
-        set
-        {
-            isAlive = value;
-            
-            if (isAlive == false)
-            {
-                //root.Detach();
-                // set all bparts to false kinematics...
-                BodyPart[] allBodyParts = GetComponentsInChildren<BodyPart>();
-                for (int i = 0; i < allBodyParts.Length; ++i)
-                {
-                    allBodyParts[i].SetLimp();
-                    allBodyParts[i].gameObject.layer = 0;
-                }
-            }
-        }
-        */
     }
 
     /// <summary>
@@ -203,6 +190,15 @@ public abstract class Character : MonoBehaviour
         //isAlive = true;
         isCrawling = false; // assume not crawling until crawl check
         characterState = CharacterState.Idle;
+        bodyPartItemState = new Dictionary<int, ItemState>();
+        animationCoroutines = new Dictionary<int, Coroutine>();
+
+        // init states as idle
+        foreach (int bodyPartId in joints.Keys)
+        {
+            bodyPartItemState[bodyPartId] = ItemState.Idle;
+            animationCoroutines[bodyPartId] = null;
+        }
 
         // set layer of character colliders to 10
         gameObject.layer = 10;
@@ -291,19 +287,19 @@ public abstract class Character : MonoBehaviour
         if (acceleration != Vector3.zero)
         {
             // TODO: When on slope, apply velocity parallel to slope with slope max.?
-            velocity += acceleration * Time.fixedDeltaTime;
+            velocity += acceleration * Time.deltaTime;
 
             // lerp directional velocity from this objects forward to the accel norm
             // creates rotation effect purely from velocity
             // TODO: looks smooth when not performing a 180
             //velocity = Vector3.MoveTowards(transform.forward, acceleration.normalized, Time.fixedDeltaTime * rotationAccelFactor) * velocity.magnitude;
-            velocity = Vector3.LerpUnclamped(transform.forward, acceleration.normalized, Time.fixedDeltaTime * rotationAccelFactor) * velocity.magnitude;
+            velocity = Vector3.LerpUnclamped(transform.forward, acceleration.normalized, Time.deltaTime * rotationAccelFactor) * velocity.magnitude;
         }
         else
         {
             // not sure if this is accurate???
             //velocity = Vector3.LerpUnclamped(velocity, Vector3.zero, Time.fixedDeltaTime * accelerationScalar);
-            velocity = Vector3.MoveTowards(velocity, Vector3.zero, Time.fixedDeltaTime * accelerationScalar);
+            velocity = Vector3.MoveTowards(velocity, Vector3.zero, Time.deltaTime * accelerationScalar);
         }
 
         // clamp to this characters max velocity.
@@ -333,8 +329,116 @@ public abstract class Character : MonoBehaviour
     /// Use this function for character specific movement.
     /// i.e. player is controlled via input but AI will move based on rules.
     /// </summary>
-    abstract protected void ProcessMovement(); 
-    
+    abstract protected void ProcessMovement();
+
+    /// <summary>
+    /// Attempts to use the currently mounted item attached to the given bodypart.
+    /// </summary>
+    /// <param name="bodyPartID">Body Part ID where the item resides.</param>
+    public void UseItem(int bodyPartID, ItemState itemState)
+    {
+        // no coroutine must be occuring for this body part in order to execute the item.
+        bodyPartItemState[bodyPartID] = itemState;
+        if (animationCoroutines[bodyPartID] != null)
+            return;
+
+        // ensure joint exists
+        if (!joints.ContainsKey(bodyPartID))
+            return;
+
+        // ensure body part is attached
+        BodyPart attachedBodyPart;
+        if ((attachedBodyPart = joints[bodyPartID].BodyPart) == null)
+            return;
+
+        // ensure mount point exists
+        if (attachedBodyPart.MountPoint == null)
+            return;
+
+        // ensure item exists
+        RegularItem item;
+        if ((item = attachedBodyPart.MountPoint.MountedItem) == null)
+            return;
+        Debug.LogError("called it");
+        animationCoroutines[bodyPartID] = StartCoroutine(BeginItemExeuction(item, bodyPartID, (success) =>
+        {
+            animationCoroutines[bodyPartID] = null;
+            bodyPartItemState[bodyPartID] = ItemState.Idle;
+        }));
+    }
+
+    private IEnumerator BeginItemExeuction(RegularItem item, int bodyPartID, System.Action<bool> callback)
+    {
+        
+        int layerIndex = characterAnimator.GetLayerIndex(item.ItemAnimation[bodyPartID].layerName);
+
+        // if key held down AND animation complete, go to next state
+        characterAnimator.SetInteger(item.ItemAnimation[bodyPartID].itemState, (int)ItemState.Aim);
+        Debug.Log("set " + item.ItemAnimation[bodyPartID].itemState + " to " + (int)ItemState.Aim);
+        yield return new WaitForEndOfFrame();
+        // wait for animator to get to new state
+        //while (characterAnimator.IsInTransition(layerIndex)) { yield return new WaitForEndOfFrame(); }
+
+        // get current animation clip
+        AnimatorStateInfo stateInfo = GetAnimatorStateInfoFromTag(layerIndex, "aim");
+        //characterAnimator.GetAnimatorTransitionInfo(0).normalizedTime
+        Debug.Log(Animator.StringToHash("aim_right") + " and " + stateInfo.shortNameHash);
+        // wait until we reach desired time
+        
+        while (stateInfo.normalizedTime < stateInfo.length)
+        {
+            Debug.Log(stateInfo.normalizedTime + " and " + stateInfo.length);
+            if (bodyPartItemState[bodyPartID] != ItemState.Aim)
+            {
+                Debug.Log("failed");
+                characterAnimator.SetInteger(item.ItemAnimation[bodyPartID].itemState, (int)ItemState.Idle);
+                callback(true);
+                yield break;
+            }
+            stateInfo = GetAnimatorStateInfoFromTag(layerIndex, "aim");
+            yield return new WaitForEndOfFrame();
+        }
+        Debug.Log(stateInfo.normalizedTime + " AND " + stateInfo.length);
+        Debug.Log("ready for execute");
+        while (bodyPartItemState[bodyPartID] != ItemState.Executing) { Debug.Log("RUNNING");  yield return new WaitForEndOfFrame(); }
+        
+        // start throw and get animation for throw
+        characterAnimator.SetInteger(item.ItemAnimation[bodyPartID].itemState, (int)ItemState.Executing);
+        stateInfo = GetAnimatorStateInfoFromTag(layerIndex, "throw");
+
+        // wait until .75 way through
+        while (stateInfo.normalizedTime < .50f)
+        {
+            stateInfo = GetAnimatorStateInfoFromTag(layerIndex, "throw");
+            yield return new WaitForEndOfFrame();
+        }
+
+        // use item
+        item.Use();
+        characterAnimator.SetInteger(item.ItemAnimation[bodyPartID].itemState, (int)ItemState.Idle);
+        // finish
+        yield return null;
+        callback(true);
+    }
+
+    private AnimatorStateInfo GetAnimatorStateInfoFromTag(int layer, string tag)
+    {
+        AnimatorStateInfo stateInfo = characterAnimator.GetCurrentAnimatorStateInfo(layer);
+        Debug.Log(stateInfo.shortNameHash);
+
+        if (stateInfo.IsTag(tag))
+            return stateInfo;
+
+        stateInfo = characterAnimator.GetNextAnimatorStateInfo(layer);
+        if (stateInfo.IsTag(tag))
+            return stateInfo;
+
+        Debug.Log(stateInfo.shortNameHash);
+        //Debug.Break();
+
+        return new AnimatorStateInfo();
+    }
+
     /// <summary>
     /// Mounts an item to the first open mount point.
     /// </summary>
@@ -348,7 +452,11 @@ public abstract class Character : MonoBehaviour
         // if slots are full, return false!
         for (int i = 0; i < mountPoints.Length; ++i)
             if (itemToMount.MountTo(mountPoints[i]) != null)
+            {
+                //characterAnimator.SetTrigger(itemToMount.EquipTriggerTag[mountPoints[i].BodyPartType]);
+                characterAnimator.SetTrigger(itemToMount.ItemAnimation[mountPoints[i].BodyPartType].equipTrigger);
                 return true;
+            }
 
         // return true, we did it reddit!
         return false;
@@ -366,13 +474,27 @@ public abstract class Character : MonoBehaviour
         // look for empty mount point
         MountPoint[] mountPoints = GetComponentsInChildren<MountPoint>();
 
-        // if slots are full, return false!
-        for (int i = 0; i < mountPoints.Length; ++i)
-            if (mountPoints[i].BodyPartType == bodyPartType)
-                return itemToMount.MountTo(mountPoints[i]) ? true : false;
+        // ensure joint exists
+        if (!joints.ContainsKey(bodyPartType))
+            return false;
 
-        // return true, we did it reddit!
-        return false;
+        // ensure body part is attached
+        BodyPart attachedBodyPart;
+        if ((attachedBodyPart = joints[bodyPartType].BodyPart) == null)
+            return false;
+
+        // ensure mount point exists
+        if (attachedBodyPart.MountPoint == null)
+            return false;
+
+        // mount it
+        if (itemToMount.MountTo(attachedBodyPart.MountPoint) == null)
+            return false;
+
+        // call animator to equip
+        characterAnimator.SetTrigger(itemToMount.ItemAnimation[bodyPartType].equipTrigger);
+
+        return true;
     }
 
     public bool Attach(BodyPart bodyPartToAttach)
@@ -429,6 +551,7 @@ public abstract class Character : MonoBehaviour
             return false;
         }
 
+        // TODO: MAKE SURE ANIMATION STATE IS SET IF ITEM IS ATTACHED.
         CrawlCheck();
 
         return true;
@@ -475,6 +598,12 @@ public abstract class Character : MonoBehaviour
         }
 
         CrawlCheck();
+
+        // stop the animation coroutine (if there is one running on this bpart)
+        if (animationCoroutines[bodyPartID] != null)
+            StopCoroutine(animationCoroutines[bodyPartID]);
+
+        // TODO: MAKE SURE ANIMATION STATE IS SET OFF IF ITEM IS ATTACHED.
 
         return tmpPart;
     }
@@ -565,6 +694,19 @@ public abstract class Character : MonoBehaviour
 
         // put back rotation after all have been processed?
         currentBodyPart.transform.localRotation = currLocalRot;
+    }
+
+    /// <summary>
+    /// Returns whether or not there is a body part occupying a given joint.
+    /// </summary>
+    /// <param name="bodyPartType">Joint ID / BodyPartID to check if body part exists in the joint location.</param>
+    /// <returns>True if a body part exists in the given location. Otherwise false.</returns>
+    public bool IsJointOccupied(int bodyPartType)
+    {
+        if (joints.ContainsKey(bodyPartType) &&
+            joints[bodyPartType].BodyPart != null)
+            return true;
+        return false;
     }
 
     /// <summary>

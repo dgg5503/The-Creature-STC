@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 
 public enum RegularItemType
@@ -8,14 +8,24 @@ public enum RegularItemType
     Quest
 };
 
-public enum ItemState
+public struct ItemAnimationInfo
 {
-    Idle,
-    Aim,
-    Executing
+    public string itemState;
+    public string equipTrigger;
+    public string layerName;
+
+    public ItemAnimationInfo(string itemState, string equipTrigger, string layerName)
+    {
+        this.itemState = itemState;
+        this.equipTrigger = equipTrigger;
+        this.layerName = layerName;
+    }
 }
 
-public abstract class RegularItem : Item  {
+public abstract class RegularItem : Item
+{
+
+    // dictionary <bodypartTypes, layerIndex>
 
     /// <summary>
     /// Get the current mount point for this item.
@@ -29,22 +39,15 @@ public abstract class RegularItem : Item  {
     public bool IsUsableWhileNotMounted { get; private set; }
 
     /// <summary>
-    /// Get or set the current state of the item that is being used.
+    /// Get or set the item state tags used with character animators.
     /// </summary>
-    public ItemState ItemState { get; protected set;}
-
-    /// <summary>
-    /// Get or set the item state tag used with character animators.
-    /// </summary>
-    public string ItemStateTag { get; protected set; }
+    public Dictionary<int, ItemAnimationInfo> ItemAnimation { get; protected set; }
 
     protected override void Awake()
     {
         base.Awake();
 
-        ItemState = ItemState.Idle;
-
-        ItemStateTag = "null";
+        ItemAnimation = new Dictionary<int, ItemAnimationInfo>();
 
         // see if we're already a child of a mountpoint!
         // if so, remount, ignores collision!
@@ -98,7 +101,7 @@ public abstract class RegularItem : Item  {
             (itemCollider = GetComponent<Collider>()) != null)
         {
             Physics.IgnoreCollision(parentCollider, itemCollider);
-            Debug.Log("coll ignored " + parentCollider.name + " and " + itemCollider.name);
+            //Debug.Log("coll ignored " + parentCollider.name + " and " + itemCollider.name);
         }
 
         // now mounted.
@@ -126,7 +129,7 @@ public abstract class RegularItem : Item  {
         {
             // TODO: TMP FIX FOR SPEARS
             //Physics.IgnoreCollision(parentCollider, itemCollider, false);
-            Debug.Log("coll unignored " + parentCollider.name + " and " + itemCollider.name);
+            //Debug.Log("coll unignored " + parentCollider.name + " and " + itemCollider.name);
         }
 
         // unparent
@@ -135,7 +138,7 @@ public abstract class RegularItem : Item  {
         // now unmounted
         CurrentMountPoint = null;
 
-        return this;    
+        return this;
     }
 
     /// <summary>
@@ -147,16 +150,5 @@ public abstract class RegularItem : Item  {
     /// <summary>
     /// Suggested to override this function. State set for animation.
     /// </summary>
-    public virtual void Use()
-    {
-        ItemState = ItemState.Executing;
-    }
-
-    /// <summary>
-    /// Suggested to override this function. State set for animation.
-    /// </summary>
-    public virtual void Aim()
-    {
-        ItemState = ItemState.Aim;
-    }
+    public abstract void Use();
 }

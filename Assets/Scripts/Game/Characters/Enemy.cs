@@ -75,7 +75,7 @@ public class Enemy : Character {
     {
         // DEBUG EQUIP.
         RegularItem tmpItem = (Instantiate(GameManager.PrefabDictionary["spear"]) as GameObject).GetComponent<RegularItem>();
-        if (!MountItem(tmpItem))
+        if (!MountItem(tmpItem, CreatureBodyBones.Right_Arm_Part_2))
             Debug.LogError("ERROR: Error mounting spear on " + name);
     }
 

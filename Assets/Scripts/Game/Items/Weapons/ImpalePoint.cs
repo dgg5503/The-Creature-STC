@@ -180,7 +180,7 @@ public class ImpalePoint : MonoBehaviour {
 
             // stop checking for OnCollisionEnter
             IsActive = false;
-            Debug.Log(transform.parent.name + " is active: " + IsActive);
+            //Debug.Log(transform.parent.name + " is active: " + IsActive);
             // go kinematic and stop detecting collision
             rigidbody.isKinematic = true;
             parentRigidBody.isKinematic = true;
@@ -230,7 +230,7 @@ public class ImpalePoint : MonoBehaviour {
     {
         if (impaleState != ImpaleState.Impaling)
         {
-            Debug.Log("SetActive called on " + transform.parent.name);
+            //Debug.Log("SetActive called on " + transform.parent.name);
 
             // if collision info is stored, detection collision again with that object
             if (finalCollision != null)

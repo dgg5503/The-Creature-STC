@@ -1,13 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class InputManager : MonoBehaviour {
+public enum KeyState
+{
+    KEY_DOWN,
+    KEY_UP,
+    KEY_PRESSED
+}
 
+public class InputManager : MonoBehaviour {
     // Fields
     /// <summary>
     /// The function pointer signature called appropriately.
     /// </summary>
-    public delegate void KeyAction();
+    public delegate void KeyAction(KeyState keyState);
     private Dictionary<KeyCode, Dictionary<GameState, KeyAction>> keyBinds;
     private Dictionary<KeyCode, Dictionary<GameState, KeyAction>>.KeyCollection boundKeys;
 
@@ -18,13 +24,19 @@ public class InputManager : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void FixedUpdate() {
+    void Update() {
         boundKeys = keyBinds.Keys;
         foreach (KeyCode keyCheck in boundKeys)
-            if (Input.GetKey(keyCheck) &&
-                keyBinds.ContainsKey(keyCheck) &&
+            if (keyBinds.ContainsKey(keyCheck) &&
                 keyBinds[keyCheck].ContainsKey(GameManager.GameState))
-                keyBinds[keyCheck][GameManager.GameState]();
+            {
+                if (Input.GetKeyDown(keyCheck))
+                    keyBinds[keyCheck][GameManager.GameState](KeyState.KEY_DOWN);
+                else if (Input.GetKeyUp(keyCheck))
+                    keyBinds[keyCheck][GameManager.GameState](KeyState.KEY_UP);
+                else if (Input.GetKey(keyCheck))
+                    keyBinds[keyCheck][GameManager.GameState](KeyState.KEY_PRESSED);
+            }
 	}
 
     /// <summary>
