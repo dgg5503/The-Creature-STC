@@ -87,8 +87,10 @@ public abstract class Character : MonoBehaviour
     // States n' Actions
     //private bool isAlive;
     private CharacterState characterState;
-    private Dictionary<int, ItemState> bodyPartItemState;
-    private Dictionary<int, Coroutine> animationCoroutines;
+    //private Dictionary<int, ItemState> bodyPartItemState;
+    private ItemState bodyPartItemState;
+    private Coroutine animationCoroutine;
+    //private Dictionary<int, Coroutine> animationCoroutines;
 
     //private ItemState leftHandItemState;
     //private ItemState rightHandItemState;
@@ -190,6 +192,7 @@ public abstract class Character : MonoBehaviour
         //isAlive = true;
         isCrawling = false; // assume not crawling until crawl check
         characterState = CharacterState.Idle;
+        /*
         bodyPartItemState = new Dictionary<int, ItemState>();
         animationCoroutines = new Dictionary<int, Coroutine>();
 
@@ -199,6 +202,13 @@ public abstract class Character : MonoBehaviour
             bodyPartItemState[bodyPartId] = ItemState.Idle;
             animationCoroutines[bodyPartId] = null;
         }
+        */
+        animationCoroutine = null;
+        bodyPartItemState = ItemState.Idle;
+
+        // Register behavior functions
+        //StateMachineBehaviour[] behaviours = characterAnimator.GetBehaviours<animationEventHandler>();
+        
 
         // set layer of character colliders to 10
         gameObject.layer = 10;
@@ -208,6 +218,7 @@ public abstract class Character : MonoBehaviour
         characterAnimator.SetInteger("characterState", (int)characterState);
         crawlController = GetComponentInChildren<CrawlRootAnim>();
         crawlAngle = Quaternion.Euler(leanForwardAngle, 0, 0);
+        animationEventHandler.animationCallbacks[characterAnimator] = test;
     }
 
     protected virtual void Start()
@@ -338,8 +349,10 @@ public abstract class Character : MonoBehaviour
     public void UseItem(int bodyPartID, ItemState itemState)
     {
         // no coroutine must be occuring for this body part in order to execute the item.
-        bodyPartItemState[bodyPartID] = itemState;
-        if (animationCoroutines[bodyPartID] != null)
+        //bodyPartItemState[bodyPartID] = itemState;
+        //if (animationCoroutines[bodyPartID] != null)
+        bodyPartItemState = itemState;
+        if(animationCoroutine != null)
             return;
 
         // ensure joint exists
@@ -360,11 +373,38 @@ public abstract class Character : MonoBehaviour
         if ((item = attachedBodyPart.MountPoint.MountedItem) == null)
             return;
         //Debug.LogError("called it");
+        /*
         animationCoroutines[bodyPartID] = StartCoroutine(BeginItemExeuction(item, bodyPartID, (success) =>
         {
             animationCoroutines[bodyPartID] = null;
             bodyPartItemState[bodyPartID] = ItemState.Idle;
+        }));*/
+        
+        animationCoroutine = StartCoroutine(BeginItemExeuction(item, bodyPartID, (success) =>
+        {
+            animationCoroutine = null;
+            bodyPartItemState = ItemState.Idle;
+            Debug.Log("null set");
         }));
+    }
+
+    private void test(AnimationState state, AnimatorStateInfo stateInfo)
+    {
+        /*
+        if(stateInfo.IsTag("aim"))
+        {
+            if(stateInfo.normalizedTime >= stateInfo.length &&
+                bodyPartItemState == ItemState.Executing)
+                
+                characterAnimator.SetInteger(item.ItemAnimation[bodyPartID].itemState, (int)ItemState.Executing);
+            Debug.Log("aiming in state " + state);
+        }
+
+        if(stateInfo.IsTag("throw"))
+        {
+            Debug.Log("throwing in state " + state);
+        }
+        */
     }
 
     private IEnumerator BeginItemExeuction(RegularItem item, int bodyPartID, System.Action<bool> callback)
@@ -382,15 +422,16 @@ public abstract class Character : MonoBehaviour
         // get current animation clip
         AnimatorStateInfo stateInfo = GetAnimatorStateInfoFromTag(layerIndex, "aim");
         //characterAnimator.GetAnimatorTransitionInfo(0).normalizedTime
-        Debug.Log(Animator.StringToHash("aim_right") + " and " + stateInfo.shortNameHash);
+        //Debug.Log(Animator.StringToHash("aim_right") + " and " + stateInfo.shortNameHash);
         // wait until we reach desired time
         
         while (stateInfo.normalizedTime < stateInfo.length)
         {
-            Debug.Log(stateInfo.normalizedTime + " and " + stateInfo.length);
-            if (bodyPartItemState[bodyPartID] != ItemState.Aim)
+            //Debug.Log(stateInfo.normalizedTime + " and " + stateInfo.length);
+            //if (bodyPartItemState[bodyPartID] != ItemState.Aim)
+            if(bodyPartItemState != ItemState.Aim)
             {
-                Debug.Log("failed");
+                //Debug.Log("failed");
                 characterAnimator.SetInteger(item.ItemAnimation[bodyPartID].itemState, (int)ItemState.Idle);
                 callback(true);
                 yield break;
@@ -398,14 +439,19 @@ public abstract class Character : MonoBehaviour
             stateInfo = GetAnimatorStateInfoFromTag(layerIndex, "aim");
             yield return new WaitForEndOfFrame();
         }
-        Debug.Log(stateInfo.normalizedTime + " AND " + stateInfo.length);
+        //Debug.Log(stateInfo.normalizedTime + " AND " + stateInfo.length);
         Debug.Log("ready for execute");
-        while (bodyPartItemState[bodyPartID] != ItemState.Executing) { Debug.Log("RUNNING");  yield return new WaitForEndOfFrame(); }
-        
+        //while (bodyPartItemState[bodyPartID] != ItemState.Executing)
+        while(bodyPartItemState != ItemState.Executing)
+        {
+            //Debug.Log(bodyPartItemState);
+            yield return new WaitForEndOfFrame();
+        }
+        Debug.Log(bodyPartItemState);
         // start throw and get animation for throw
         characterAnimator.SetInteger(item.ItemAnimation[bodyPartID].itemState, (int)ItemState.Executing);
         stateInfo = GetAnimatorStateInfoFromTag(layerIndex, "throw");
-
+        Debug.Log(stateInfo.normalizedTime);
         // wait until .75 way through
         while (stateInfo.normalizedTime < .50f)
         {
@@ -414,8 +460,10 @@ public abstract class Character : MonoBehaviour
         }
 
         // use item
+        //Debug.Log("item thrown");
         item.Use();
         characterAnimator.SetInteger(item.ItemAnimation[bodyPartID].itemState, (int)ItemState.Idle);
+        //Debug.Log("integer set thrown");
         // finish
         yield return null;
         callback(true);
@@ -424,7 +472,7 @@ public abstract class Character : MonoBehaviour
     private AnimatorStateInfo GetAnimatorStateInfoFromTag(int layer, string tag)
     {
         AnimatorStateInfo stateInfo = characterAnimator.GetCurrentAnimatorStateInfo(layer);
-        Debug.Log(stateInfo.shortNameHash);
+        //Debug.Log(stateInfo.shortNameHash);
 
         if (stateInfo.IsTag(tag))
             return stateInfo;
@@ -433,7 +481,7 @@ public abstract class Character : MonoBehaviour
         if (stateInfo.IsTag(tag))
             return stateInfo;
 
-        Debug.Log(stateInfo.shortNameHash);
+        //Debug.Log(stateInfo.shortNameHash);
         //Debug.Break();
 
         return new AnimatorStateInfo();
@@ -567,6 +615,10 @@ public abstract class Character : MonoBehaviour
     /// <returns>Reference to body part detached if it exists.</returns>
     public BodyPart Detach(int bodyPartID)
     {
+        // ensure corutine isnt running
+        if (animationCoroutine != null)
+            return null;
+
         // see if part exists
         if (!joints.ContainsKey(bodyPartID))
         {
@@ -600,13 +652,15 @@ public abstract class Character : MonoBehaviour
         CrawlCheck();
 
         // stop the animation coroutine (if there is one running on this bpart)
-        if (animationCoroutines[bodyPartID] != null)
-            StopCoroutine(animationCoroutines[bodyPartID]);
+        //if (animationCoroutines[bodyPartID] != null)
+        //    StopCoroutine(animationCoroutines[bodyPartID]);
 
         // TODO: MAKE SURE ANIMATION STATE IS SET OFF IF ITEM IS ATTACHED.
 
         return tmpPart;
     }
+
+
 
     /// <summary>
     /// Call this function when the character should be placed into a "death" state.
