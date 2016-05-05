@@ -7,7 +7,7 @@ public class SwitchScene : MonoBehaviour {
 
     void OnTriggerEnter(Collider collidedWith)
     {
-        if(collidedWith.tag == "Item")
+        if(collidedWith.gameObject.name == "The_Creature")
         {
             //Application.LoadLevel(SceneLevel);
             UnityEngine.SceneManagement.SceneManager.LoadScene(SceneLevel);
