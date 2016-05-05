@@ -74,9 +74,10 @@ public class Inventory : MonoBehaviour
                     if (item.GetComponent<RegularItem>())
                     {
                         Vector3 position = new Vector3(1, 0, 1);
-                        string pathToTheFile = "Prefabs/Items/" + item.itemName;
+                        string pathToTheFile = "Prefabs/Items/" + item.name;
                         GameObject test = Resources.Load(pathToTheFile) as GameObject;
-                        GameObject.Instantiate(test, playerPosition.transform.position - position, Quaternion.identity);
+                       Object itemToInstantiate =  GameObject.Instantiate(test, playerPosition.transform.position - position, Quaternion.identity);
+                       itemToInstantiate.name = item.name;
                     }
                     else
                     {

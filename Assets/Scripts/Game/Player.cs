@@ -30,6 +30,7 @@ public class Player : Character
     private int cheatIWay = 1;
     private string path;
     private BodyPart testingBodyPart;
+    private string newItemName = "";
     //TEst
     // private Canvas getCanvas;
     //  private Camera passCamera;
@@ -93,7 +94,7 @@ public class Player : Character
             {
                 if (Input.GetMouseButtonDown(1))
                 {
-                    Debug.Log(hit.transform.gameObject.GetComponent<Item>().itemName);
+                    Debug.Log(hit.transform.gameObject.GetComponent<Item>().name);
 
                     if (hit.transform.gameObject.GetComponent<BodyPart>())
                     {
@@ -104,7 +105,19 @@ public class Player : Character
                         path = "Prefabs/Items/";
                         Destroy(hit.transform.gameObject);
                     }
-                    GameObject itemToAdd = Resources.Load(path + hit.transform.gameObject.GetComponent<Item>().name) as GameObject;
+                    string pickUpItemName = hit.transform.gameObject.name;
+                    if (pickUpItemName.Any(char.IsWhiteSpace))
+                    {
+                        newItemName = pickUpItemName.Remove(pickUpItemName.IndexOf(' '));
+                    }
+                    else
+                    {
+                        newItemName = pickUpItemName;
+                    }
+                    Debug.Log("ITEM NAME IS HERE " + newItemName);
+
+
+                    GameObject itemToAdd = Resources.Load(path + newItemName) as GameObject;
                     Debug.Log(itemToAdd);
                     Item itemToAddNew = itemToAdd.GetComponent<Item>() as Item;
                     charInventory.AddItem(itemToAddNew);
