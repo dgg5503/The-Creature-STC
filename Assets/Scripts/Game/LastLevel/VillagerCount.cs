@@ -10,8 +10,10 @@ public class VillagerCount : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         villagerCount = GameObject.FindGameObjectsWithTag("Villager").Length;
-        lastCount = villagerCount; 
-	}
+        lastCount = villagerCount;
+        countText.text = villagerCount.ToString();
+        
+    }
 	
 	// Update is called once per frame
 	void Update () {
