@@ -581,6 +581,7 @@ public abstract class Character : MonoBehaviour
             allBodyParts[i].SetLimp();
             //allBodyParts[i].Health = 0;
             allBodyParts[i].gameObject.layer = 0;
+            allBodyParts[i].ClearAllEvents();
         }
     }
 

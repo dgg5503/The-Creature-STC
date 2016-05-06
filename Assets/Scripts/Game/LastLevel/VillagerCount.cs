@@ -4,26 +4,25 @@ using System.Collections;
 
 public class VillagerCount : MonoBehaviour {
     public int villagerCount;
-    private int lastCount;
     public Text countText;
 
 	// Use this for initialization
 	void Start () {
-        villagerCount = GameObject.FindGameObjectsWithTag("Villager").Length;
-        lastCount = villagerCount;
+        Enemy[] enemies = FindObjectsOfType<Enemy>();
+        for (int i = 0; i < enemies.Length; ++i)
+            enemies[i].deathCallback += ChangeCount;
+
+        villagerCount = enemies.Length;
+        countText = GetComponent<Text>();
         countText.text = villagerCount.ToString();
-        
     }
 	
 	// Update is called once per frame
 	void Update () {
-	    if(lastCount != villagerCount)
-        {
-            
-            countText.text = villagerCount.ToString();
-            lastCount = villagerCount;
-            
-            
-        }
+        countText.text = villagerCount.ToString();
 	}
+    void ChangeCount()
+    {
+        villagerCount -= 1;
+    }
 }

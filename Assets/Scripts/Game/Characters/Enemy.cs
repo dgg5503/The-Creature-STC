@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 /*
  * Enemy
@@ -26,7 +26,11 @@ enum EnemyState
 [RequireComponent(typeof(NavMeshAgent))]
 public class Enemy : Character {
 
-    // Fields
+    // Delegate
+    public delegate void DeathCallback();
+    public event DeathCallback deathCallback;
+
+    // FIelds
     private float sphereCastRadius = 5f;
     public float coneAngle = 30;
     public float maxIdleTime = 5;
@@ -57,6 +61,9 @@ public class Enemy : Character {
     protected override void Awake()
     {
         base.Awake();
+        foreach(KeyValuePair<int, CustomJoint> kvp in joints)
+            if(kvp.Value.BodyPart != null)
+                kvp.Value.BodyPart.bodyPartHitCallbacks += BodyPart_bodyPartHitCallbacks;
 
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.updatePosition = false;
@@ -73,11 +80,16 @@ public class Enemy : Character {
         stateTimer = Random.Range(minIdleTime, maxIdleTime);
     }
 
+    private void BodyPart_bodyPartHitCallbacks(int health)
+    {
+        Die();
+    }
+
     protected override void Start()
     {
         // DEBUG EQUIP.
         EquipItem();
-        Die();
+        //Die();
     }
 
     /// <summary>
@@ -133,6 +145,9 @@ public class Enemy : Character {
                 break;
 
             case EnemyState.Attack:
+                // ensure target is within distance
+                
+
                 stateTimer -= Time.deltaTime;
 
                 // draw line
@@ -290,6 +305,10 @@ public class Enemy : Character {
     protected override void Die()
     {
         ChangeStateTo(EnemyState.None);
+        if (deathCallback != null)
+        {
+            deathCallback();
+        }
         base.Die();
     }
 

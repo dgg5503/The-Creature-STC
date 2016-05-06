@@ -29,7 +29,7 @@ using UnityEngine.UI;
 public class BodyPart : Item, ISerializationCallbackReceiver
 {
     // Delegates
-    public delegate void BodyPartHitCallback();
+    public delegate void BodyPartHitCallback(int health);
     public event BodyPartHitCallback bodyPartHitCallbacks;
 
     // Physics components
@@ -152,13 +152,19 @@ public class BodyPart : Item, ISerializationCallbackReceiver
             if (value >= 0)
             {
                 currHealth = value;
-                if(transform.root.name.Contains("Creature"))
+
+
+
+                if (transform.root.name.Contains("Creature"))
                 {
                     creatureInventory.reduceHealthImproved(this.bodyPartType, currHealth);
                 }
             }
             else
                 currHealth = 0;
+
+            if (bodyPartHitCallbacks != null)
+                bodyPartHitCallbacks(currHealth);
 
             /*
              * if(transform.root.getComponenet<playerinventory>() != null)
@@ -521,6 +527,17 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         Debug.Log(this.transform.FindChild("Halo(Clone)").gameObject.transform.position);
 
     }*/
+
+    public void ClearAllEvents()
+    {
+        if (bodyPartHitCallbacks != null)
+        {
+            Delegate[] events = bodyPartHitCallbacks.GetInvocationList();
+            foreach (BodyPartHitCallback d in events)
+                bodyPartHitCallbacks -= d;
+        }
+    }
+
     public void haloGlow(bool toggle)
     {
         if (bodyPartType == 1 || bodyPartType == 3 || bodyPartType == 5 || bodyPartType == 7)

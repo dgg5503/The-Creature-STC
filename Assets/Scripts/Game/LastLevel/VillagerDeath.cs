@@ -15,9 +15,5 @@ public class VillagerDeath : MonoBehaviour {
        //if(this.gameObject.GetComponent<>)
 	}
 
-    void ChangeCount()
-    {
-        Text counter = GameObject.Find("VillagerCountText").GetComponent<Text>();
-        counter.GetComponent<VillagerCount>().villagerCount -= 1;
-    }
+
 }
