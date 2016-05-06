@@ -133,7 +133,7 @@ public class Player : Character
                     }
                     else
                     {
-                        GameObject itemToAdd = Resources.Load(path + newItemName) as GameObject;
+                        GameObject itemToAdd = Resources.Load(path + hit.transform.gameObject.name) as GameObject;
                         Item itemToAddNew = itemToAdd.GetComponent<Item>() as Item;
                         charInventory.AddItem(itemToAddNew);
                     }
