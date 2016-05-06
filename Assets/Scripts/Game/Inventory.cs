@@ -87,8 +87,10 @@ public class Inventory : MonoBehaviour
                     }
 
                 }
-
-                moveFromSlot.clearItemSlot();
+                if (moveFromSlot.name != "Head")
+                {
+                    moveFromSlot.clearItemSlot();
+                }
                 moveFromSlot = null;
                 moveToSlot = null;
                 emptySlot++;
@@ -513,6 +515,29 @@ public class Inventory : MonoBehaviour
             {
                 slot.GetComponent<Slot>().clearItemSlot();
             }
+        }
+    }
+
+    public int getNumberOfEmptyRegularItemSlots(){
+        int numberOfEmptySlots = 0;
+        foreach (GameObject slot in allSlots)
+        {
+            if (slot.name == "InventorySlot")
+            {
+                if (slot.GetComponent<Slot>().IsEmptySlot())
+                {
+                    ++numberOfEmptySlots;
+                }
+            }
+        }
+        return numberOfEmptySlots-1;
+    }
+
+    //Helper
+    public void returnTotalNumberOfSlots() {
+        foreach (GameObject slot in allSlots)
+        {
+            Debug.Log(slot.name);
         }
     }
 /*

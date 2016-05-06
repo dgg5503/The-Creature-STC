@@ -102,7 +102,10 @@ public class Player : Character
                     else if (hit.transform.gameObject.GetComponent<RegularItem>())
                     {
                         path = "Prefabs/Items/";
-                        Destroy(hit.transform.gameObject);
+                        if (charInventory.getNumberOfEmptyRegularItemSlots() >= 0)
+                        {
+                            Destroy(hit.transform.gameObject);
+                        }   
                     }
                     string pickUpItemName = hit.transform.gameObject.name;
                     if (pickUpItemName.Any(char.IsWhiteSpace))
