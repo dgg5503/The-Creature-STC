@@ -20,6 +20,7 @@ enum EnemyState
     Flee,
     Alert,
     Equipping,
+    Grappled,
     None
 }
 
@@ -40,6 +41,7 @@ public class Enemy : Character {
     public float fleeTime = 4;
     public float equipTime = 5;
     public float aimTime = 5;
+    public float maxDistance = 10;
 
     // nav mesh agent info
     private NavMeshAgent navMeshAgent;
@@ -145,8 +147,15 @@ public class Enemy : Character {
                 break;
 
             case EnemyState.Attack:
+                Debug.Log("ATTACKING");
                 // ensure target is within distance
-                
+                if(Vector3.Distance(transform.position, targetedCharacter.transform.position) > maxDistance)
+                {
+                    ChangeStateTo(EnemyState.Wonder);
+                    UseItem(CreatureBodyBones.Right_Arm_Part_2, KeyState.KEY_UP);
+                    targetedCharacter = null;
+                    break;    
+                }
 
                 stateTimer -= Time.deltaTime;
 
@@ -172,6 +181,14 @@ public class Enemy : Character {
                 break;
 
             case EnemyState.Equipping:
+                if (Vector3.Distance(transform.position, targetedCharacter.transform.position) > maxDistance)
+                {
+                    ChangeStateTo(EnemyState.Wonder);
+                    //UseItem(CreatureBodyBones.Right_Arm_Part_2, KeyState.KEY_DOWN);
+                    targetedCharacter = null;
+                    break;
+                }
+
                 stateTimer -= Time.deltaTime;
                 if (stateTimer <= 0)
                 {
@@ -194,6 +211,9 @@ public class Enemy : Character {
                 stateTimer -= Time.deltaTime;
                 if (stateTimer <= 0)
                     ChangeStateTo(EnemyState.Wonder);
+                break;
+
+            case EnemyState.Grappled:
                 break;
 
             case EnemyState.None:
@@ -225,7 +245,9 @@ public class Enemy : Character {
 
             case EnemyState.Wonder:
                 // get random direction
-                if(navMeshAgent.isOnNavMesh)
+                navMeshAgent.Resume();
+                //UseItem(CreatureBodyBones.Right_Arm_Part_2, KeyState.KEY_UP);
+                if (navMeshAgent.isOnNavMesh)
                     navMeshAgent.destination = RandomNavSphere(transform.position, 5f, -1); //transform.position + (new Vector3(Random.Range(-1.0f, 1.0f), 0, Random.Range(-1.0f, 1.0f)) * 5f);
 
                 //animator.Play("walk");
@@ -236,8 +258,8 @@ public class Enemy : Character {
 
             case EnemyState.Attack:
                 // stop moving for now
+                Debug.Log("going to attack");
                 navMeshAgent.Stop();
-                UseItem(CreatureBodyBones.Right_Arm_Part_2, KeyState.KEY_DOWN);
                 stateTimer = aimTime;
                 break;
 
@@ -251,7 +273,11 @@ public class Enemy : Character {
                 break;
 
             case EnemyState.Alert:
-                
+                break;
+
+            case EnemyState.Grappled:
+                stateTimer = 0;
+                navMeshAgent.Stop();
                 break;
 
             case EnemyState.None:
@@ -267,8 +293,7 @@ public class Enemy : Character {
     private void EquipItem()
     {
         RegularItem tmpItem = (Instantiate(GameManager.PrefabDictionary["spear"]) as GameObject).GetComponent<RegularItem>();
-        if (!MountItem(tmpItem, CreatureBodyBones.Right_Arm_Part_2))
-            Debug.LogError("ERROR: Error mounting spear on " + name);
+        MountItem(tmpItem, CreatureBodyBones.Right_Arm_Part_2);
     }
 
     private void ScanForPlayer()
@@ -291,7 +316,8 @@ public class Enemy : Character {
                  * 1. Project position location of player relative to head on to forward of this guy (dot product)
                  * 2. Angle of cone is now in 3D space from forward, inside cone is when normalized dot product is larger than the radian angle (our calculated theta)
                  */
-                if ((Vector3.Dot(transform.forward, positionDifference)) > calculatedAngle)
+                if ((Vector3.Dot(transform.forward, positionDifference)) > calculatedAngle &&
+                    Vector3.Distance(transform.position, raycastHits[i].collider.transform.position) < maxDistance)
                 {
                     // Logical reaction
                     //Debug.DrawLine(headPoint.position, raycastHits[i].collider.transform.position, Color.red);
@@ -306,15 +332,17 @@ public class Enemy : Character {
     {
         ChangeStateTo(EnemyState.None);
         if (deathCallback != null)
-        {
             deathCallback();
-        }
         base.Die();
     }
 
     private void SeePlayerResponse(Character character)
     {
         targetedCharacter = character;
+
+        // if no weapon, get one.
+        EquipItem();
+
         ChangeStateTo(EnemyState.Attack);
         // set state based on current stats
         // have a weapon? try to attack
@@ -347,6 +375,14 @@ public class Enemy : Character {
             return navHit.position;
 
         return transform.position;
+    }
+
+    public void IsHitWithGrapple(bool status)
+    {
+        if (status)
+            ChangeStateTo(EnemyState.Grappled);
+        else
+            ChangeStateTo(EnemyState.Idle);
     }
 
     protected override void ProcessMovement()
