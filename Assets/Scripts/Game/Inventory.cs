@@ -377,6 +377,8 @@ public class Inventory : MonoBehaviour
                 }
         }
     }
+
+    /*
     public float helperFunctionBodyPartHealth(int id, float healthValue) {
         float convertedValue = 0.0f;
         for (int i = 0; i < playerRef.BodyParts.Length; i++)
@@ -490,6 +492,124 @@ public class Inventory : MonoBehaviour
         Debug.Log("Converted Value Should be here: " + convertedValue);
         return convertedValue;
     }
+    */
+
+    public float helperFunctionBodyPartHealth(int id, float healthValue)
+    {
+        float convertedValue = 0.0f;
+        for (int i = 0; i < playerRef.BodyParts.Length; i++)
+        {
+            if (id == 1)
+            {
+                if (playerRef.BodyParts[i].BodyPartType == 2)
+                {
+
+                    convertedValue = Mathf.Min(healthValue, playerRef.BodyParts[i].Health);
+                    convertedValue /= 100;
+                    break;
+                }
+                else
+                {
+                    convertedValue = healthValue / 100;
+                }
+            }
+            else if (id == 2)
+            {
+                if (playerRef.BodyParts[i].BodyPartType == 1)
+                {
+                    convertedValue = Mathf.Min(healthValue, playerRef.BodyParts[i].Health);
+                    convertedValue /= 100;
+                    break;
+                }
+                else
+                {
+                    convertedValue = healthValue / 100;
+                }
+            }
+            else if (id == 3)
+            {
+                if (playerRef.BodyParts[i].BodyPartType == 4)
+                {
+                    convertedValue = Mathf.Min(healthValue, playerRef.BodyParts[i].Health);
+                    convertedValue /= 100;
+                    break;
+                }
+                else
+                {
+                    convertedValue = healthValue / 100;
+                }
+            }
+            else if (id == 4)
+            {
+                if (playerRef.BodyParts[i].BodyPartType == 3)
+                {
+                    convertedValue = Mathf.Min(healthValue, playerRef.BodyParts[i].Health);
+                    convertedValue /= 100;
+                    break;
+                }
+                else
+                {
+                    convertedValue = healthValue / 100;
+                }
+            }
+            else if (id == 5)
+            {
+                if (playerRef.BodyParts[i].BodyPartType == 6)
+                {
+                    convertedValue = Mathf.Min(healthValue, playerRef.BodyParts[i].Health);
+                    convertedValue /= 100;
+                    break;
+                }
+                else
+                {
+                    convertedValue = healthValue / 100;
+                }
+            }
+            else if (id == 6)
+            {
+                if (playerRef.BodyParts[i].BodyPartType == 5)
+                {
+                    convertedValue = Mathf.Min(healthValue, playerRef.BodyParts[i].Health);
+                    convertedValue /= 100;
+                    break;
+                }
+                else
+                {
+                    convertedValue = healthValue / 100;
+                }
+            }
+            else if (id == 7)
+            {
+                if (playerRef.BodyParts[i].BodyPartType == 8)
+                {
+                    convertedValue = Mathf.Min(healthValue, playerRef.BodyParts[i].Health);
+                    convertedValue /= 100;
+                    break;
+                }
+                else
+                {
+                    convertedValue = healthValue / 100;
+                }
+            }
+            else if (id == 8)
+            {
+                if (playerRef.BodyParts[i].BodyPartType == 7)
+                {
+                    convertedValue = Mathf.Min(healthValue, playerRef.BodyParts[i].Health);
+                    convertedValue /= 100;
+                    break;
+                }
+                else
+                {
+                    convertedValue = healthValue / 100;
+                }
+            }
+        }
+
+        Debug.Log("Converted Value Should be here: " + convertedValue);
+        return convertedValue;
+    }
+
 
 
     public void toggleHealthBars() {

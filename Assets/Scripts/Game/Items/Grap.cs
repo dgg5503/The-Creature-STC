@@ -4,7 +4,6 @@ using System.Collections;
 public class Grap : MonoBehaviour {
     private GameObject collideWith;
     private Hook hookScript;
-
     public GameObject ColliderObject {
         get { return collideWith; }
         set { collideWith = value; }
@@ -13,6 +12,7 @@ public class Grap : MonoBehaviour {
     void Awake()
     {
         hookScript = GameObject.Find("HookPoint").GetComponent<Hook>();
+
     }
 
     void OnCollisionEnter(Collision col)
@@ -22,7 +22,7 @@ public class Grap : MonoBehaviour {
         {
             col.gameObject.transform.parent = this.transform;
             ColliderObject = col.gameObject;
-
+            ColliderObject.GetComponent<Enemy>().IsHitWithGrapple(true);
         }
         else if (col.gameObject.name == "GrapplingLocation")
         {
