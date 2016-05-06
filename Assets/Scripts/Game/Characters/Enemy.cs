@@ -19,7 +19,8 @@ enum EnemyState
     Attack,
     Flee,
     Alert,
-    Equipping
+    Equipping,
+    None
 }
 
 [RequireComponent(typeof(NavMeshAgent))]
@@ -91,10 +92,6 @@ public class Enemy : Character {
     {
         base.Update();
 
-        // scan for the enemy
-        if(targetedCharacter == null)
-            ScanForPlayer();
-
         // state machine
         // handle state actions here
         switch (enemyState)
@@ -106,6 +103,10 @@ public class Enemy : Character {
                 //animator.Play("idle");
                 if (stateTimer <= 0)
                     ChangeStateTo(EnemyState.Wonder);
+
+                // scan for the enemy
+                if (targetedCharacter == null)
+                    ScanForPlayer();
                 break;
 
             case EnemyState.Wonder:
@@ -124,6 +125,10 @@ public class Enemy : Character {
                         }
                     }
                 }
+
+                // scan for the enemy
+                if (targetedCharacter == null)
+                    ScanForPlayer();
                 break;
 
             case EnemyState.Attack:
@@ -175,6 +180,9 @@ public class Enemy : Character {
                     ChangeStateTo(EnemyState.Wonder);
                 break;
 
+            case EnemyState.None:
+               // Debug.Log("hi");
+                break;
         }
         
     }
@@ -230,6 +238,10 @@ public class Enemy : Character {
                 
                 break;
 
+            case EnemyState.None:
+                navMeshAgent.enabled = false;
+                stateTimer = 0;
+                break;
         }
 
         // set state in animator
@@ -272,6 +284,12 @@ public class Enemy : Character {
                 }
             }
         }
+    }
+
+    protected override void Die()
+    {
+        ChangeStateTo(EnemyState.None);
+        base.Die();
     }
 
     private void SeePlayerResponse(Character character)

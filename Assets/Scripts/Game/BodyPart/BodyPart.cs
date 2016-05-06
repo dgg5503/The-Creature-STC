@@ -28,6 +28,7 @@ using UnityEngine.UI;
 
 public class BodyPart : Item, ISerializationCallbackReceiver
 {
+    // Delegates
     // Physics components
     // hidding base memebers since these properties are depricated
     private new Rigidbody rigidbody;
@@ -238,8 +239,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     // Use this for initialization
     void Start()
     {
-        //haloEffect();
-        haloGlow();   
+  
         // no joint connected
         if (joint == null)
         {
@@ -311,6 +311,8 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         // re-ignore parent collision
         if (transform.parent != null && collider != null)
             Physics.IgnoreCollision(collider, transform.parent.GetComponent<Collider>());
+
+        haloGlow(false);
 
         return true;
     }
@@ -431,6 +433,9 @@ public class BodyPart : Item, ISerializationCallbackReceiver
             }
         }
 
+        //haloEffect();
+        haloGlow(true);
+
         return this;
     }
 
@@ -483,12 +488,12 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         Debug.Log(this.transform.FindChild("Halo(Clone)").gameObject.transform.position);
 
     }*/
-    public void haloGlow()
+    public void haloGlow(bool toggle)
     {
         if (bodyPartType == 1 || bodyPartType == 3 || bodyPartType == 5 || bodyPartType == 7)
         {
             Component halo = GetComponent("Halo");
-            halo.GetType().GetProperty("enabled").SetValue(halo, true, null);
+            halo.GetType().GetProperty("enabled").SetValue(halo, toggle, null);
         }
     }
 }

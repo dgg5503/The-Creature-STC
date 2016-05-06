@@ -570,6 +570,14 @@ public abstract class Character : MonoBehaviour
         accelerationScalar = 0;
         rotationAccelFactor = 0;
         maxSpeed = 0;
+
+        // set all bparts to false kinematics...
+        BodyPart[] allBodyParts = GetComponentsInChildren<BodyPart>();
+        for (int i = 0; i < allBodyParts.Length; ++i)
+        {
+            allBodyParts[i].SetLimp();
+            allBodyParts[i].gameObject.layer = 0;
+        }
     }
 
     /// <summary>

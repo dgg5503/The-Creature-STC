@@ -32,7 +32,7 @@ public class animationEventHandler : StateMachineBehaviour {
             animationCallbacks[animator](AnimationState.UPDATE, stateInfo, layerIndex);*/
         if (animationCallbacks != null)
         {
-            Debug.Log(animationCallbacks.GetInvocationList().Length);
+            //Debug.Log(animationCallbacks.GetInvocationList().Length);
             animationCallbacks(AnimationState.UPDATE, animator, stateInfo, layerIndex);
         }
         base.OnStateUpdate(animator, stateInfo, layerIndex);

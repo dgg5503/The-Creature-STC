@@ -21,7 +21,7 @@ public class Corpse : Character
     {
         // Initiate parent first THEN move on to this classes stuff.
         base.Awake();
-
+        Die();
         // tag as corpse for easy mouse detection
         tag = "Corpse";
     }
@@ -30,7 +30,7 @@ public class Corpse : Character
     protected override void Start()
     {
         //IsAlive = false;
-        Die();
+        
     }
 
     // Update is called once per frame
@@ -42,14 +42,6 @@ public class Corpse : Character
     protected override void Die()
     {
         base.Die();
-
-        // set all bparts to false kinematics...
-        BodyPart[] allBodyParts = GetComponentsInChildren<BodyPart>();
-        for (int i = 0; i < allBodyParts.Length; ++i)
-        {
-            allBodyParts[i].SetLimp();
-            allBodyParts[i].gameObject.layer = 0;
-        }
     }
 
     /// <summary>
