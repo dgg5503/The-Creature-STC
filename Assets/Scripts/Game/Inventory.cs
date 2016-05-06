@@ -77,8 +77,10 @@ public class Inventory : MonoBehaviour
                         Vector3 position = new Vector3(1, 0, 1);
                         string pathToTheFile = "Prefabs/Items/" + item.name;
                         GameObject test = Resources.Load(pathToTheFile) as GameObject;
-                       Object itemToInstantiate =  GameObject.Instantiate(test, playerPosition.transform.position - position, Quaternion.identity);
+                       GameObject itemToInstantiate =  (GameObject)GameObject.Instantiate(test, playerPosition.transform.position - position, Quaternion.identity);
                        itemToInstantiate.name = item.name;
+       
+                       playerRef.MountItem(itemToInstantiate.GetComponent<RegularItem>());
                     }
                     else
                     {
@@ -87,8 +89,10 @@ public class Inventory : MonoBehaviour
                     }
 
                 }
-
-                moveFromSlot.clearItemSlot();
+                if (moveFromSlot.name != "Head")
+                {
+                    moveFromSlot.clearItemSlot();
+                }
                 moveFromSlot = null;
                 moveToSlot = null;
                 emptySlot++;
@@ -513,6 +517,29 @@ public class Inventory : MonoBehaviour
             {
                 slot.GetComponent<Slot>().clearItemSlot();
             }
+        }
+    }
+
+    public int getNumberOfEmptyRegularItemSlots(){
+        int numberOfEmptySlots = 0;
+        foreach (GameObject slot in allSlots)
+        {
+            if (slot.name == "InventorySlot")
+            {
+                if (slot.GetComponent<Slot>().IsEmptySlot())
+                {
+                    ++numberOfEmptySlots;
+                }
+            }
+        }
+        return numberOfEmptySlots-1;
+    }
+
+    //Helper
+    public void returnTotalNumberOfSlots() {
+        foreach (GameObject slot in allSlots)
+        {
+            Debug.Log(slot.name);
         }
     }
 /*
