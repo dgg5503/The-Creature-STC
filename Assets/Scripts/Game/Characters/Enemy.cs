@@ -176,6 +176,8 @@ public class Enemy : Character {
                 }
                 else
                 {
+                    // calculate angle from forward up or down for target
+                    AimingAt = Vector3.ProjectOnPlane((targetedCharacter.transform.position - transform.position).normalized, transform.right);
                     UseItem(CreatureBodyBones.Right_Arm_Part_2, KeyState.KEY_DOWN);
                 }
                 break;
@@ -389,10 +391,5 @@ public class Enemy : Character {
     {
         velocity = navMeshAgent.desiredVelocity;
         navMeshAgent.nextPosition = transform.position;
-    }
-
-    void OnDrawGizmos()
-    {
-        //Gizmos.DrawSphere(GameObject.Find("Male_Villager1_Head").transform.position, sphereCastRadius);
     }
 }

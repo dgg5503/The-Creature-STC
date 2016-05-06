@@ -92,6 +92,11 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     public Animator CharacterAnimator { get { return characterAnimator; } }
 
+    /// <summary>
+    /// Get or set what this character's target aim is.
+    /// </summary>
+    public Vector3 AimingAt { get; protected set; }
+
     protected bool IsAlive
     {
         get

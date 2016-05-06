@@ -20,6 +20,10 @@ public class Player : Character
     private Vector3 cameraForward;
     private Vector3 cameraRight;
 
+    // Pickup distance
+    [SerializeField]
+    private float pickupDistance = 4f;
+
     // TMP INVENTORY
     private GameObject characterInventory;
     private bool displayCharacterInventory = true;
@@ -92,7 +96,8 @@ public class Player : Character
 
         if (Physics.Raycast(ray, out hit))
         {
-            if (hit.transform.tag == "Item")
+            if (Vector3.Distance(hit.point, transform.position) < pickupDistance &&
+                hit.transform.tag == "Item")
             {
                 if (Input.GetMouseButtonDown(1))
                 {
@@ -382,11 +387,13 @@ public class Player : Character
 
     private void UseItemLeft(KeyState keyState)
     {
+        AimingAt = transform.forward;
         UseItem(CreatureBodyBones.Left_Arm_Part_2, keyState);
     }
 
     private void UseItemRight(KeyState keyState)
     {
+        AimingAt = transform.forward;
         UseItem(CreatureBodyBones.Right_Arm_Part_2, keyState);
     }
 
