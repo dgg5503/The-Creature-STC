@@ -17,7 +17,7 @@ public class Inventory : MonoBehaviour
     private GameObject playerPosition;
 
     //Health Bars for the creature body parts
-    private GameObject headHealthBar;
+   // private GameObject headHealthBar;
     private GameObject leftHandHealthBar;
     private GameObject rightHandHealthBar;
     private GameObject leftLegHealthBar;
@@ -40,11 +40,12 @@ public class Inventory : MonoBehaviour
         }
 
         //Health Bar
-        headHealthBar = GameObject.FindGameObjectWithTag("HHB");
+       // headHealthBar = GameObject.FindGameObjectWithTag("HHB");
         leftHandHealthBar = GameObject.FindGameObjectWithTag("LHHB");
         rightHandHealthBar = GameObject.FindGameObjectWithTag("RHHB");
         leftLegHealthBar = GameObject.FindGameObjectWithTag("LLHB");
         rightLegHealthBar = GameObject.FindGameObjectWithTag("RLHB");
+        //Debug.Log("HealthBar is here:" + headHealthBar);
     }
 
     void Start()
@@ -58,8 +59,8 @@ public class Inventory : MonoBehaviour
         
         emptySlot = allSlots.Count;
         playerPosition = GameObject.FindGameObjectWithTag("Player");
-        headHealthBar.SetActive(true);
-        headHealthBar.SetActive(false);
+        //headHealthBar.SetActive(true);
+        //headHealthBar.SetActive(false);
     }
 
     // Update is called once per frame
@@ -331,7 +332,7 @@ public class Inventory : MonoBehaviour
         {
             case 0: //Head
                 {
-                    headHealthBar.GetComponent<Image>().fillAmount = convertedValue;
+                   // headHealthBar.GetComponent<Image>().fillAmount = convertedValue;
                     break;
                 }
             case 1: // Left Arm Part 1

@@ -31,6 +31,7 @@ public class Hook : MonoBehaviour {
 
     void Awake()
     {
+        camera = GameObject.Find("Main Camera").GetComponent<Camera>();
         chain = GameObject.Find("Chain").GetComponent<LineRenderer>();
         grapplingPoint = GameObject.Find("GrapperPoint");
         creature = GameObject.FindGameObjectWithTag("Player");
@@ -48,6 +49,7 @@ public class Hook : MonoBehaviour {
         chain.enabled = false;
         Physics.IgnoreCollision(grapplingHookHand.GetComponent<Collider>(), grapper.GetComponent<Collider>());
         Physics.IgnoreCollision(creature.GetComponent<Collider>(), grapper.GetComponent<Collider>());
+        
 	} 
 	
 	// Update is called once per frame
