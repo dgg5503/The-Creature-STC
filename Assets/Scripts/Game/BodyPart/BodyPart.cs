@@ -252,6 +252,8 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         // no joint connected
         if (joint == null)
         {
+            haloGlow(true);
+
             Debug.Log(name + " is null.");
 
             // start rb as loose on the ground
@@ -540,10 +542,8 @@ public class BodyPart : Item, ISerializationCallbackReceiver
 
     public void haloGlow(bool toggle)
     {
-        if (bodyPartType == 1 || bodyPartType == 3 || bodyPartType == 5 || bodyPartType == 7)
-        {
-            Component halo = GetComponent("Halo");
+        Component halo = GetComponent("Halo");
+        if(halo != null)
             halo.GetType().GetProperty("enabled").SetValue(halo, toggle, null);
-        }
     }
 }
