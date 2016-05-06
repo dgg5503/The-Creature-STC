@@ -62,7 +62,7 @@ public class Hook : MonoBehaviour {
         {
          
             chain.enabled = true;
-            if (Input.GetButtonDown("Jump") && Input.GetButton("Jump") && this.transform.root.name == "The_Creature 1") // Check if we pressed button (space)
+            if (Input.GetButtonDown("Jump") && Input.GetButton("Jump") && this.transform.root.name == "The_Creature") // Check if we pressed button (space)
             {
                 shoot = true;
                 if (Physics.Raycast(ray, out hit))

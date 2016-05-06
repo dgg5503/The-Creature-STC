@@ -116,6 +116,7 @@ ModelImporter:
     7400002: mal5_defaultPose
     7400004: mal5_idle
     7400006: mal5_throw
+    7400008: mal5_aim
     9500000: //RootNode
   materials:
     importMaterials: 1
@@ -393,8 +394,92 @@ ModelImporter:
     - serializedVersion: 16
       name: mal5_throw
       takeName: Take 001
-      firstFrame: 70
+      firstFrame: 80
       lastFrame: 100
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Head
+        weight: 1
+      - path: Head/Male_Villager5_Head
+        weight: 1
+      - path: Head/Male_Villager5_Head/Male_Villager5_Eyes
+        weight: 1
+      - path: Head/Male_Villager5_Head/Male_Villager5_Hat
+        weight: 1
+      - path: Left_Arm
+        weight: 1
+      - path: Left_Arm/Left_Arm_Part_2
+        weight: 1
+      - path: Left_Arm/Left_Arm_Part_2/Male_Villager5_Left_Arm_Part_2
+        weight: 1
+      - path: Left_Arm/Male_Villager5_Left_Arm_Part_1
+        weight: 1
+      - path: Left_Leg
+        weight: 1
+      - path: Left_Leg/Left_Leg_Part_2
+        weight: 1
+      - path: Left_Leg/Left_Leg_Part_2/Villager5_Left_Leg_Part
+        weight: 1
+      - path: Left_Leg/Left_Leg_Part_2/Villager5_Left_Leg_Part/Villager5_Left_Boot
+        weight: 1
+      - path: Left_Leg/Male_Villager5_Left_Leg_Part_1
+        weight: 1
+      - path: Right_Arm
+        weight: 1
+      - path: Right_Arm/Male_Villager5_Right_Arm_Part_1
+        weight: 1
+      - path: Right_Arm/Right_Arm_Part_2
+        weight: 1
+      - path: Right_Arm/Right_Arm_Part_2/Male_Villager5_Right_Arm_Part_2
+        weight: 1
+      - path: Right_Leg
+        weight: 1
+      - path: Right_Leg/Male_Villager5_Right_Leg_Part_1
+        weight: 1
+      - path: Right_Leg/Right_Leg_Part_2
+        weight: 1
+      - path: Right_Leg/Right_Leg_Part_2/Villager5_Right_Leg_Part
+        weight: 1
+      - path: Right_Leg/Right_Leg_Part_2/Villager5_Right_Leg_Part/Villager5_Right_Boot
+        weight: 1
+      - path: Torso
+        weight: 1
+      - path: Torso/Male_Villager5_Torso
+        weight: 1
+      - path: Torso/Male_Villager5_Torso/Male_Villager5_Shirt
+        weight: 1
+      - path: Torso/Male_Villager5_Torso/Male_Villager5_Shirt/Male_Villager5_Hood
+        weight: 1
+      - path: Torso/Male_Villager5_Torso/Male_Villager5_Shirt/Male_Villager5_Pants
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: mal5_aim
+      takeName: Take 001
+      firstFrame: 70
+      lastFrame: 80
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
