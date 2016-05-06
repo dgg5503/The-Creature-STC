@@ -16,7 +16,7 @@ public class ClickToContinue : MonoBehaviour {
 	
 	void Update () {
         timeCounter += Time.deltaTime;
-        if(timeCounter >= 2.0f && showOnce == false)
+        if(timeCounter >= 0.1f && showOnce == false)
         {
             showOnce = true;
             clickText.text += "Click 'P' to continue";
@@ -25,6 +25,11 @@ public class ClickToContinue : MonoBehaviour {
         {
             if (Input.GetKeyDown("p"))
             {
+                DontDestroyOnLoad(GameObject.Find("The_Creature"));
+                GameObject canv = GameObject.Find("Canvas");
+                DontDestroyOnLoad(canv);
+                canv.SetActive(true);
+                DontDestroyOnLoad(GameObject.Find("FreeLookCameraRig"));
                 UnityEngine.SceneManagement.SceneManager.LoadScene(SceneLevel);
             }
         }

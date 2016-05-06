@@ -53,7 +53,7 @@ public class Player : Character
         characterInventory = GameObject.FindGameObjectWithTag("Inventory");
         characterInventory.SetActive(false);
 
-        testingBodyPart = GameObject.Find("Creature_Left_Leg_Part_1").GetComponent<BodyPart>();
+        //testingBodyPart = GameObject.Find("Creature_Left_Leg_Part_1").GetComponent<BodyPart>();
         //   getCanvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         //   passCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
 
@@ -133,7 +133,7 @@ public class Player : Character
                     }
                     else
                     {
-                        GameObject itemToAdd = Resources.Load(path + newItemName) as GameObject;
+                        GameObject itemToAdd = Resources.Load(path + hit.transform.gameObject.name) as GameObject;
                         Item itemToAddNew = itemToAdd.GetComponent<Item>() as Item;
                         charInventory.AddItem(itemToAddNew);
                     }

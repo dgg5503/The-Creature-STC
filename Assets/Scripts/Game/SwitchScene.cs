@@ -9,7 +9,14 @@ public class SwitchScene : MonoBehaviour {
     {
         if(collidedWith.gameObject.name == "The_Creature")
         {
-            //Application.LoadLevel(SceneLevel);
+            //GameObject headHealthBar = GameObject.FindGameObjectWithTag("HHB");
+            //headHealthBar.SetActive(true);
+            DontDestroyOnLoad(GameObject.Find("GameManager"));
+            DontDestroyOnLoad(GameObject.Find("The_Creature"));
+            GameObject canv = GameObject.Find("Canvas");
+            DontDestroyOnLoad(canv);
+            //canv.SetActive(false);
+            DontDestroyOnLoad(GameObject.Find("FreeLookCameraRig"));
             UnityEngine.SceneManagement.SceneManager.LoadScene(SceneLevel);
         }
     }

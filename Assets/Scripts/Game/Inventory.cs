@@ -59,7 +59,7 @@ public class Inventory : MonoBehaviour
         
         emptySlot = allSlots.Count;
         playerPosition = GameObject.FindGameObjectWithTag("Player");
-  
+        headHealthBar.SetActive(true);
         headHealthBar.SetActive(false);
     }
 
@@ -77,8 +77,10 @@ public class Inventory : MonoBehaviour
                         Vector3 position = new Vector3(1, 0, 1);
                         string pathToTheFile = "Prefabs/Items/" + item.name;
                         GameObject test = Resources.Load(pathToTheFile) as GameObject;
-                       Object itemToInstantiate =  GameObject.Instantiate(test, playerPosition.transform.position - position, Quaternion.identity);
+                       GameObject itemToInstantiate =  (GameObject)GameObject.Instantiate(test, playerPosition.transform.position - position, Quaternion.identity);
                        itemToInstantiate.name = item.name;
+       
+                       playerRef.MountItem(itemToInstantiate.GetComponent<RegularItem>());
                     }
                     else
                     {
