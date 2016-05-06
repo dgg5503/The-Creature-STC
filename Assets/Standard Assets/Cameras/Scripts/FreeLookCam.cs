@@ -45,6 +45,10 @@ namespace UnityStandardAssets.Cameras
             
         }
 
+        protected override void Start()
+        {
+            m_Target = GameObject.Find("The_Creature").gameObject.transform;
+        }
 
         protected void Update()
         {
