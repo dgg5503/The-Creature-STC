@@ -12,7 +12,7 @@ public class ItemIdle : ItemStates
         this.bodyPartID = bodyPartID;
 
         // do animation stuff
-        Debug.Log("STARTING AT THE IDLE");
+        //Debug.Log("STARTING AT THE IDLE");
         character.CharacterAnimator.SetTrigger(
             regularItem.ItemAnimation[bodyPartID].equipTrigger);
         character.CharacterAnimator.SetInteger(
@@ -29,6 +29,7 @@ public class ItemIdle : ItemStates
     {
         if (keyState == KeyState.KEY_DOWN)
         {
+            //Debug.Log("go to aim");
             nextState = CreateInstance<ItemAim>();
             nextState.Enter(character, regularItem, bodyPartID);
             return nextState;

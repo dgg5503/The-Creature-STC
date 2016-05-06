@@ -28,7 +28,7 @@ public abstract class ItemStates : ScriptableObject {
             );
 
         // unregister callback
-        animationEventHandler.animationCallbacks[character.CharacterAnimator] = null;
+        animationEventHandler.animationCallbacks.Remove(character.CharacterAnimator);
 
         // set item to null
         regularItem = null;

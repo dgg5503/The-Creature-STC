@@ -141,10 +141,12 @@ public class Enemy : Character {
 
                 if(stateTimer <= 0)
                 {
-                    BodyPart bodyPart;
-                    if ((bodyPart = joints[CreatureBodyBones.Left_Arm_Part_2].BodyPart) != null)
-                        bodyPart.MountPoint.UseItem();
+                    UseItem(CreatureBodyBones.Right_Arm_Part_2, KeyState.KEY_UP);
                     stateTimer = aimTime;
+                }
+                else
+                {
+                    UseItem(CreatureBodyBones.Right_Arm_Part_2, KeyState.KEY_DOWN);
                 }
 
                 break;
@@ -203,7 +205,7 @@ public class Enemy : Character {
             case EnemyState.Attack:
                 // stop moving for now
                 navMeshAgent.Stop();
-
+                UseItem(CreatureBodyBones.Right_Arm_Part_2, KeyState.KEY_DOWN);
                 stateTimer = aimTime;
                 break;
 

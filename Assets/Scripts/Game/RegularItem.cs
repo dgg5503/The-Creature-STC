@@ -48,6 +48,11 @@ public abstract class RegularItem : Item
     /// </summary>
     public Dictionary<int, ItemAnimationInfo> ItemAnimation { get; protected set; }
 
+    /// <summary>
+    /// Get or set the point of the fire animation in which this item should actually be used.
+    /// </summary>
+    public float UseAnimationOffset { get; protected set; }
+
     protected override void Awake()
     {
         base.Awake();

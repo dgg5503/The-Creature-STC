@@ -36,6 +36,8 @@ public class Spear : Weapon {
         type = RegularItemType.Weapon;
         amountOfItems = 1;
         damage = 10;
+        UseAnimationOffset = .75f;
+
         capsuleCollider = collider as CapsuleCollider;
         passThroughTrigger = gameObject.AddComponent<CapsuleCollider>();
         passThroughTrigger.center = capsuleCollider.center;

@@ -228,6 +228,8 @@ public abstract class Character : MonoBehaviour
         crawlAngle = Quaternion.Euler(leanForwardAngle, 0, 0);
 
         bodyPartStates = new Dictionary<int, ItemStates>();
+        foreach (int bodyPartId in joints.Keys)
+            bodyPartStates[bodyPartId] = null;
     }
 
     protected virtual void Start()
@@ -362,11 +364,9 @@ public abstract class Character : MonoBehaviour
             return;
 
         // attempt to use
-        ItemStates tmpItemState;
-        if ((tmpItemState = bodyPartStates[bodyPartID].HandleInput(keyState))
-            != bodyPartStates[bodyPartID])
-            bodyPartStates[bodyPartID] = tmpItemState;
-
+        //ItemStates tmpItemState;
+        bodyPartStates[bodyPartID] = bodyPartStates[bodyPartID].HandleInput(keyState);
+        
 
         // no coroutine must be occuring for this body part in order to execute the item.
         //bodyPartItemState[bodyPartID] = itemState;

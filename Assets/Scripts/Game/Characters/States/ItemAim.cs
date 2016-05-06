@@ -34,32 +34,28 @@ public class ItemAim : ItemStates
 
     public override ItemStates HandleInput(KeyState keyState)
     {
-        
-        if (keyState == KeyState.KEY_UP &&
-            animatorStateInfo.length != 0) // yield until aim state
+        if (keyState == KeyState.KEY_UP) // yield until aim state
         {
-            Debug.Log(animatorStateInfo.normalizedTime + ": " + animatorStateInfo.length + " and " + animatorStateInfo.shortNameHash);
-            if (animatorStateInfo.normalizedTime >= animatorStateInfo.length)
+            if (animatorStateInfo.length != 0 &&
+                animatorStateInfo.normalizedTime * animatorStateInfo.speed >= animatorStateInfo.length)
             {
                 nextState = CreateInstance<ItemFire>();
-                //Exit();
                 nextState.Enter(character, regularItem, bodyPartID);
-                
-                Debug.Log("fire");
+                //Debug.Log(animatorStateInfo.normalizedTime + ": " + animatorStateInfo.length + " and " + animatorStateInfo.shortNameHash);
+                //Debug.Log("fire");
                 return nextState;
             }
             else
             {
                 nextState = CreateInstance<ItemIdle>();
-                //Exit();
                 nextState.Enter(character, regularItem, bodyPartID);
-                Debug.Log("idle");
+                //Debug.Log("idle");
                 return nextState;
             }
         }
 
         // WHAT TO DO ABOUT THIS?
-        Debug.Log("this");
+        //Debug.Log("this");
         return this;
     }
 
@@ -68,6 +64,9 @@ public class ItemAim : ItemStates
         // ensure 
         if (stateInfo.IsTag("aim"))
             animatorStateInfo = stateInfo;
+        else
+            animatorStateInfo = zeroInfo;
+
         base.AnimationCallback(state, stateInfo, layerIndex);
     }
 }
