@@ -104,6 +104,7 @@ public class Player : Character
                         path = "Prefabs/Items/";
                         if (charInventory.getNumberOfEmptyRegularItemSlots() >= 0)
                         {
+                            if (hit.transform.gameObject.GetComponent<RegularItem>().CurrentMountPoint == null)
                             Destroy(hit.transform.gameObject);
                         }   
                     }
@@ -120,9 +121,22 @@ public class Player : Character
                     {
                         newItemName = pickUpItemName;
                     }
-                    GameObject itemToAdd = Resources.Load(path + newItemName) as GameObject;
-                    Item itemToAddNew = itemToAdd.GetComponent<Item>() as Item;
-                    charInventory.AddItem(itemToAddNew);
+
+                    if (hit.transform.gameObject.GetComponent<RegularItem>())
+                    {
+                        if (hit.transform.gameObject.GetComponent<RegularItem>().CurrentMountPoint == null)
+                        {
+                            GameObject itemToAdd = Resources.Load(path + newItemName) as GameObject;
+                            Item itemToAddNew = itemToAdd.GetComponent<Item>() as Item;
+                            charInventory.AddItem(itemToAddNew);
+                        }
+                    }
+                    else
+                    {
+                        GameObject itemToAdd = Resources.Load(path + newItemName) as GameObject;
+                        Item itemToAddNew = itemToAdd.GetComponent<Item>() as Item;
+                        charInventory.AddItem(itemToAddNew);
+                    }
                 }
             }
         }
