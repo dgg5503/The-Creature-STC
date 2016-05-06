@@ -59,7 +59,7 @@ public class Inventory : MonoBehaviour
         
         emptySlot = allSlots.Count;
         playerPosition = GameObject.FindGameObjectWithTag("Player");
-  
+        headHealthBar.SetActive(true);
         headHealthBar.SetActive(false);
     }
 
