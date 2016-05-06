@@ -19,6 +19,7 @@ using System.Collections;
 using System;
 using UnityEngine.UI;
 
+
 // for physics and collision
 [RequireComponent(typeof(Rigidbody))]
 
@@ -37,10 +38,12 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     private int currHealth;
     private int minHealth;
     private int maxHealth;
+    //public bool isDetached;
 
     // Part specific
     private CustomJoint joint;
     private MountPoint mountPoint;
+    //[SerializeField] private GameObject haloprefab;
 
     // Serialized to store body part type.
     [SerializeField]
@@ -161,7 +164,12 @@ public class BodyPart : Item, ISerializationCallbackReceiver
             // non detachable bodyparts cannot fall off.
             if (currHealth <= minHealth &&
                 isDetachable)
+            {
+                //haloEffect();
                 Detach();
+                //isDetached = true;
+                
+            }
         }
     }
 
@@ -201,7 +209,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     protected override void Awake()
     {
         base.Awake();
-
+        
         // setup physics sutff
         collider = GetComponent<Collider>();
         rigidbody = GetComponent<Rigidbody>();
@@ -223,12 +231,15 @@ public class BodyPart : Item, ISerializationCallbackReceiver
 
 
         creatureInventory = GameObject.FindGameObjectWithTag("Inventory").GetComponent<Inventory>();
+        
 
     }
 
     // Use this for initialization
     void Start()
     {
+        //haloEffect();
+        haloGlow();   
         // no joint connected
         if (joint == null)
         {
@@ -252,7 +263,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
                 //Debug.Log(string.Format("{0} ignores coll with {1}", transform.parent.name, name));
             }
         }
-
+        
         // TODO ignore collision with all immediate children no matter type
     }
 
@@ -262,12 +273,14 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     /// </summary>
     void LateUpdate()
     {
+        
         if (joint != null && IsControlledByJoint)
             transform.localRotation = joint.transform.localRotation;
     }
 
     public bool SetParent(BodyPart newParent)
     {
+        
         // cant set this as parent
         if (newParent == this || newParent == null)
             return false;
@@ -459,5 +472,23 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         endPoints.Clear();
         for (int i = 0; i != Math.Min(_keys.Count, _values.Count); i++)
             endPoints.Add(_keys[i], _values[i]);
+    }
+
+    //John's Halo effect
+    /*public void haloEffect()
+    {
+        GameObject halo = Instantiate(Resources.Load("Prefabs/Halo", typeof(GameObject)),new Vector3(0,0,0), Quaternion.identity) as GameObject;
+        halo.transform.position = new Vector3(0, 0, 0);
+        halo.transform.parent = this.transform;
+        Debug.Log(this.transform.FindChild("Halo(Clone)").gameObject.transform.position);
+
+    }*/
+    public void haloGlow()
+    {
+        if (bodyPartType == 1 || bodyPartType == 3 || bodyPartType == 5 || bodyPartType == 7)
+        {
+            Component halo = GetComponent("Halo");
+            halo.GetType().GetProperty("enabled").SetValue(halo, true, null);
+        }
     }
 }
