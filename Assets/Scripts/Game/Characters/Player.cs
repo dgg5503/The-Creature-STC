@@ -29,8 +29,6 @@ public class Player : Character
     private BodyPart testingBodyPart;
     private string newItemName = "";
 
-    // TMP ANIM
-    private ItemState tempItemState;
     //TEst
     // private Canvas getCanvas;
     //  private Camera passCamera;

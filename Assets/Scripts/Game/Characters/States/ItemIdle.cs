@@ -27,9 +27,9 @@ public class ItemIdle : ItemStates
 
     public override ItemStates HandleInput(KeyState keyState)
     {
-        if (keyState == KeyState.KEY_DOWN)
+        if (keyState == KeyState.KEY_DOWN) // if current state is idle, then continue
         {
-            //Debug.Log("go to aim");
+            //Debug.Log("go to aim " + bodyPartID);
             nextState = CreateInstance<ItemAim>();
             nextState.Enter(character, regularItem, bodyPartID);
             return nextState;

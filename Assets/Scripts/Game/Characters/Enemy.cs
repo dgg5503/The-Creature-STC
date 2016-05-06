@@ -18,7 +18,9 @@ enum EnemyState
     Wonder,
     Attack,
     Flee,
-    Alert
+    Alert,
+    Equipping,
+    None
 }
 
 [RequireComponent(typeof(NavMeshAgent))]
@@ -74,9 +76,7 @@ public class Enemy : Character {
     protected override void Start()
     {
         // DEBUG EQUIP.
-        RegularItem tmpItem = (Instantiate(GameManager.PrefabDictionary["spear"]) as GameObject).GetComponent<RegularItem>();
-        if (!MountItem(tmpItem, CreatureBodyBones.Right_Arm_Part_2))
-            Debug.LogError("ERROR: Error mounting spear on " + name);
+        EquipItem();
     }
 
     /// <summary>
@@ -92,10 +92,6 @@ public class Enemy : Character {
     {
         base.Update();
 
-        // scan for the enemy
-        if(targetedCharacter == null)
-            ScanForPlayer();
-
         // state machine
         // handle state actions here
         switch (enemyState)
@@ -107,6 +103,10 @@ public class Enemy : Character {
                 //animator.Play("idle");
                 if (stateTimer <= 0)
                     ChangeStateTo(EnemyState.Wonder);
+
+                // scan for the enemy
+                if (targetedCharacter == null)
+                    ScanForPlayer();
                 break;
 
             case EnemyState.Wonder:
@@ -125,6 +125,10 @@ public class Enemy : Character {
                         }
                     }
                 }
+
+                // scan for the enemy
+                if (targetedCharacter == null)
+                    ScanForPlayer();
                 break;
 
             case EnemyState.Attack:
@@ -142,13 +146,22 @@ public class Enemy : Character {
                 if(stateTimer <= 0)
                 {
                     UseItem(CreatureBodyBones.Right_Arm_Part_2, KeyState.KEY_UP);
-                    stateTimer = aimTime;
+                    //stateTimer = equipTime;
+                    ChangeStateTo(EnemyState.Equipping);
                 }
                 else
                 {
                     UseItem(CreatureBodyBones.Right_Arm_Part_2, KeyState.KEY_DOWN);
                 }
+                break;
 
+            case EnemyState.Equipping:
+                stateTimer -= Time.deltaTime;
+                if (stateTimer <= 0)
+                {
+                    ChangeStateTo(EnemyState.Attack);
+                    EquipItem();
+                }
                 break;
 
             case EnemyState.Flee:
@@ -167,6 +180,9 @@ public class Enemy : Character {
                     ChangeStateTo(EnemyState.Wonder);
                 break;
 
+            case EnemyState.None:
+               // Debug.Log("hi");
+                break;
         }
         
     }
@@ -209,6 +225,10 @@ public class Enemy : Character {
                 stateTimer = aimTime;
                 break;
 
+            case EnemyState.Equipping:
+                stateTimer = equipTime;
+                break;
+
             case EnemyState.Flee:
                 // get destination to that opposite of the creature
                 //navMeshAgent
@@ -218,10 +238,21 @@ public class Enemy : Character {
                 
                 break;
 
+            case EnemyState.None:
+                navMeshAgent.enabled = false;
+                stateTimer = 0;
+                break;
         }
 
         // set state in animator
         //animator.SetInteger("characterState", (int)state);
+    }
+    
+    private void EquipItem()
+    {
+        RegularItem tmpItem = (Instantiate(GameManager.PrefabDictionary["spear"]) as GameObject).GetComponent<RegularItem>();
+        if (!MountItem(tmpItem, CreatureBodyBones.Right_Arm_Part_2))
+            Debug.LogError("ERROR: Error mounting spear on " + name);
     }
 
     private void ScanForPlayer()
@@ -253,6 +284,12 @@ public class Enemy : Character {
                 }
             }
         }
+    }
+
+    protected override void Die()
+    {
+        ChangeStateTo(EnemyState.None);
+        base.Die();
     }
 
     private void SeePlayerResponse(Character character)

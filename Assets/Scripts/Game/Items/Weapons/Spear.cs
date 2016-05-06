@@ -16,14 +16,18 @@ public class Spear : Weapon {
 
     private static ItemAnimationInfo leftHand = new ItemAnimationInfo(
         "leftHandItemState",
+        "aim_left",
+        "throw_left",
         "equipSpearLeft",
         "throwing_left",
         "equipNothingLeft");
 
     private static ItemAnimationInfo rightHand = new ItemAnimationInfo(
         "rightHandItemState",
+        "aim_right",
+        "throw_right",
         "equipSpearRight",
-        "throwing_right",
+        "throwing_left",
         "equipNothingRight");
 
     protected override void Awake()

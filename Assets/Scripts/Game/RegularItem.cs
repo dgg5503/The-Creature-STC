@@ -11,16 +11,22 @@ public enum RegularItemType
 public struct ItemAnimationInfo
 {
     public string itemState;
+    public string aimState;
+    public string throwState;
     public string equipTrigger;
     public string layerName;
     public string unequipTrigger;
 
     public ItemAnimationInfo(string itemState,
+        string aimState,
+        string throwState,
         string equipTrigger,
         string layerName,
         string unequipTrigger)
     {
         this.itemState = itemState;
+        this.aimState = aimState;
+        this.throwState = throwState;
         this.equipTrigger = equipTrigger;
         this.layerName = layerName;
         this.unequipTrigger = unequipTrigger;
@@ -29,7 +35,6 @@ public struct ItemAnimationInfo
 
 public abstract class RegularItem : Item
 {
-
     // dictionary <bodypartTypes, layerIndex>
 
     /// <summary>
