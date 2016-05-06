@@ -18,6 +18,18 @@ public class MountPoint : MonoBehaviour {
     }
 
     /// <summary>
+    /// Returns the root character found on this mount point (if any).
+    /// </summary>
+    /*
+    public Character RootCharacter
+    {
+        get
+        {
+            return transform.root.GetComponent<Character>();
+        }
+    }*/
+
+    /// <summary>
     /// Gets the body part type bound to this mount point.
     /// </summary>
     public int BodyPartType { get; private set; }

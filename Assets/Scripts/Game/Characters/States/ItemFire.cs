@@ -12,7 +12,7 @@ public class ItemFire : ItemStates
         this.bodyPartID = bodyPartID;
 
         // register with animator
-        animationEventHandler.animationCallbacks[character.CharacterAnimator] = AnimationCallback;
+        animationEventHandler.animationCallbacks += AnimationCallback;
 
         // do animation stuff
         character.CharacterAnimator.SetInteger(
@@ -24,7 +24,7 @@ public class ItemFire : ItemStates
     {
         // do animation stuff
         // unregister with animator
-
+        animationEventHandler.animationCallbacks -= AnimationCallback;
         // return to idle
         /*
         character.CharacterAnimator.SetInteger(
@@ -38,24 +38,34 @@ public class ItemFire : ItemStates
         return null;
     }
 
-    protected override void AnimationCallback(AnimationState state, AnimatorStateInfo stateInfo, int layerIndex)
+    protected override void AnimationCallback(AnimationState state, Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        // ensure 
-        if (stateInfo.IsTag("throw"))
-        {
-            // wait until certain amount of time
-            if((stateInfo.normalizedTime * stateInfo.speed) >= (stateInfo.length * stateInfo.speed * regularItem.UseAnimationOffset))
-            {
-                //Debug.Log("FIRE!");
-                //Debug.Log(stateInfo.normalizedTime + ": " + stateInfo.length + " and " + stateInfo.shortNameHash);
+        if (animator != character.CharacterAnimator)
+            return;
 
-                // match forward of creature
-                regularItem.transform.right = character.transform.forward;
-                regularItem.Use();
-                BreakState();
+        // ensure 
+        if (character.CharacterAnimator.GetLayerIndex(regularItem.ItemAnimation[bodyPartID].layerName) == layerIndex)
+        {
+            // ensure 
+            if (stateInfo.IsTag(regularItem.ItemAnimation[bodyPartID].throwState))
+            {
+                // wait until certain amount of time
+                if ((stateInfo.normalizedTime * stateInfo.speed) >= (stateInfo.length * stateInfo.speed * regularItem.UseAnimationOffset))
+                {
+                    //Debug.Log("FIRE!");
+                    //Debug.Log(stateInfo.normalizedTime + ": " + stateInfo.length + " and " + stateInfo.shortNameHash);
+
+                    // match forward of creature
+                    regularItem.transform.right = character.transform.forward;
+                    regularItem.Use();
+                    Exit();
+                    BreakState();
+                    
+                    //DestroyImmediate(this);
+                }
             }
         }
 
-        base.AnimationCallback(state, stateInfo, layerIndex);
+        base.AnimationCallback(state, animator, stateInfo, layerIndex);
     }
 }

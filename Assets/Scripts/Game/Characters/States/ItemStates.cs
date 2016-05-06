@@ -2,10 +2,19 @@
 using System.Collections;
 
 public abstract class ItemStates : ScriptableObject {
+    protected enum ItemState
+    {
+        Idle,
+        Aim,
+        Executing
+    }
+
     protected RegularItem regularItem;
     protected Character character;
     protected ItemStates nextState;
     protected int bodyPartID;
+
+    public int BodyPartID { get { return bodyPartID; } }
 
     public abstract void Enter(Character character, RegularItem regularItem, int bodyPartID);
     
@@ -13,9 +22,13 @@ public abstract class ItemStates : ScriptableObject {
 
     public abstract ItemStates HandleInput(KeyState keyState);
 
-    protected virtual void AnimationCallback(AnimationState state, AnimatorStateInfo stateInfo, int layerIndex) { }
+    protected virtual void AnimationCallback(AnimationState state, Animator animator, AnimatorStateInfo stateInfo, int layerIndex) { }
 
-    public ItemStates BreakState()
+
+    /// <summary>
+    /// Use this when you want to break out of any state.
+    /// </summary>
+    public void BreakState()
     {
         // set to idle
         character.CharacterAnimator.SetInteger(
@@ -27,11 +40,25 @@ public abstract class ItemStates : ScriptableObject {
             regularItem.ItemAnimation[bodyPartID].unequipTrigger
             );
 
-        // unregister callback
-        animationEventHandler.animationCallbacks.Remove(character.CharacterAnimator);
+        // unregister callback (must be handled by class child)
+        //animationEventHandler.animationCallbacks -= AnimationCallback;
+        Exit();
 
         // set item to null
         regularItem = null;
-        return null;
+        DestroyImmediate(this);
     }
+
+    /// <summary>
+    /// Use this when you want item to return to idle.
+    /// </summary>
+    /// <returns></returns>
+    /*
+    public ItemStates BreakToIdle()
+    {
+        nextState = CreateInstance<ItemIdle>();
+        nextState.Enter(character, regularItem, bodyPartID);
+        return nextState;
+    }
+    */
 }

@@ -30,13 +30,6 @@ public enum CharacterState
     Fall
 }
 
-public enum ItemState
-{
-    Idle,
-    Aim,
-    Executing
-}
-
 public enum GrappleState
 {
     Idle,
@@ -87,15 +80,7 @@ public abstract class Character : MonoBehaviour
     // States n' Actions
     //private bool isAlive;
     private CharacterState characterState;
-    //private Dictionary<int, ItemState> bodyPartItemState;
-    private ItemState bodyPartItemState;
-    private RegularItem currentItem;
     private Dictionary<int, ItemStates> bodyPartStates;
-    //private Coroutine animationCoroutine;
-    //private Dictionary<int, Coroutine> animationCoroutines;
-
-    //private ItemState leftHandItemState;
-    //private ItemState rightHandItemState;
 
     /// <summary>
     /// Get the inventory of this character.
@@ -161,7 +146,6 @@ public abstract class Character : MonoBehaviour
 
         // get all body parts that are children and set joint relationships ONCE
         // all other joint relationship will be handled in attach and detach
-
         // get root and set its skeleton
         foreach (Transform possBodyPart in transform)
             if ((root = possBodyPart.GetComponent<BodyPart>()) != null)
@@ -186,37 +170,17 @@ public abstract class Character : MonoBehaviour
         velocity = Vector3.zero;
         rigidbody = GetComponent<Rigidbody>();
         rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
-        //rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-        
+
         // get the overall capsule collider
         collider = GetComponent<CapsuleCollider>();
 
         // calc bounds for the character
-        //StartCoroutine(RecalculateCollisionBounds());
         RecalculateCollisionBounds();
 
         // always start alive
         //isAlive = true;
         isCrawling = false; // assume not crawling until crawl check
         characterState = CharacterState.Idle;
-        /*
-        bodyPartItemState = new Dictionary<int, ItemState>();
-        animationCoroutines = new Dictionary<int, Coroutine>();
-
-        // init states as idle
-        foreach (int bodyPartId in joints.Keys)
-        {
-            bodyPartItemState[bodyPartId] = ItemState.Idle;
-            animationCoroutines[bodyPartId] = null;
-        }
-        */
-        //animationCoroutine = null;
-        currentItem = null;
-        bodyPartItemState = ItemState.Idle;
-
-        // Register behavior functions
-        //StateMachineBehaviour[] behaviours = characterAnimator.GetBehaviours<animationEventHandler>();
-        
 
         // set layer of character colliders to 10
         gameObject.layer = 10;
@@ -359,14 +323,17 @@ public abstract class Character : MonoBehaviour
     /// <param name="bodyPartID">Body Part ID where the item resides.</param>
     public void UseItem(int bodyPartID, KeyState keyState)
     {
-        // make sure not null
         if (bodyPartStates[bodyPartID] == null)
             return;
+
+        // TMPFIX: ensure no other bparts in use
+        //if(bodyPartStates.Count(x => x.Value != null))
+        //Debug.Log(bodyPartStates.Count);
 
         // attempt to use
         //ItemStates tmpItemState;
         bodyPartStates[bodyPartID] = bodyPartStates[bodyPartID].HandleInput(keyState);
-        
+        //handState = handState.HandleInput(keyState);
 
         // no coroutine must be occuring for this body part in order to execute the item.
         //bodyPartItemState[bodyPartID] = itemState;
@@ -435,10 +402,7 @@ public abstract class Character : MonoBehaviour
     /// <param name="bodyPartType">Body part ID to mount this item to.</param>
     /// <returns>True if the item mounted successfully, otherwise false.</returns>
     public bool MountItem(RegularItem itemToMount, int bodyPartType)
-    {
-        // look for empty mount point
-        MountPoint[] mountPoints = GetComponentsInChildren<MountPoint>();
-
+    {   
         // ensure joint exists
         if (!joints.ContainsKey(bodyPartType))
             return false;
@@ -475,21 +439,6 @@ public abstract class Character : MonoBehaviour
         if (!bodyPartToAttach.SetSkeleton(joints))
             return false;
 
-        // get children bparts
-        BodyPart[] bodyParts = bodyPartToAttach.GetComponentsInChildren<BodyPart>();
-
-        // attempt to add colliders to clothing
-        for (int i = 0; i < clothing.Length; ++i)
-        {
-            // TMP FIX: get all component bparts, do this recursively??
-            for (int z = 0; z < bodyParts.Length; ++z)
-                clothing[i].AddBodyPart(bodyParts[z]);
-        }
-
-        // set layer to 9 for all bparts
-        for (int i = 0; i < bodyParts.Length; ++i)
-            bodyParts[i].gameObject.layer = 9;
-
         // store bottom height to get relative height.
         Vector3 bottomHeight = collider.bounds.center - (transform.up * ((collider.height / 2) - collider.radius));
 
@@ -518,6 +467,35 @@ public abstract class Character : MonoBehaviour
             return false;
         }
 
+        // get children bparts
+        BodyPart[] bodyParts = bodyPartToAttach.GetComponentsInChildren<BodyPart>();
+
+        // attempt to add colliders to clothing
+        for (int i = 0; i < clothing.Length; ++i)
+        {
+            // TMP FIX: get all component bparts, do this recursively??
+            for (int z = 0; z < bodyParts.Length; ++z)
+                clothing[i].AddBodyPart(bodyParts[z]);
+        }
+
+        ItemIdle itemStateIdle;
+        MountPoint mountPoint;
+        RegularItem mountedItem;
+
+        // set layer to 9 for all bparts
+        for (int i = 0; i < bodyParts.Length; ++i)
+        {
+            bodyParts[i].gameObject.layer = 9;
+            if ((mountPoint = bodyParts[i].MountPoint) != null &&
+                (mountedItem = mountPoint.MountedItem) != null &&
+                mountedItem.ItemAnimation.ContainsKey(bodyParts[i].BodyPartType))
+            {
+                itemStateIdle  = ScriptableObject.CreateInstance<ItemIdle>();
+                itemStateIdle.Enter(this, mountedItem, bodyParts[i].BodyPartType);
+                bodyPartStates[bodyParts[i].BodyPartType] = itemStateIdle;
+            }
+        }
+
         // TODO: MAKE SURE ANIMATION STATE IS SET IF ITEM IS ATTACHED.
         CrawlCheck();
 
@@ -534,10 +512,6 @@ public abstract class Character : MonoBehaviour
     /// <returns>Reference to body part detached if it exists.</returns>
     public BodyPart Detach(int bodyPartID)
     {
-        // ensure corutine isnt running
-        if (currentItem != null)
-            return null;
-
         // see if part exists
         if (!joints.ContainsKey(bodyPartID))
         {
@@ -558,23 +532,23 @@ public abstract class Character : MonoBehaviour
         // adjust capsule collider pivot to new center and height
         RecalculateCollisionBounds();
 
+        // TMP FIX: get all component bparts, do this recursively??
+        BodyPart[] bodyParts = tmpPart.GetComponentsInChildren<BodyPart>();
         // remove from clothing array
         // attempt to add colliders to clothing
         for (int i = 0; i < clothing.Length; ++i)
-        {
-            // TMP FIX: get all component bparts, do this recursively??
-            BodyPart[] bodyParts = tmpPart.GetComponentsInChildren<BodyPart>();
             for (int z = 0; z < bodyParts.Length; ++z)
                 clothing[i].RemoveBodyPart(bodyParts[z]);
-        }
 
         CrawlCheck();
 
-        // stop the animation coroutine (if there is one running on this bpart)
-        //if (animationCoroutines[bodyPartID] != null)
-        //    StopCoroutine(animationCoroutines[bodyPartID]);
-
         // TODO: MAKE SURE ANIMATION STATE IS SET OFF IF ITEM IS ATTACHED.
+        // grab all body part ids and ensure no animation is running on them
+        ItemStates tmpItemState;
+        for (int i = 0; i < bodyParts.Length; ++i)
+            if ((tmpItemState = bodyPartStates[bodyParts[i].BodyPartType]) != null)
+                tmpItemState.BreakState();
+
 
         return tmpPart;
     }
@@ -587,6 +561,8 @@ public abstract class Character : MonoBehaviour
     protected virtual void Die()
     {
         characterState = CharacterState.None;
+        
+        // TODO: ACTIVATE HALOS
 
         // place in ragdoll mode.
         rigidbody.isKinematic = false;

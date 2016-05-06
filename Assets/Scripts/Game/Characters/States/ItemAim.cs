@@ -14,9 +14,9 @@ public class ItemAim : ItemStates
         this.character = character;
         this.regularItem = regularItem;
         this.bodyPartID = bodyPartID;
-
+        //Debug.Log("enter aim");
         // register with animator
-        animationEventHandler.animationCallbacks[character.CharacterAnimator] = AnimationCallback;
+        animationEventHandler.animationCallbacks += AnimationCallback;
 
         // do animation stuff
         //checkingForTime = false;
@@ -30,6 +30,7 @@ public class ItemAim : ItemStates
         // remove callback
         // register with animator
         //animationEventHandler.animationCallbacks[character.CharacterAnimator] = null;
+        animationEventHandler.animationCallbacks -= AnimationCallback;
     }
 
     public override ItemStates HandleInput(KeyState keyState)
@@ -37,17 +38,21 @@ public class ItemAim : ItemStates
         if (keyState == KeyState.KEY_UP) // yield until aim state
         {
             if (animatorStateInfo.length != 0 &&
-                animatorStateInfo.normalizedTime * animatorStateInfo.speed >= animatorStateInfo.length)
+                ((animatorStateInfo.normalizedTime * animatorStateInfo.speed) >= animatorStateInfo.length))
             {
-                nextState = CreateInstance<ItemFire>();
-                nextState.Enter(character, regularItem, bodyPartID);
-                //Debug.Log(animatorStateInfo.normalizedTime + ": " + animatorStateInfo.length + " and " + animatorStateInfo.shortNameHash);
                 //Debug.Log("fire");
+                nextState = CreateInstance<ItemFire>();
+                Exit();
+                nextState.Enter(character, regularItem, bodyPartID);
+                //Debug.Break();
+                //Debug.Log(animatorStateInfo.normalizedTime + ": " + animatorStateInfo.length + " and " + animatorStateInfo.shortNameHash);
+                
                 return nextState;
             }
             else
             {
                 nextState = CreateInstance<ItemIdle>();
+                Exit();
                 nextState.Enter(character, regularItem, bodyPartID);
                 //Debug.Log("idle");
                 return nextState;
@@ -59,14 +64,20 @@ public class ItemAim : ItemStates
         return this;
     }
 
-    protected override void AnimationCallback(AnimationState state, AnimatorStateInfo stateInfo, int layerIndex)
+    protected override void AnimationCallback(AnimationState state, Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        // ensure 
-        if (stateInfo.IsTag("aim"))
+        if (animator != character.CharacterAnimator)
+            return;
+
+        if (stateInfo.IsTag(regularItem.ItemAnimation[bodyPartID].aimState) &&
+        !character.CharacterAnimator.IsInTransition(layerIndex))
+        {
+            //Debug.Log(regularItem.ItemAnimation[bodyPartID].aimState);
+            //Debug.Log((stateInfo.normalizedTime * stateInfo.speed) + " and " + stateInfo.length);
             animatorStateInfo = stateInfo;
+        }
         else
             animatorStateInfo = zeroInfo;
-
-        base.AnimationCallback(state, stateInfo, layerIndex);
+        base.AnimationCallback(state, animator, stateInfo, layerIndex);
     }
 }
