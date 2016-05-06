@@ -344,20 +344,12 @@ public class Player : Character
 
     private void UseItemLeft(KeyState keyState)
     {
-        if (keyState == KeyState.KEY_DOWN || keyState == KeyState.KEY_PRESSED)
-            tempItemState = ItemState.Aim;
-        else
-            tempItemState = ItemState.Executing;
-        UseItem(CreatureBodyBones.Left_Arm_Part_2, tempItemState);
+        UseItem(CreatureBodyBones.Left_Arm_Part_2, keyState);
     }
 
     private void UseItemRight(KeyState keyState)
     {
-        if (keyState == KeyState.KEY_DOWN || keyState == KeyState.KEY_PRESSED)
-            tempItemState = ItemState.Aim;
-        else
-            tempItemState = ItemState.Executing;
-        UseItem(CreatureBodyBones.Right_Arm_Part_2, tempItemState);
+        UseItem(CreatureBodyBones.Right_Arm_Part_2, keyState);
     }
 
     private void ToggleInventory(KeyState keyState)

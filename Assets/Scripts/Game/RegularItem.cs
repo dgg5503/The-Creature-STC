@@ -13,12 +13,17 @@ public struct ItemAnimationInfo
     public string itemState;
     public string equipTrigger;
     public string layerName;
+    public string unequipTrigger;
 
-    public ItemAnimationInfo(string itemState, string equipTrigger, string layerName)
+    public ItemAnimationInfo(string itemState,
+        string equipTrigger,
+        string layerName,
+        string unequipTrigger)
     {
         this.itemState = itemState;
         this.equipTrigger = equipTrigger;
         this.layerName = layerName;
+        this.unequipTrigger = unequipTrigger;
     }
 }
 

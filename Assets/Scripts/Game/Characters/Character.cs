@@ -89,7 +89,9 @@ public abstract class Character : MonoBehaviour
     private CharacterState characterState;
     //private Dictionary<int, ItemState> bodyPartItemState;
     private ItemState bodyPartItemState;
-    private Coroutine animationCoroutine;
+    private RegularItem currentItem;
+    private Dictionary<int, ItemStates> bodyPartStates;
+    //private Coroutine animationCoroutine;
     //private Dictionary<int, Coroutine> animationCoroutines;
 
     //private ItemState leftHandItemState;
@@ -99,6 +101,11 @@ public abstract class Character : MonoBehaviour
     /// Get the inventory of this character.
     /// </summary>
     public Inventory Inventory { get { return inventory; } }
+
+    /// <summary>
+    /// Gets the animator set for this character.
+    /// </summary>
+    public Animator CharacterAnimator { get { return characterAnimator; } }
 
     protected bool IsAlive
     {
@@ -203,7 +210,8 @@ public abstract class Character : MonoBehaviour
             animationCoroutines[bodyPartId] = null;
         }
         */
-        animationCoroutine = null;
+        //animationCoroutine = null;
+        currentItem = null;
         bodyPartItemState = ItemState.Idle;
 
         // Register behavior functions
@@ -218,7 +226,8 @@ public abstract class Character : MonoBehaviour
         characterAnimator.SetInteger("characterState", (int)characterState);
         crawlController = GetComponentInChildren<CrawlRootAnim>();
         crawlAngle = Quaternion.Euler(leanForwardAngle, 0, 0);
-        animationEventHandler.animationCallbacks[characterAnimator] = test;
+
+        bodyPartStates = new Dictionary<int, ItemStates>();
     }
 
     protected virtual void Start()
@@ -346,13 +355,29 @@ public abstract class Character : MonoBehaviour
     /// Attempts to use the currently mounted item attached to the given bodypart.
     /// </summary>
     /// <param name="bodyPartID">Body Part ID where the item resides.</param>
-    public void UseItem(int bodyPartID, ItemState itemState)
+    public void UseItem(int bodyPartID, KeyState keyState)
     {
+        // make sure not null
+        if (bodyPartStates[bodyPartID] == null)
+            return;
+
+        // attempt to use
+        ItemStates tmpItemState;
+        if ((tmpItemState = bodyPartStates[bodyPartID].HandleInput(keyState))
+            != bodyPartStates[bodyPartID])
+            bodyPartStates[bodyPartID] = tmpItemState;
+
+
         // no coroutine must be occuring for this body part in order to execute the item.
         //bodyPartItemState[bodyPartID] = itemState;
         //if (animationCoroutines[bodyPartID] != null)
-        bodyPartItemState = itemState;
-        if(animationCoroutine != null)
+        /*
+        if (currentItem != null &&
+            currentItem.CurrentMountPoint.BodyPartType != bodyPartID)
+            return;
+
+        Debug.Log("state set on " + bodyPartID);
+        if(currentItem != null)
             return;
 
         // ensure joint exists
@@ -372,121 +397,11 @@ public abstract class Character : MonoBehaviour
         RegularItem item;
         if ((item = attachedBodyPart.MountPoint.MountedItem) == null)
             return;
-        //Debug.LogError("called it");
-        /*
-        animationCoroutines[bodyPartID] = StartCoroutine(BeginItemExeuction(item, bodyPartID, (success) =>
-        {
-            animationCoroutines[bodyPartID] = null;
-            bodyPartItemState[bodyPartID] = ItemState.Idle;
-        }));*/
-        
-        animationCoroutine = StartCoroutine(BeginItemExeuction(item, bodyPartID, (success) =>
-        {
-            animationCoroutine = null;
-            bodyPartItemState = ItemState.Idle;
-            Debug.Log("null set");
-        }));
+            */
+
     }
-
-    private void test(AnimationState state, AnimatorStateInfo stateInfo)
-    {
-        /*
-        if(stateInfo.IsTag("aim"))
-        {
-            if(stateInfo.normalizedTime >= stateInfo.length &&
-                bodyPartItemState == ItemState.Executing)
-                
-                characterAnimator.SetInteger(item.ItemAnimation[bodyPartID].itemState, (int)ItemState.Executing);
-            Debug.Log("aiming in state " + state);
-        }
-
-        if(stateInfo.IsTag("throw"))
-        {
-            Debug.Log("throwing in state " + state);
-        }
-        */
-    }
-
-    private IEnumerator BeginItemExeuction(RegularItem item, int bodyPartID, System.Action<bool> callback)
-    {
-        
-        int layerIndex = characterAnimator.GetLayerIndex(item.ItemAnimation[bodyPartID].layerName);
-
-        // if key held down AND animation complete, go to next state
-        characterAnimator.SetInteger(item.ItemAnimation[bodyPartID].itemState, (int)ItemState.Aim);
-        Debug.Log("set " + item.ItemAnimation[bodyPartID].itemState + " to " + (int)ItemState.Aim);
-        yield return new WaitForEndOfFrame();
-        // wait for animator to get to new state
-        //while (characterAnimator.IsInTransition(layerIndex)) { yield return new WaitForEndOfFrame(); }
-
-        // get current animation clip
-        AnimatorStateInfo stateInfo = GetAnimatorStateInfoFromTag(layerIndex, "aim");
-        //characterAnimator.GetAnimatorTransitionInfo(0).normalizedTime
-        //Debug.Log(Animator.StringToHash("aim_right") + " and " + stateInfo.shortNameHash);
-        // wait until we reach desired time
-        
-        while (stateInfo.normalizedTime < stateInfo.length)
-        {
-            //Debug.Log(stateInfo.normalizedTime + " and " + stateInfo.length);
-            //if (bodyPartItemState[bodyPartID] != ItemState.Aim)
-            if(bodyPartItemState != ItemState.Aim)
-            {
-                //Debug.Log("failed");
-                characterAnimator.SetInteger(item.ItemAnimation[bodyPartID].itemState, (int)ItemState.Idle);
-                callback(true);
-                yield break;
-            }
-            stateInfo = GetAnimatorStateInfoFromTag(layerIndex, "aim");
-            yield return new WaitForEndOfFrame();
-        }
-        //Debug.Log(stateInfo.normalizedTime + " AND " + stateInfo.length);
-        Debug.Log("ready for execute");
-        //while (bodyPartItemState[bodyPartID] != ItemState.Executing)
-        while(bodyPartItemState != ItemState.Executing)
-        {
-            //Debug.Log(bodyPartItemState);
-            yield return new WaitForEndOfFrame();
-        }
-        Debug.Log(bodyPartItemState);
-        // start throw and get animation for throw
-        characterAnimator.SetInteger(item.ItemAnimation[bodyPartID].itemState, (int)ItemState.Executing);
-        stateInfo = GetAnimatorStateInfoFromTag(layerIndex, "throw");
-        Debug.Log(stateInfo.normalizedTime);
-        // wait until .75 way through
-        while (stateInfo.normalizedTime < .50f)
-        {
-            stateInfo = GetAnimatorStateInfoFromTag(layerIndex, "throw");
-            yield return new WaitForEndOfFrame();
-        }
-
-        // use item
-        //Debug.Log("item thrown");
-        item.Use();
-        characterAnimator.SetInteger(item.ItemAnimation[bodyPartID].itemState, (int)ItemState.Idle);
-        //Debug.Log("integer set thrown");
-        // finish
-        yield return null;
-        callback(true);
-    }
-
-    private AnimatorStateInfo GetAnimatorStateInfoFromTag(int layer, string tag)
-    {
-        AnimatorStateInfo stateInfo = characterAnimator.GetCurrentAnimatorStateInfo(layer);
-        //Debug.Log(stateInfo.shortNameHash);
-
-        if (stateInfo.IsTag(tag))
-            return stateInfo;
-
-        stateInfo = characterAnimator.GetNextAnimatorStateInfo(layer);
-        if (stateInfo.IsTag(tag))
-            return stateInfo;
-
-        //Debug.Log(stateInfo.shortNameHash);
-        //Debug.Break();
-
-        return new AnimatorStateInfo();
-    }
-
+    
+    
     /// <summary>
     /// Mounts an item to the first open mount point.
     /// </summary>
@@ -501,8 +416,9 @@ public abstract class Character : MonoBehaviour
         for (int i = 0; i < mountPoints.Length; ++i)
             if (itemToMount.MountTo(mountPoints[i]) != null)
             {
-                //characterAnimator.SetTrigger(itemToMount.EquipTriggerTag[mountPoints[i].BodyPartType]);
-                characterAnimator.SetTrigger(itemToMount.ItemAnimation[mountPoints[i].BodyPartType].equipTrigger);
+                ItemIdle itemStateIdle = ScriptableObject.CreateInstance<ItemIdle>();
+                itemStateIdle.Enter(this, itemToMount, mountPoints[i].BodyPartType);
+                bodyPartStates[mountPoints[i].BodyPartType] = itemStateIdle;
                 return true;
             }
 
@@ -540,7 +456,9 @@ public abstract class Character : MonoBehaviour
             return false;
 
         // call animator to equip
-        characterAnimator.SetTrigger(itemToMount.ItemAnimation[bodyPartType].equipTrigger);
+        ItemIdle itemStateIdle = ScriptableObject.CreateInstance<ItemIdle>();
+        itemStateIdle.Enter(this, itemToMount, bodyPartType);
+        bodyPartStates[bodyPartType] = itemStateIdle;
 
         return true;
     }
@@ -616,7 +534,7 @@ public abstract class Character : MonoBehaviour
     public BodyPart Detach(int bodyPartID)
     {
         // ensure corutine isnt running
-        if (animationCoroutine != null)
+        if (currentItem != null)
             return null;
 
         // see if part exists
