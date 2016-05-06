@@ -30,7 +30,7 @@ public class Corpse : Character
     protected override void Start()
     {
         //IsAlive = false;
-        
+        base.Start();
     }
 
     // Update is called once per frame

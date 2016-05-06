@@ -77,6 +77,7 @@ public class Enemy : Character {
     {
         // DEBUG EQUIP.
         EquipItem();
+        Die();
     }
 
     /// <summary>

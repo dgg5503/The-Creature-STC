@@ -29,6 +29,9 @@ using UnityEngine.UI;
 public class BodyPart : Item, ISerializationCallbackReceiver
 {
     // Delegates
+    public delegate void BodyPartHitCallback();
+    public event BodyPartHitCallback bodyPartHitCallbacks;
+
     // Physics components
     // hidding base memebers since these properties are depricated
     private new Rigidbody rigidbody;
@@ -354,6 +357,9 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         if (skeleton[bodyPartType].Parent.BodyPart == null)
             return false;
 
+        // set layer back
+        gameObject.layer = 9;
+
         // Get all child body parts
         BodyPart[] childBodyParts = transform.GetComponentsInChildren<BodyPart>();
 
@@ -368,6 +374,8 @@ public class BodyPart : Item, ISerializationCallbackReceiver
 
                 if (childBodyParts[i].Joint.Parent != null)
                     childBodyParts[i].SetParent(childBodyParts[i].Joint.Parent.BodyPart);
+
+                childBodyParts[i].gameObject.layer = 9;
             }
         }
         return true;        
@@ -416,8 +424,11 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         // Get all child body parts
         BodyPart[] childBodyParts = transform.GetComponentsInChildren<BodyPart>();
 
+        // set layer to 0
+        gameObject.layer = 0;
+
         // Apply detach properties to all.
-        for(int i = 0; i < childBodyParts.Length; ++i)
+        for (int i = 0; i < childBodyParts.Length; ++i)
         {
             if (childBodyParts[i].isDetachable == true)
             {
@@ -428,8 +439,11 @@ public class BodyPart : Item, ISerializationCallbackReceiver
                     childBodyParts[i].SetupPhysicsJoint();
 
                 // turn off kinematic
-                if(childBodyParts[i].rigidbody != null)
+                if (childBodyParts[i].rigidbody != null)
                     childBodyParts[i].rigidbody.isKinematic = false;
+
+                // set layer to 0
+                childBodyParts[i].gameObject.layer = 0;
             }
         }
 
@@ -458,6 +472,25 @@ public class BodyPart : Item, ISerializationCallbackReceiver
             hinge.angularZMotion = ConfigurableJointMotion.Free;
             hinge.anchor = Vector3.zero;
         }
+    }
+
+    /// <summary>
+    /// Gets the root body part attached to this body part.
+    /// </summary>
+    /// <returns>First body part to appear after traversing up.</returns>
+    public BodyPart GetRootBodyPart()
+    {
+        return GetRootBodyPart(transform);
+    }
+
+    private BodyPart GetRootBodyPart(Transform bodyPart)
+    {
+        if (bodyPart.parent == null ||
+            bodyPart.parent.GetComponent<BodyPart>() == null)
+            return bodyPart.GetComponent<BodyPart>();
+
+        // recurse
+        return GetRootBodyPart(bodyPart.parent);
     }
 
     // --- EDITOR ONLY ---

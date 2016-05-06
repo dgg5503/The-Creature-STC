@@ -34,7 +34,7 @@ public class Grap : MonoBehaviour {
         {
             hookScript.Detach = true;
         }
-        this.GetComponent<Rigidbody>().isKinematic = true;
+        GetComponent<Rigidbody>().isKinematic = true;
 
     }
 }
