@@ -435,7 +435,15 @@ public abstract class Character : MonoBehaviour
             !joints.ContainsKey(bodyPartToAttach.BodyPartType) ||
             characterState == CharacterState.None)
             return false;
-        
+
+        // get children bparts
+        BodyPart[] bodyParts = bodyPartToAttach.GetComponentsInChildren<BodyPart>();
+        // set layer to 9 for all bparts
+        for (int i = 0; i < bodyParts.Length; ++i)
+        {
+            bodyParts[i].gameObject.layer = 9;
+        }
+
         if (!bodyPartToAttach.SetSkeleton(joints))
             return false;
 
@@ -457,6 +465,7 @@ public abstract class Character : MonoBehaviour
         // revert if hits found.
         if (hits.Length != 0)
         {
+            Debug.Log("Hit " + hits[0].collider.name);
             /*
             foreach (RaycastHit hit in hits)
                 Debug.Log(hit.transform.name);
@@ -465,10 +474,7 @@ public abstract class Character : MonoBehaviour
             */
             Detach(bodyPartToAttach.BodyPartType);
             return false;
-        }
-
-        // get children bparts
-        BodyPart[] bodyParts = bodyPartToAttach.GetComponentsInChildren<BodyPart>();
+        }        
 
         // attempt to add colliders to clothing
         for (int i = 0; i < clothing.Length; ++i)
@@ -485,7 +491,6 @@ public abstract class Character : MonoBehaviour
         // set layer to 9 for all bparts
         for (int i = 0; i < bodyParts.Length; ++i)
         {
-            bodyParts[i].gameObject.layer = 9;
             if ((mountPoint = bodyParts[i].MountPoint) != null &&
                 (mountedItem = mountPoint.MountedItem) != null &&
                 mountedItem.ItemAnimation.ContainsKey(bodyParts[i].BodyPartType))
@@ -561,9 +566,7 @@ public abstract class Character : MonoBehaviour
     protected virtual void Die()
     {
         characterState = CharacterState.None;
-        
-        // TODO: ACTIVATE HALOS
-
+       
         // place in ragdoll mode.
         rigidbody.isKinematic = false;
         collider.enabled = false;
@@ -576,6 +579,7 @@ public abstract class Character : MonoBehaviour
         for (int i = 0; i < allBodyParts.Length; ++i)
         {
             allBodyParts[i].SetLimp();
+            //allBodyParts[i].Health = 0;
             allBodyParts[i].gameObject.layer = 0;
         }
     }

@@ -16,7 +16,6 @@ public class Inventory : MonoBehaviour
     // public GameObject dropItem;
     private GameObject playerPosition;
 
-
     //Health Bars for the creature body parts
     private GameObject headHealthBar;
     private GameObject leftHandHealthBar;
@@ -26,7 +25,7 @@ public class Inventory : MonoBehaviour
 
 
     // Use this for initialization
-
+    public List<GameObject> AllSlots { get { return allSlots; } }
 
     protected virtual void Awake()
     {

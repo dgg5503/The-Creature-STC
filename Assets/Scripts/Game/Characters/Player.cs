@@ -72,8 +72,11 @@ public class Player : Character
 
         CheatWay();
         charInventory.toggleHealthBars();
+
+        base.Start();
     }
 
+    bool attachSuccess;
     protected override void Update()
     {
         // TMP FIX: REMOVE FOR FINAL
@@ -95,7 +98,23 @@ public class Player : Character
                 {
                     if (hit.transform.gameObject.GetComponent<BodyPart>())
                     {
+                        //BodyPart bodyPart = (hit.transform.gameObject.GetComponent<BodyPart>()).GetRootBodyPart();
+                        BodyPart bodyPart = hit.transform.gameObject.GetComponent<BodyPart>();
+                        // make sure we're at parent
                         path = "Prefabs/BodyParts/";
+                        if (joints[bodyPart.BodyPartType].BodyPart != null)
+                            return;
+
+                        if (bodyPart.IsControlledByJoint == false)
+                            Detach(bodyPart.BodyPartType);
+
+                        if (attachSuccess = Attach(bodyPart))
+                        {
+                            charInventory.toggleBodyPartsIcons();
+                            charInventory.reduceHealthImproved(bodyPart.BodyPartType, bodyPart.Health);
+                            charInventory.toggleHealthBars();
+                        }
+                        CheatWay();
                     }
                     else if (hit.transform.gameObject.GetComponent<RegularItem>())
                     {
@@ -131,15 +150,19 @@ public class Player : Character
                     }
                     else
                     {
-                        GameObject itemToAdd = Resources.Load(path + hit.transform.gameObject.name) as GameObject;
-                        Item itemToAddNew = itemToAdd.GetComponent<Item>() as Item;
-                        charInventory.AddItem(itemToAddNew);
+                        if (attachSuccess)
+                        {
+                            GameObject itemToAdd = Resources.Load(path + hit.transform.gameObject.name) as GameObject;
+                            Item itemToAddNew = itemToAdd.GetComponent<Item>() as Item;
+                            charInventory.AddItem(itemToAddNew);
+                        }
                     }
                 }
             }
         }
 
         /* DEBUG TESTS */
+        /*
         if (Input.GetMouseButtonDown(0))
         {
             // ray cast
@@ -157,12 +180,12 @@ public class Player : Character
             {
                 if ((foundBodyPart = obj.collider.GetComponent<BodyPart>()) != null)
                 {
-                    if (Detach(foundBodyPart.BodyPartType) == null)
-                    {
-                        Attach(foundBodyPart);
+                    //if (Detach(foundBodyPart.BodyPartType) == null)
+                    //{
+                        //Attach(foundBodyPart);
                         charInventory.toggleBodyPartsIcons();
                        // CheatWay();
-                    }
+                    //}
                     charInventory.reduceHealthImproved(foundBodyPart.BodyPartType, foundBodyPart.Health);
                     charInventory.toggleHealthBars();
                     CheatWay();
@@ -178,7 +201,7 @@ public class Player : Character
                     
             }
         }
-
+        */
         /* DEBUG WEAPON TEST */
         if(Input.GetKeyDown("k"))
         {
