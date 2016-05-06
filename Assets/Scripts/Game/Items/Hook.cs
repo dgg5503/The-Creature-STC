@@ -105,10 +105,11 @@ public class Hook : MonoBehaviour {
                 }
                 if (temp.transform.position == initialPosition)
                 {
-                    temp.transform.parent = this.transform;
-                    GrapplingSettings();
-                    tempEnemy.transform.parent = null;
-                    shoot = false;
+                    if (tempEnemy.gameObject.name.Contains("Villager"))
+                    {
+                        tempEnemy.gameObject.GetComponent<Enemy>().IsHitWithGrapple(false);
+                    }
+                    resetHookShot(temp, tempEnemy);
                 }
             }
         }
@@ -139,7 +140,10 @@ public class Hook : MonoBehaviour {
 
                 GameObject tempEnemy = grapplingPart.ColliderObject;
                 tempEnemy.transform.parent = null;
-                
+                if (tempEnemy.gameObject.name.Contains("Villager"))
+                {
+                    tempEnemy.GetComponent<Enemy>().IsHitWithGrapple(false);
+                }
             }
 
         }
@@ -159,6 +163,13 @@ public class Hook : MonoBehaviour {
     {
         GameObject temp = GameObject.FindGameObjectWithTag("Grapper");
         temp.transform.rotation = initialRotationForTheHook;
+    }
+
+    private void resetHookShot(GameObject temp, GameObject tempEnemy) {
+        temp.transform.parent = this.transform;
+        GrapplingSettings();
+        tempEnemy.transform.parent = null;
+        shoot = false;
     }
 
 }
