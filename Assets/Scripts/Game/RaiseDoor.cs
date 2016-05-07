@@ -22,20 +22,21 @@ public class RaiseDoor : MonoBehaviour {
     
     void OnTriggerStay(Collider colWith)
     {
-        if(colWith.tag == "Item")
+        if(colWith.tag == "Item" || colWith.tag == "Player")
         {
             //Debug.Log("stay");
             isColliding = true;
             if (currentLift < liftHeight) {
                 currentLift += liftVal;
                 exitDoor.transform.position += new Vector3(0.0f, liftVal, 0.0f);
+                Debug.Log("Raise the door");
             }
            
         }
     }
     void OnTriggerExit(Collider colWith)
     {
-        if (colWith.tag == "Item")
+        if (colWith.tag == "Item" || colWith.tag == "Player")
         {
             isColliding = false;
         }
