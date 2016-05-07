@@ -564,7 +564,6 @@ public abstract class Character : MonoBehaviour
             if ((tmpItemState = bodyPartStates[bodyParts[i].BodyPartType]) != null)
                 tmpItemState.BreakState();
 
-
         return tmpPart;
     }
 

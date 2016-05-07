@@ -40,7 +40,6 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     // Stats
     [SerializeField]
     private int currHealth;
-    private int minHealth;
     private int maxHealth;
     //public bool isDetached;
 
@@ -170,7 +169,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
              */
 
             // non detachable bodyparts cannot fall off.
-            if (currHealth <= minHealth &&
+            if (currHealth <= 0 &&
                 isDetachable)
             {
                 //haloEffect();
@@ -179,24 +178,6 @@ public class BodyPart : Item, ISerializationCallbackReceiver
                 //isDetached = true;
                 
             }
-        }
-    }
-
-    /// <summary>
-    /// Get or set the minimum health value of this body part.
-    /// When current health is lessthan or equal to min health, this body part will automatically detach.
-    /// </summary>
-    public int MinHealth
-    {
-        get
-        {
-            return minHealth;
-        }
-
-        set
-        {
-            // TODO CHECK TO SEE IF SHOULD DETACH.
-            minHealth = value;
         }
     }
 
@@ -229,7 +210,6 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         // health        
         // TODO, DETERMINE WHEN TO SET THESE?
         maxHealth = 100;
-        minHealth = 30;
         currHealth = maxHealth;
 
         // Control determined later
