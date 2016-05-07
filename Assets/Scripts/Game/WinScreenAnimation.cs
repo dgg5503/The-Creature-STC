@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class WinScreenAnimation : MonoBehaviour {
 
@@ -30,8 +31,14 @@ public class WinScreenAnimation : MonoBehaviour {
             if (victoryImage.localScale == new Vector3(1, 1, 1))
             {
                 finishedAnimation = true;
+                Invoke("changeLevel", 3.0f);
             }
         }
 
+    }
+
+    public void changeLevel()
+    {
+        SceneManager.LoadScene("UI Main Menu");
     }
 }
