@@ -110,7 +110,7 @@ public class Player : Character
             if (Vector3.Distance(hit.point, transform.position) < pickupDistance &&
                 hit.transform.tag == "Item")
             {
-                if (Input.GetMouseButtonDown(1))
+                if (Input.GetMouseButtonDown(0))
                 {
                     if (hit.transform.gameObject.GetComponent<BodyPart>())
                     {

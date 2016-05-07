@@ -58,6 +58,7 @@ public class GameManager : MonoBehaviour
         // Have bparts ignore character colliders
         Physics.IgnoreLayerCollision(9, 10);
         Physics.IgnoreLayerCollision(9, 11);
+        Physics.IgnoreLayerCollision(2, 9);
 
         // http://answers.unity3d.com/questions/416919/making-raycast-ignore-multiple-layers.html
         // ignore layers 9 and 10 as they are not considered to be "ground"

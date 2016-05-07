@@ -7,7 +7,8 @@ public class SwitchScene : MonoBehaviour {
 
     void OnTriggerEnter(Collider collidedWith)
     {
-        if(collidedWith.gameObject.name == "The_Creature")
+        
+        if(collidedWith.gameObject.name == "The_Creature" )
         {
             //GameObject headHealthBar = GameObject.FindGameObjectWithTag("HHB");
             //headHealthBar.SetActive(true);
