@@ -99,6 +99,13 @@ public class Player : Character
     {
         charInventory.toggleBodyPartsIcons();
         CheatWay();
+        int count = joints.Count(x => (x.Value.BodyPart != null));
+        if (count <= 3)
+        {
+            // if one of them are grappleHook, die
+            //if(joints.)
+            // else if the count is == 2 then die
+        }
     }
 
     // Use this for initialization

@@ -469,7 +469,8 @@ public abstract class Character : MonoBehaviour
             collider.radius - .1f,
             transform.up,
             collider.radius - .1f,
-            GameManager.GroundedLayerMask);
+            GameManager.GroundedLayerMask,
+            QueryTriggerInteraction.Ignore);
 
         // TODO: set up raycast in a place that wont require detachment to be called.
         // revert if hits found.
