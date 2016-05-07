@@ -22,7 +22,10 @@ public class Grap : MonoBehaviour {
         {
             col.gameObject.transform.parent = this.transform;
             ColliderObject = col.gameObject;
-            ColliderObject.GetComponent<Enemy>().IsHitWithGrapple(true);
+            if (ColliderObject.GetComponent<Enemy>())
+            {
+                ColliderObject.GetComponent<Enemy>().IsHitWithGrapple(true);
+            }
         }
         else if (col.gameObject.name == "GrapplingLocation")
         {

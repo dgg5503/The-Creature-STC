@@ -144,7 +144,7 @@ public class Hook : MonoBehaviour {
 
                 GameObject tempEnemy = grapplingPart.ColliderObject;
                 tempEnemy.transform.parent = null;
-                if (tempEnemy.gameObject.name.Contains("Villager"))
+                if (tempEnemy.gameObject.name.Contains("Villager") && tempEnemy.gameObject.GetComponent<Enemy>())
                 {
                     tempEnemy.GetComponent<Enemy>().IsHitWithGrapple(false);
                 }
