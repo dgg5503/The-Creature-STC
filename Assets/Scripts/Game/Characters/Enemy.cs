@@ -147,7 +147,7 @@ public class Enemy : Character {
                 break;
 
             case EnemyState.Attack:
-                Debug.Log("ATTACKING");
+                //Debug.Log("ATTACKING");
                 // ensure target is within distance
                 if(Vector3.Distance(transform.position, targetedCharacter.transform.position) > maxDistance)
                 {

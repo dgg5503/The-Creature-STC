@@ -97,7 +97,7 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     public Vector3 AimingAt { get; protected set; }
 
-    protected bool IsAlive
+    public bool IsAlive
     {
         get
         {
@@ -580,6 +580,8 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected virtual void Die()
     {
+        Debug.Log("Dead");
+
         characterState = CharacterState.None;
        
         // place in ragdoll mode.

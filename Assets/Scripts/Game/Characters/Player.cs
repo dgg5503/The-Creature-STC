@@ -99,16 +99,21 @@ public class Player : Character
     {
         charInventory.toggleBodyPartsIcons();
         CheatWay();
+        DeathTest();
+    }
+
+    private void DeathTest()
+    {
         int count = joints.Count(x => (x.Value.BodyPart != null));
         if (count <= 3)
         {
             // if one of them are grappleHook, die
-            if(count == 3 &&
+            if (count == 3 &&
                 GetComponentInChildren<ChainRescale>() != null)
             {
                 Die();
             }
-            else if(count == 2)
+            else if (count == 2)
             {
                 Die();
             }

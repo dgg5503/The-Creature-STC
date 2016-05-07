@@ -17,7 +17,7 @@ public class Grap : MonoBehaviour {
 
     void OnCollisionEnter(Collision col)
     {
-        Debug.Log(col.collider.name);
+        //Debug.Log(col.collider.name);
         if (col.gameObject.name.Contains("Villager"))
         {
             col.gameObject.transform.parent = this.transform;
