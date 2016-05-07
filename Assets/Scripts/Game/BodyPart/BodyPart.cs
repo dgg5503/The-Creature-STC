@@ -412,7 +412,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         BodyPart[] childBodyParts = transform.GetComponentsInChildren<BodyPart>();
 
         // set layer to 0
-        gameObject.layer = 0;
+        gameObject.layer = 8;
 
         // Apply detach properties to all.
         for (int i = 0; i < childBodyParts.Length; ++i)
@@ -430,7 +430,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
                     childBodyParts[i].rigidbody.isKinematic = false;
 
                 // set layer to 0
-                childBodyParts[i].gameObject.layer = 0;
+                childBodyParts[i].gameObject.layer = 8;
             }
         }
 

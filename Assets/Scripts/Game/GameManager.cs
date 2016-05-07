@@ -61,6 +61,8 @@ public class GameManager : MonoBehaviour
         Physics.IgnoreLayerCollision(9, 10);
         Physics.IgnoreLayerCollision(9, 11);
         Physics.IgnoreLayerCollision(2, 9);
+        Physics.IgnoreLayerCollision(8, 8);
+        Physics.IgnoreLayerCollision(9, 8);
 
         // http://answers.unity3d.com/questions/416919/making-raycast-ignore-multiple-layers.html
         // ignore layers 9 and 10 as they are not considered to be "ground"

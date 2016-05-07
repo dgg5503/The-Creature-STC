@@ -66,8 +66,8 @@ public class Player : Character
         characterInventory.SetActive(false);
 
         aimPlane = new Plane(Vector3.up, Vector3.zero);
-        deathMenuScreen = GameObject.FindGameObjectWithTag("DeathMenu").GetComponent<Canvas>();
-        deathMenuScreen.enabled = false;
+        //deathMenuScreen = GameObject.FindGameObjectWithTag("DeathMenu").GetComponent<Canvas>();
+        //deathMenuScreen.enabled = false;
         //testingBodyPart = GameObject.Find("Creature_Left_Leg_Part_1").GetComponent<BodyPart>();
         //   getCanvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         //   passCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
@@ -81,6 +81,8 @@ public class Player : Character
         GameManager.InputManager.BindKey(UseItemRight, KeyCode.Q);
         GameManager.InputManager.BindKey(ToggleInventory, KeyCode.I);
 
+
+        //Debug.Log("made " + name);
         root.bodyPartHitCallbacks += Root_bodyPartHitCallbacks;
         joints[CreatureBodyBones.Head].BodyPart.bodyPartHitCallbacks += Root_bodyPartHitCallbacks;
         foreach (KeyValuePair<int, CustomJoint> kvp in joints)

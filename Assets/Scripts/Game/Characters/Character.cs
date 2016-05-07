@@ -584,7 +584,7 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     protected virtual void Die()
     {
-        Debug.Log("Dead");
+        //Debug.Log("Dead " + name);
 
         characterState = CharacterState.None;
        
@@ -601,7 +601,7 @@ public abstract class Character : MonoBehaviour
         {
             allBodyParts[i].SetLimp();
             //allBodyParts[i].Healthd = 0;
-            allBodyParts[i].gameObject.layer = 0;
+            allBodyParts[i].gameObject.layer = 8;
             allBodyParts[i].haloGlow(true);
             allBodyParts[i].ClearAllEvents();
         }

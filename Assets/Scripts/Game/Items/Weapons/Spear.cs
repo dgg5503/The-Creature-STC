@@ -80,7 +80,6 @@ public class Spear : Weapon {
     {
         // disable pass through collision check.
         passThroughTrigger.enabled = false;
-        
     }
     
     // Use this for initialization
