@@ -145,6 +145,10 @@ public class PauseMenu : MonoBehaviour {
     }
 
     public void backToMainMenu() {
+        Destroy(GameObject.Find("GameManager"));
+        Destroy(GameObject.Find("The_Creature"));
+        Destroy(GameObject.Find("Canvas"));
+        Destroy(GameObject.Find("FreeLookCameraRig"));
         SceneManager.LoadScene("UI Main Menu");
     }
 

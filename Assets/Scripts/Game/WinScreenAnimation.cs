@@ -39,6 +39,10 @@ public class WinScreenAnimation : MonoBehaviour {
 
     public void changeLevel()
     {
+        Destroy(GameObject.Find("GameManager"));
+        Destroy(GameObject.Find("The_Creature"));
+        Destroy(GameObject.Find("Canvas"));
+        Destroy(GameObject.Find("FreeLookCameraRig"));
         SceneManager.LoadScene("UI Main Menu");
     }
 }

@@ -9,12 +9,21 @@ public class YouDied : MonoBehaviour {
             }
 
     public void backToMainMenu() {
+        Destroy(GameObject.Find("GameManager"));
+        Destroy(GameObject.Find("The_Creature"));
+        Destroy(GameObject.Find("Canvas"));
+        Destroy(GameObject.Find("FreeLookCameraRig"));
         SceneManager.LoadScene("UI Main Menu");
     }
 
     public void restartGame() {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-      //  Debug.Log(SceneManager.GetActiveScene().name);
+        Destroy(GameObject.Find("GameManager"));
+        Destroy(GameObject.Find("The_Creature"));
+        Destroy(GameObject.Find("Canvas"));
+        Destroy(GameObject.Find("FreeLookCameraRig"));
+        SceneManager.LoadScene("Start");
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        //  Debug.Log(SceneManager.GetActiveScene().name);
     }
 
 

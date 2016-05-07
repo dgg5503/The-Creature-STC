@@ -125,7 +125,8 @@ public class Player : Character
 
     protected override void Die()
     {
-        deathMenuScreen.enabled = true;
+        GameObject.Find("DeathMenu").GetComponent<Canvas>().enabled = true;
+        //deathMenuScreen.enabled = true;
         base.Die();
     }
 
