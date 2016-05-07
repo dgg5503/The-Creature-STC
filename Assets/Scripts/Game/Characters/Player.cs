@@ -84,6 +84,8 @@ public class Player : Character
         foreach (KeyValuePair<int, CustomJoint> kvp in joints)
             if (kvp.Value.BodyPart != null)
                 kvp.Value.BodyPart.bodyPartHitCallbacks += CheatWayBodyPart;
+
+        ItemUseOffset = new Vector3(0, -.2f, 0);
     }
 
     private void Root_bodyPartHitCallbacks(int health)

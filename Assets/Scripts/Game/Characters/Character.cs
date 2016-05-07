@@ -97,6 +97,8 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     public Vector3 AimingAt { get; protected set; }
 
+    public Vector3 ItemUseOffset { get; protected set; }
+
     public bool IsAlive
     {
         get
@@ -200,6 +202,8 @@ public abstract class Character : MonoBehaviour
         bodyPartStates = new Dictionary<int, ItemStates>();
         foreach (int bodyPartId in joints.Keys)
             bodyPartStates[bodyPartId] = null;
+
+        ItemUseOffset = Vector3.zero;
     }
 
     protected virtual void Start()
