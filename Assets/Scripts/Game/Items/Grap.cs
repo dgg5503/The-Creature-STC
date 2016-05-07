@@ -18,7 +18,7 @@ public class Grap : MonoBehaviour {
     void OnCollisionEnter(Collision col)
     {
         //Debug.Log(col.collider.name);
-        if (col.gameObject.name.Contains("Villager"))
+        if (col.gameObject.name.Contains("Villager") && hookScript.Shoot == true)
         {
             col.gameObject.transform.parent = this.transform;
             ColliderObject = col.gameObject;

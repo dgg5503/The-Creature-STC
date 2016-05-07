@@ -29,6 +29,11 @@ public class Hook : MonoBehaviour {
         set { detach = value; }
     }
 
+    public bool Shoot
+    {
+        get { return shoot; }
+        set { shoot = value; }
+    }
 
     void Awake()
     {
