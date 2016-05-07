@@ -103,7 +103,15 @@ public class Player : Character
         if (count <= 3)
         {
             // if one of them are grappleHook, die
-            //if(joints.)
+            if(count == 3 &&
+                GetComponentInChildren<ChainRescale>() != null)
+            {
+                Die();
+            }
+            else if(count == 2)
+            {
+                Die();
+            }
             // else if the count is == 2 then die
         }
     }

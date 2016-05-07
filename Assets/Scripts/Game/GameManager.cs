@@ -31,6 +31,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public static LayerMask CharacterLayerMask { get; private set; }
 
+    public static LayerMask RaycastLayerMask { get; private set; }
+
     /// <summary>
     /// Get or set the current game state.
     /// </summary>
@@ -65,7 +67,7 @@ public class GameManager : MonoBehaviour
         GroundedLayerMask = ~((1 << 9) | (1 << 10) | (1 << 11) | (1 << 2));
         BodyPartLayerMask = ~((1 << 9) | (1 << 11));
         CharacterLayerMask = (1 << 10);
-
+        RaycastLayerMask = ~(1 << 2);
         // load all prefabs!
         prefabDictionary = Resources.LoadAll("Prefabs/Items").ToDictionary(x => x.name, x => x);
 
