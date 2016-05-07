@@ -39,7 +39,7 @@ public class Spear : Weapon {
 
         type = RegularItemType.Weapon;
         amountOfItems = 1;
-        damage = 10;
+        damage = 35;
         UseAnimationOffset = .75f;
 
         capsuleCollider = collider as CapsuleCollider;

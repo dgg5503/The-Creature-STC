@@ -157,7 +157,9 @@ public class ImpalePoint : MonoBehaviour {
     void OnCollisionEnter(Collision collision)
     {
         
-        if (IsActive && collision.collider.GetComponent<ImpalePoint>() == null)
+        if (IsActive &&
+            collision.collider.GetComponent<ImpalePoint>() == null &&
+            collision.collider.GetComponent<Spear>() == null)
         {
             // TO-DO: slow speed? dont let it attach!!
             // if velocity is negative direction of forward, return

@@ -40,7 +40,7 @@ public class Enemy : Character {
     public float minWonderTime = 3;
     public float fleeTime = 4;
     public float equipTime = 5;
-    public float aimTime = 5;
+    private float aimTime = 2;
     public float maxDistance = 10;
 
     // nav mesh agent info
@@ -90,7 +90,7 @@ public class Enemy : Character {
     protected override void Start()
     {
         // DEBUG EQUIP.
-        EquipItem();
+        //EquipItem();
         //Die();
     }
 
@@ -377,6 +377,12 @@ public class Enemy : Character {
             return navHit.position;
 
         return transform.position;
+    }
+
+    public void OnCollisionEnter(Collision collision)
+    {
+        if(collision.collider.tag == "KillVillager")
+            Die();
     }
 
     public void IsHitWithGrapple(bool status)

@@ -153,8 +153,6 @@ public class BodyPart : Item, ISerializationCallbackReceiver
             {
                 currHealth = value;
 
-
-
                 if (transform.root.name.Contains("Creature"))
                 {
                     creatureInventory.reduceHealthImproved(this.bodyPartType, currHealth);
@@ -177,6 +175,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
             {
                 //haloEffect();
                 Detach();
+                
                 //isDetached = true;
                 
             }

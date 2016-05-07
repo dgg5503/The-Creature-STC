@@ -126,11 +126,12 @@ public abstract class Character : MonoBehaviour
     {
         get
         {
-           // Debug.DrawLine(transform.position, transform.position + (Vector3.down * collider.bounds.extents.y) + (Vector3.down * groundedContact), Color.black);
+            // Debug.DrawLine(transform.position, transform.position + (Vector3.down * collider.bounds.extents.y) + (Vector3.down * groundedContact), Color.black);
             //Debug.DrawLine(collider.bounds.center, collider.bounds.center + (Vector3.down * (collider.bounds.extents.y + groundedContact)), Color.black);
             //Debug.Log(collider.bounds.extents.y);
             //return Physics.CheckCapsule(collider.bounds.center, new Vector3(collider.bounds.center.x, collider.bounds.center.y + collider.height / 2, collider.bounds.center.z), collider.radius, GameManager.GroundedLayerMask);
-            return Physics.Raycast(collider.bounds.center, Vector3.down, collider.bounds.extents.y + groundedContact, GameManager.GroundedLayerMask);
+            //return Physics.Raycast(collider.bounds.center, Vector3.down, collider.bounds.extents.y + groundedContact, GameManager.GroundedLayerMask);
+            return Physics.CheckSphere(collider.bounds.center - (transform.up * ((collider.height / 2) - collider.radius)), collider.radius + .1f, GameManager.GroundedLayerMask);
         }
     }
 
@@ -267,8 +268,10 @@ public abstract class Character : MonoBehaviour
 
     void FixedUpdate()
     {
+        //Debug.Log(joints.Count(x => (x.Value.BodyPart == null)));
         // if state is none, assume dead
-        if (characterState == CharacterState.None)
+        if (characterState == CharacterState.None ||
+            joints.Count(x => (x.Value.BodyPart != null)) == 2)
             return;
 
         // calculate movement
@@ -565,6 +568,11 @@ public abstract class Character : MonoBehaviour
         return tmpPart;
     }
 
+    public void OnTriggerEnter(Collider collider)
+    {
+        if (collider.tag == "Kill")
+            Die();
+    }
 
 
     /// <summary>
