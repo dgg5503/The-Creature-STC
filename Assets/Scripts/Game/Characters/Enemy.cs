@@ -401,6 +401,7 @@ public class Enemy : Character {
 
     public override void CalculateAimPoint()
     {
-        AimingAt = Vector3.ProjectOnPlane((targetedCharacter.transform.position - transform.position).normalized, transform.right);
+        if(targetedCharacter != null)
+            AimingAt = Vector3.ProjectOnPlane((targetedCharacter.transform.position - transform.position).normalized, transform.right);
     }
 }

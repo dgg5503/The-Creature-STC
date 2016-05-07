@@ -82,6 +82,8 @@ public abstract class Character : MonoBehaviour
     private CharacterState characterState;
     private Dictionary<int, ItemStates> bodyPartStates;
 
+    public CharacterState CharacterState { get { return characterState; } }
+
     /// <summary>
     /// Get the inventory of this character.
     /// </summary>
@@ -340,46 +342,9 @@ public abstract class Character : MonoBehaviour
         if (bodyPartStates[bodyPartID] == null)
             return;
 
-        // TMPFIX: ensure no other bparts in use
-        //if(bodyPartStates.Count(x => x.Value != null))
-        //Debug.Log(bodyPartStates.Count);
-
         // attempt to use
         //ItemStates tmpItemState;
         bodyPartStates[bodyPartID] = bodyPartStates[bodyPartID].HandleInput(keyState);
-        //handState = handState.HandleInput(keyState);
-
-        // no coroutine must be occuring for this body part in order to execute the item.
-        //bodyPartItemState[bodyPartID] = itemState;
-        //if (animationCoroutines[bodyPartID] != null)
-        /*
-        if (currentItem != null &&
-            currentItem.CurrentMountPoint.BodyPartType != bodyPartID)
-            return;
-
-        Debug.Log("state set on " + bodyPartID);
-        if(currentItem != null)
-            return;
-
-        // ensure joint exists
-        if (!joints.ContainsKey(bodyPartID))
-            return;
-
-        // ensure body part is attached
-        BodyPart attachedBodyPart;
-        if ((attachedBodyPart = joints[bodyPartID].BodyPart) == null)
-            return;
-
-        // ensure mount point exists
-        if (attachedBodyPart.MountPoint == null)
-            return;
-
-        // ensure item exists
-        RegularItem item;
-        if ((item = attachedBodyPart.MountPoint.MountedItem) == null)
-            return;
-            */
-
     }
     
     
@@ -572,11 +537,7 @@ public abstract class Character : MonoBehaviour
         return tmpPart;
     }
 
-    public void OnTriggerEnter(Collider collider)
-    {
-        if (collider.tag == "Kill")
-            Die();
-    }
+
 
 
     /// <summary>
@@ -605,6 +566,7 @@ public abstract class Character : MonoBehaviour
             allBodyParts[i].haloGlow(true);
             allBodyParts[i].ClearAllEvents();
         }
+        
     }
 
     /// <summary>

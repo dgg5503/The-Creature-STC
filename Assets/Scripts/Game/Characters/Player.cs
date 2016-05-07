@@ -67,10 +67,6 @@ public class Player : Character
 
         aimPlane = new Plane(Vector3.up, Vector3.zero);
         //deathMenuScreen = GameObject.FindGameObjectWithTag("DeathMenu").GetComponent<Canvas>();
-        //deathMenuScreen.enabled = false;
-        //testingBodyPart = GameObject.Find("Creature_Left_Leg_Part_1").GetComponent<BodyPart>();
-        //   getCanvas = GameObject.Find("Canvas").GetComponent<Canvas>();
-        //   passCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
 
         // -- KEY BINDING -- //
         GameManager.InputManager.BindKey(MoveForward, KeyCode.W);
@@ -118,16 +114,19 @@ public class Player : Character
                 GetComponentInChildren<ChainRescale>() != null)
             {
                 Die();
-                deathMenuScreen.enabled = true;
-
             }
             else if (count == 2)
             {
                 Die();
-                deathMenuScreen.enabled = true;
             }
             // else if the count is == 2 then die
         }
+    }
+
+    protected override void Die()
+    {
+        deathMenuScreen.enabled = true;
+        base.Die();
     }
 
     // Use this for initialization
@@ -226,95 +225,14 @@ public class Player : Character
                 }
             }
         }
-
-        /* DEBUG TESTS */
-        /*
-        if (Input.GetMouseButtonDown(0))
-        {
-            // ray cast
-            // RAY CAST
-            // cast ray from camera to where mouse position is
-            ray = playerCamera.ScreenPointToRay(Input.mousePosition);
-
-            // Raycast
-            RaycastHit[] allhit = Physics.RaycastAll(ray);
-
-            // Get first body part
-            BodyPart foundBodyPart = null;
-            RegularItem foundItem = null;
-            foreach (RaycastHit obj in allhit)
-            {
-                if ((foundBodyPart = obj.collider.GetComponent<BodyPart>()) != null)
-                {
-                    //if (Detach(foundBodyPart.BodyPartType) == null)
-                    //{
-                        //Attach(foundBodyPart);
-                        charInventory.toggleBodyPartsIcons();
-                       // CheatWay();
-                    //}
-                    charInventory.reduceHealthImproved(foundBodyPart.BodyPartType, foundBodyPart.Health);
-                    charInventory.toggleHealthBars();
-                    CheatWay();
-                    break;
-                }
-
-                if ((foundItem = obj.collider.GetComponent<RegularItem>()) != null)
-                {
-                    // attempt to mount
-                    MountItem(foundItem);
-                    break;
-                }
-                    
-            }
-        }
-        */
-        /* DEBUG WEAPON TEST */
-        /*
-        if(Input.GetKeyDown("k"))
-        {
-            Weapon[] spears = GetComponentsInChildren<Weapon>().Where(x => x.CurrentMountPoint == null).ToArray();
-
-            // if weapon is already mounted, dont mount again!
-            if(spears.Length != 0)
-                MountItem(spears[0]);
-        }*/
-
-        /* DEBUG WEAPON TEST */
-        /*
-        if (Input.GetKeyDown("j"))
-        {
-            MountPoint[] mountPoints = GetComponentsInChildren<MountPoint>();
-            //state = CharacterState.Throw_Right;
-            for (int i = 0; i < mountPoints.Length; ++i)
-                if (mountPoints[i].MountedItem != null)
-                {
-                    mountPoints[i].UseItem();
-                    break;
-                }
-        }
-        */
-
-        /* DEBUG TESTS */
-        // TMP INVENTORY
-        /*
-        if (Input.GetKeyDown("i"))
-        {
-            
-        }
-        */
-        
-        /*
-        if (Input.GetKeyDown("m"))
-        {
-            testingBodyPart.Health = 20;
-           // DontDestroyOnLoad(this.transform.gameObject);
-           // DontDestroyOnLoad(getCanvas);
-          //  DontDestroyOnLoad(passCamera);
-           // SceneManager.LoadScene("TestSceneForTransferObjects");
-        }
-        */
         base.Update();
-        
+    }
+
+    public void OnTriggerEnter(Collider collider)
+    {
+        if (collider.tag == "Kill" &&
+            CharacterState != CharacterState.None)
+            Die();
     }
 
     public override void CalculateAimPoint()
