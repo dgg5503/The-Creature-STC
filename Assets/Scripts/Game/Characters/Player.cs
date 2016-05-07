@@ -41,6 +41,7 @@ public class Player : Character
     private string path;
     private BodyPart testingBodyPart;
     private string newItemName = "";
+    private Canvas deathMenuScreen;
 
     //TEst
     // private Canvas getCanvas;
@@ -65,7 +66,8 @@ public class Player : Character
         characterInventory.SetActive(false);
 
         aimPlane = new Plane(Vector3.up, Vector3.zero);
-
+        deathMenuScreen = GameObject.FindGameObjectWithTag("DeathMenu").GetComponent<Canvas>();
+        deathMenuScreen.enabled = false;
         //testingBodyPart = GameObject.Find("Creature_Left_Leg_Part_1").GetComponent<BodyPart>();
         //   getCanvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         //   passCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
@@ -112,10 +114,13 @@ public class Player : Character
                 GetComponentInChildren<ChainRescale>() != null)
             {
                 Die();
+                deathMenuScreen.enabled = true;
+
             }
             else if (count == 2)
             {
                 Die();
+                deathMenuScreen.enabled = true;
             }
             // else if the count is == 2 then die
         }
