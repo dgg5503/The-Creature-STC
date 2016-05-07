@@ -61,6 +61,8 @@ public class ItemAim : ItemStates
 
         // WHAT TO DO ABOUT THIS?
         //Debug.Log("this");
+        //character.CalculateAimPoint();
+        //character.transform.forward = character.AimingAt;
         return this;
     }
 

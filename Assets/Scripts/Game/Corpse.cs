@@ -48,4 +48,5 @@ public class Corpse : Character
     /// Corpses dont move...
     /// </summary>
     protected override void ProcessMovement() { }
+    public override void CalculateAimPoint() { }
 }

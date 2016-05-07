@@ -12,6 +12,8 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using System;
+
 public class Player : Character
 {
     // Camera used by this player
@@ -23,6 +25,13 @@ public class Player : Character
     // Pickup distance
     [SerializeField]
     private float pickupDistance = 4f;
+
+    // Aiming from plane
+    private Plane aimPlane;
+    private float rayDistance;
+
+    // Camera casts
+    private Ray mouseToCamRay;
 
     // TMP INVENTORY
     private GameObject characterInventory;
@@ -54,6 +63,8 @@ public class Player : Character
 
         characterInventory = GameObject.FindGameObjectWithTag("Inventory");
         characterInventory.SetActive(false);
+
+        aimPlane = new Plane(Vector3.up, Vector3.zero);
 
         //testingBodyPart = GameObject.Find("Creature_Left_Leg_Part_1").GetComponent<BodyPart>();
         //   getCanvas = GameObject.Find("Canvas").GetComponent<Canvas>();
@@ -92,9 +103,9 @@ public class Player : Character
         
 
         RaycastHit hit;
-        Ray ray = playerCamera.ScreenPointToRay(Input.mousePosition);
-
-        if (Physics.Raycast(ray, out hit))
+        mouseToCamRay = playerCamera.ScreenPointToRay(Input.mousePosition);
+        
+        if (Physics.Raycast(mouseToCamRay, out hit))
         {
             if (Vector3.Distance(hit.point, transform.position) < pickupDistance &&
                 hit.transform.tag == "Item")
@@ -208,6 +219,7 @@ public class Player : Character
         }
         */
         /* DEBUG WEAPON TEST */
+        /*
         if(Input.GetKeyDown("k"))
         {
             Weapon[] spears = GetComponentsInChildren<Weapon>().Where(x => x.CurrentMountPoint == null).ToArray();
@@ -215,7 +227,7 @@ public class Player : Character
             // if weapon is already mounted, dont mount again!
             if(spears.Length != 0)
                 MountItem(spears[0]);
-        }
+        }*/
 
         /* DEBUG WEAPON TEST */
         /*
@@ -292,6 +304,27 @@ public class Player : Character
         characterAnimator.SetInteger(item.ItemStateTag, (int)item.ItemState);
     }
     */
+
+    public override void CalculateAimPoint()
+    {
+        aimPlane.SetNormalAndPosition(aimPlane.normal, transform.position);
+
+        // get plane cast
+        if (aimPlane.Raycast(mouseToCamRay, out rayDistance))
+        { 
+            // get vector from player to plane
+            AimingAt = mouseToCamRay.GetPoint(rayDistance) - transform.position;
+
+            //Debug.DrawLine(transform.position, mouseToCamRay.GetPoint(rayDistance));
+
+            // project aiming vector onto plane
+            AimingAt = Vector3.ProjectOnPlane(AimingAt, aimPlane.normal);
+
+            //Debug.DrawLine(transform.position, AimingAt);
+
+            //transform.forward = AimingAt.normalized;
+        }
+    }
 
     /// <summary>
     /// Processes movement for the player specifically. Called before applying
@@ -387,13 +420,13 @@ public class Player : Character
 
     private void UseItemLeft(KeyState keyState)
     {
-        AimingAt = transform.forward;
+        //SetAimPoint();
         UseItem(CreatureBodyBones.Left_Arm_Part_2, keyState);
     }
 
     private void UseItemRight(KeyState keyState)
     {
-        AimingAt = transform.forward;
+        //SetAimPoint();
         UseItem(CreatureBodyBones.Right_Arm_Part_2, keyState);
     }
 

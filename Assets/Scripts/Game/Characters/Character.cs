@@ -322,6 +322,8 @@ public abstract class Character : MonoBehaviour
     /// </summary>
     abstract protected void ProcessMovement();
 
+    abstract public void CalculateAimPoint();
+
     /// <summary>
     /// Attempts to use the currently mounted item attached to the given bodypart.
     /// </summary>

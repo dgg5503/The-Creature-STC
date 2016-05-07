@@ -56,6 +56,7 @@ public class ItemFire : ItemStates
                     //Debug.Log(stateInfo.normalizedTime + ": " + stateInfo.length + " and " + stateInfo.shortNameHash);
 
                     // match forward of creature
+                    character.CalculateAimPoint();
                     regularItem.transform.right = character.AimingAt; //character.transform.forward;
                     regularItem.Use();
                     Exit();
