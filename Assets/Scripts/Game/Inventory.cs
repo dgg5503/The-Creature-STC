@@ -637,6 +637,18 @@ public class Inventory : MonoBehaviour
             {
                 slot.GetComponent<Slot>().clearItemSlot();
             }
+            if (slot.name == "RightHand" && rightHand == false)
+            {
+                slot.GetComponent<Slot>().clearItemSlot();
+            }
+            if (slot.name == "LeftLeg" && leftLeg == false)
+            {
+                slot.GetComponent<Slot>().clearItemSlot();
+            }
+            if (slot.name == "RightLeg" && rightLeg == false)
+            {
+                slot.GetComponent<Slot>().clearItemSlot();
+            }
         }
     }
 
