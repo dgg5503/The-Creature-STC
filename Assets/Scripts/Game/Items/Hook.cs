@@ -21,6 +21,7 @@ public class Hook : MonoBehaviour {
     private Quaternion initialRotationForTheHook = new Quaternion(0,0,0,0);
     private GameObject grapplingHookHand;
     private GameObject grapper;
+    private GameObject grapperPoint;
 
     public bool Detach
     {
@@ -37,6 +38,7 @@ public class Hook : MonoBehaviour {
         creature = GameObject.FindGameObjectWithTag("Player");
         grapplingHookHand = GameObject.Find("grappling_hook_Right_Arm 1");
         grapper = GameObject.FindGameObjectWithTag("Grapper");
+        grapperPoint = GameObject.Find("GrapperPoint");
         gameObject.layer = 11;
     }
 	// Use this for initialization
@@ -49,7 +51,6 @@ public class Hook : MonoBehaviour {
         chain.enabled = false;
         Physics.IgnoreCollision(grapplingHookHand.GetComponent<Collider>(), grapper.GetComponent<Collider>());
         Physics.IgnoreCollision(creature.GetComponent<Collider>(), grapper.GetComponent<Collider>());
-        
 	} 
 	
 	// Update is called once per frame
@@ -91,11 +92,14 @@ public class Hook : MonoBehaviour {
                 if (tempEnemy != null && tempEnemy.gameObject.name == "GrapplingLocation")
                 {
                     creature.gameObject.transform.position = Vector3.MoveTowards(creature.gameObject.transform.position, temp.gameObject.transform.position, 7 * Time.deltaTime);
-                    var dist = Vector3.Distance(temp.gameObject.transform.position, this.gameObject.transform.root.position);
-                    if(dist == 0)
+                    var dist = Vector3.Distance(creature.gameObject.transform.position, temp.gameObject.transform.root.position);
+                    Debug.Log(dist);
+                    if(dist < 1.5f)
                     {
                         temp.gameObject.transform.DetachChildren();
                         temp.gameObject.transform.parent = this.transform;
+                        grapperPoint.transform.parent = temp.gameObject.transform;
+                        temp.gameObject.transform.position = Vector3.MoveTowards(temp.transform.position, initialPosition, 7 * Time.deltaTime);
                     }
                 }
                 else if (tempEnemy != null && tempEnemy.gameObject.name.Contains("Villager"))
