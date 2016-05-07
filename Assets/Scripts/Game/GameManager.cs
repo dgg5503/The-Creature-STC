@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour
 
         // http://answers.unity3d.com/questions/416919/making-raycast-ignore-multiple-layers.html
         // ignore layers 9 and 10 as they are not considered to be "ground"
-        GroundedLayerMask = ~((1 << 9) | (1 << 10) | (1 << 11));
+        GroundedLayerMask = ~((1 << 9) | (1 << 10) | (1 << 11) | (1 << 2));
         BodyPartLayerMask = ~((1 << 9) | (1 << 11));
         CharacterLayerMask = (1 << 10);
 

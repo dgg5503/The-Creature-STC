@@ -38,14 +38,14 @@ public class OpenDoor : MonoBehaviour {
                                
             }
         }
-        else if(colWith.name == "The_Creature" && creature.GetComponent<Character>().IsJointOccupied(4) == false && creature.GetComponent<Character>().IsJointOccupied(8) == false){
+        else if(colWith.name == "The_Creature" && (creature.GetComponent<Character>().IsJointOccupied(4) == false || creature.GetComponent<Character>().IsJointOccupied(8) == false)){
             showText = true;
         }
         
     }
 
     void Update () {
-        if (currentLift < 4.8f && pulled == true)
+        if (currentLift < 4.8f && pulled == true && creature.GetComponent<Character>().IsJointOccupied(4) && creature.GetComponent<Character>().IsJointOccupied(8))
         {
             currentLift += liftVal;
             exitDoor.transform.position += new Vector3(0.0f, liftVal, 0.0f);
@@ -59,5 +59,11 @@ public class OpenDoor : MonoBehaviour {
         {
             GameObject.Find("HelpText").GetComponent<Text>().text = "Not enough body parts";
         }
+
+        if(creature.GetComponent<Character>().IsJointOccupied(4) == false || creature.GetComponent<Character>().IsJointOccupied(8) == false)
+        {
+            GameObject.Find("Door").transform.position = new Vector3(5.40517f, 7.39753f, 0.44631f) ;
+        }
+
     }
 }
