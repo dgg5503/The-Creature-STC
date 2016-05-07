@@ -3,6 +3,11 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 public class YouDied : MonoBehaviour {
 
+    void Start()
+    {
+        this.gameObject.GetComponent<Canvas>().enabled = false;
+            }
+
     public void backToMainMenu() {
         SceneManager.LoadScene("UI Main Menu");
     }
