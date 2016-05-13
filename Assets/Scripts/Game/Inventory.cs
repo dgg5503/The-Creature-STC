@@ -86,12 +86,13 @@ public class Inventory : MonoBehaviour
                     {
                         DetachBodyParts(moveFromSlot.name);
                         toggleHealthBars();
+                        break;
                     }
 
                 }
                 if (moveFromSlot.name != "Head")
                 {
-                    moveFromSlot.clearItemSlot();
+                   moveFromSlot.clearItemSlot();
                 }
                 moveFromSlot = null;
                 moveToSlot = null;
