@@ -16,7 +16,7 @@ public abstract class Projectile : Weapon {
 
     // Base properties
     private float calculatedAngle;
-    private float minVelocity = 9f;
+    private float minVelocity = 3f;
     //private float impaleDistance = 0f;
     private float collidedMass;
     private float lerpTime = 1f;
@@ -105,9 +105,8 @@ public abstract class Projectile : Weapon {
                 }
                 else*/
                 //transform.parent.InverseTransformDirection(
-                if (transform.parent == null)
-                    return;
-                transform.localPosition += (transform.parent.InverseTransformDirection(transform.right) * currSpeed) * Time.fixedDeltaTime;
+                if (transform.parent != null)
+                    transform.localPosition += (transform.parent.InverseTransformDirection(transform.right) * currSpeed) * Time.fixedDeltaTime;
                 // go until embedded
                 if (currSpeed <= .05f)
                 {
