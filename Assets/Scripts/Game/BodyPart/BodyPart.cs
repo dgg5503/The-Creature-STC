@@ -15,7 +15,7 @@
 
 using UnityEngine;
 using System.Collections.Generic;
-using System.Collections;
+using System.Linq;
 using System;
 using UnityEngine.UI;
 
@@ -31,6 +31,10 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     // Delegates
     public delegate void BodyPartHitCallback(int health);
     public event BodyPartHitCallback bodyPartHitCallbacks;
+    public delegate void BodyPartDetachCallback(BodyPart detachedBodyPart);
+    public event BodyPartDetachCallback bodyPartDeatchCallback;
+    //public delegate void BodyPartAttachCallback(BodyPart attachedBodyPart);
+    //public event BodyPartAttachCallback bodyPartAttachCallback;
 
     // Physics components
     // hidding base memebers since these properties are depricated
@@ -54,6 +58,9 @@ public class BodyPart : Item, ISerializationCallbackReceiver
 
     [SerializeField]
     private bool isDetachable = true;
+
+    [SerializeField]
+    private bool isExtendable = true;
 
     [SerializeField]
     private bool isControlledByJoint;
@@ -131,6 +138,11 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     /// Get whether or not this body part is detachable.
     /// </summary>
     public bool IsDetachable { get { return isDetachable; } }
+
+    /// <summary>
+    /// Get whether or not this body part is allowed to have parts attached to it.
+    /// </summary>
+    public bool IsExtendable { get { return isExtendable; } }
 
 
     // Properties
@@ -272,7 +284,9 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     {
         
         // cant set this as parent
-        if (newParent == this || newParent == null)
+        if (newParent == this ||
+            newParent == null ||
+            !newParent.IsExtendable)
             return false;
 
         // set parent
@@ -303,6 +317,14 @@ public class BodyPart : Item, ISerializationCallbackReceiver
             Physics.IgnoreCollision(collider, transform.parent.GetComponent<Collider>());
 
         haloGlow(false);
+
+        /*
+        if (bodyPartAttachCallback != null)
+        {
+            Debug.Log("calling attach " + name);
+            bodyPartAttachCallback(this);
+        }
+        */
 
         return true;
     }
@@ -341,7 +363,8 @@ public class BodyPart : Item, ISerializationCallbackReceiver
             return false;
 
         // ensure expected parent exists
-        if (skeleton[bodyPartType].Parent.BodyPart == null)
+        if (skeleton[bodyPartType].Parent.BodyPart == null ||
+            !skeleton[bodyPartType].Parent.BodyPart.IsExtendable)
             return false;
 
         // set layer back
@@ -410,7 +433,7 @@ public class BodyPart : Item, ISerializationCallbackReceiver
 
         // Get all child body parts
         BodyPart[] childBodyParts = transform.GetComponentsInChildren<BodyPart>();
-
+        
         // set layer to 0
         gameObject.layer = 8;
 
@@ -431,6 +454,15 @@ public class BodyPart : Item, ISerializationCallbackReceiver
 
                 // set layer to 0
                 childBodyParts[i].gameObject.layer = 8;
+
+                // call callback
+                if (childBodyParts[i].bodyPartDeatchCallback != null)
+                {
+                    Debug.Log("calling " + childBodyParts[i].name);
+                    childBodyParts[i].bodyPartDeatchCallback(childBodyParts[i]);
+                    childBodyParts[i].bodyPartDeatchCallback = null;
+                    childBodyParts[i].bodyPartHitCallbacks = null;
+                }
             }
         }
 
@@ -465,22 +497,40 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     /// Gets the root body part attached to this body part.
     /// </summary>
     /// <returns>First body part to appear after traversing up.</returns>
-    public BodyPart GetRootBodyPart()
+    /*
+    public BodyPart GetRootBodyPart(int[] customJoints)
     {
-        return GetRootBodyPart(transform);
+        return GetRootBodyPart(transform, customJoints);
     }
 
-    private BodyPart GetRootBodyPart(Transform bodyPart)
+    private BodyPart GetRootBodyPart(Transform bodyPart, int[] customJoints)
     {
-        if (bodyPart.parent == null ||
+        BodyPart bodyPartObject = bodyPart.GetComponent<BodyPart>();
+        if (customJoints.Contains(bodyPartObject.BodyPartType) ||
+            bodyPart.parent == null || 
             bodyPart.parent.GetComponent<BodyPart>() == null)
-            return bodyPart.GetComponent<BodyPart>();
+            return bodyPartObject;
+
+        return GetRootBodyPart(bodyPart.parent, customJoints);
+    }
+    */
+    /*
+    private BodyPart GetRootBodyPart(Transform bodyPart, int[] customJoints)
+    {
+        // TODO: LEFT OFF HERE 5/9/16
+        BodyPart bodyPartObject = null;
+        if (bodyPart.parent == null ||
+            (bodyPartObject = bodyPart.parent.GetComponent<BodyPart>()) == null ||
+            customJoints.Contains(bodyPartObject.BodyPartType))
+            return bodyPartObject;
 
         // recurse
-        return GetRootBodyPart(bodyPart.parent);
-    }
+        return GetRootBodyPart(bodyPart.parent, customJoints);
+    }*/
 
     // --- EDITOR ONLY ---
+#if UNITY_EDITOR
+    [ExecuteInEditMode]
     public void OnBeforeSerialize()
     {
         _keys.Clear();
@@ -492,12 +542,15 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         }
     }
 
+    [ExecuteInEditMode]
     public void OnAfterDeserialize()
     {
+        //Debug.Log("CALLED");
         endPoints.Clear();
         for (int i = 0; i != Math.Min(_keys.Count, _values.Count); i++)
             endPoints.Add(_keys[i], _values[i]);
     }
+#endif
 
     //John's Halo effect
     /*public void haloEffect()

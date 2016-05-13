@@ -407,7 +407,7 @@ public abstract class Character : MonoBehaviour
         return true;
     }
 
-    public bool Attach(BodyPart bodyPartToAttach)
+    public virtual bool Attach(BodyPart bodyPartToAttach)
     {
         // make sure part isnt null, exists in joint dictionary and player isnt dead
         if (bodyPartToAttach == null ||
@@ -573,7 +573,7 @@ public abstract class Character : MonoBehaviour
     /// Recalculates the capsule colliders bounds.
     /// TODO: IGNORE HANDS
     /// </summary>
-    private void RecalculateCollisionBounds()
+    protected void RecalculateCollisionBounds()
     {
         // preserve rotation, rotate to 0 and then put back.
         //Quaternion currLocalRot = transform.localRotation;
@@ -658,7 +658,7 @@ public abstract class Character : MonoBehaviour
     /// <summary>
     /// Checks to see if the character is missing enough legs to crawl!
     /// </summary>
-    private void CrawlCheck()
+    protected void CrawlCheck()
     {
         // determine if player should crawl, check to see if 3 and 7 are on the player.
         if (joints[CreatureBodyBones.Left_Leg].BodyPart == null &&

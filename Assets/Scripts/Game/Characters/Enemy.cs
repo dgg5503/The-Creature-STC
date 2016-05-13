@@ -260,7 +260,7 @@ public class Enemy : Character {
 
             case EnemyState.Attack:
                 // stop moving for now
-                Debug.Log("going to attack");
+                //Debug.Log("going to attack");
                 navMeshAgent.Stop();
                 stateTimer = aimTime;
                 break;

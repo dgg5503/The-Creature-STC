@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using System;
 
 public enum ImpaleState
@@ -13,18 +13,14 @@ public enum ImpaleState
 /// Every projectile must have a collider.
 /// </summary>
 [RequireComponent(typeof(Collider))]
-
-/// <summary>
-/// Colliders require rigidbodies.
-/// </summary>
-[RequireComponent(typeof(Rigidbody))]
 public class ImpalePoint : MonoBehaviour {
 
     // Fields
-    private Collision finalCollision;
+    private new Collider collider;
+    private Queue<Collider> colliderQueue;
+    private Stack<Collider> colliderStack;
     private Transform parentModel;
     private Rigidbody parentRigidBody;
-    private new Rigidbody rigidbody;
     private Vector3 lastVelocity;
     //private Vector3 projection;
     private ImpaleState impaleState;
@@ -35,7 +31,7 @@ public class ImpalePoint : MonoBehaviour {
     private float currentLerpTime;
     private float currSpeed;
 
-    public delegate void Action(Collision collision);
+    public delegate void Action(Collider collider);
     public event Action OnImpale;
     public event Action AfterImpale;
 
@@ -47,7 +43,22 @@ public class ImpalePoint : MonoBehaviour {
     /// <summary>
     /// Get the last collision obtained from the impale point.
     /// </summary>
-    public Collision LastCollision { get { return finalCollision; } }
+    public Collider LastCollision
+    {
+        get
+        {
+            if (colliderQueue.Count == 0)
+                return null;
+            Debug.Log(colliderQueue.Peek().name);
+            return colliderQueue.Peek();
+            
+
+            /*
+            if (colliderStack.Count == 0)
+                return null;
+            return colliderStack.Peek();*/
+        }
+    }
 
     public ImpaleState ImpaleState { get { return impaleState; } }
 
@@ -60,13 +71,16 @@ public class ImpalePoint : MonoBehaviour {
     void Awake()
     {
         IsActive = true; // WAS TRUE!
-        rigidbody = GetComponent<Rigidbody>();
+        collider = GetComponent<Collider>();
 
-        // freeze constraints
-        rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+        // set trigger
+        collider.isTrigger = true;
+
+        // set kinematic
+        //rigidbody.isKinematic = true;
 
         // dont use gravity
-        rigidbody.useGravity = false;
+        //rigidbody.useGravity = false;
 
         // Error check to see if parent is null
         if ((parentModel = transform.parent) == null)
@@ -76,8 +90,12 @@ public class ImpalePoint : MonoBehaviour {
         if ((parentRigidBody = parentModel.GetComponent<Rigidbody>()) == null)
             Debug.LogError("ERROR: " + transform.parent.name + " doesnt have a rigidbody!");
 
+        // init collider stack
+        colliderStack = new Stack<Collider>();
+        colliderQueue = new Queue<Collider>();
+
         // ignore collision with parent
-        Physics.IgnoreCollision(GetComponent<Collider>(), parentModel.GetComponent<Collider>());
+        //Physics.IgnoreCollision(GetComponent<Collider>(), parentModel.GetComponent<Collider>());
 
         // Default to no impale state
         impaleState = ImpaleState.None;
@@ -139,7 +157,7 @@ public class ImpalePoint : MonoBehaviour {
 
                     // call after impale event
                     if (AfterImpale != null)
-                        AfterImpale(finalCollision);
+                        AfterImpale(LastCollision);
 
                     // set to embedded
                     //Debug.Log(transform.parent.name + " is impaled.");
@@ -154,6 +172,7 @@ public class ImpalePoint : MonoBehaviour {
 
     // after traveling for speicifed distance from contact point
     // stop
+    /*
     void OnCollisionEnter(Collision collision)
     {
         
@@ -207,49 +226,123 @@ public class ImpalePoint : MonoBehaviour {
             if (OnImpale != null)
                 OnImpale(finalCollision);
         }
+    }*/
+
+    void OnTriggerEnter(Collider collider)
+    {
+        Debug.Log("CALLED");
+        if (IsActive ||
+            ImpaleState == ImpaleState.Impaling)
+        {
+            // TO-DO: slow speed? dont let it attach!!
+            // if velocity is negative direction of forward, return
+            // if speed is too little to impale, return.
+            //if (Vector3.Dot(projection, parentModel.right) < 0 ||
+            //    (projection = Vector3.Project(parentRigidBody.velocity, parentModel.TransformDirection(parentModel.right))).sqrMagnitude < 10)
+
+            if (Vector3.Dot(lastVelocity, parentModel.right) < minVelocity)
+            {
+                return;
+            }
+            /*
+            Collider[] parentColliders = parentModel.GetComponents<Collider>();
+            if (finalCollision != null)
+            {
+                Collider[] finalColliders = finalCollision.GetComponents<Collider>();
+                for (int i = 0; i < parentColliders.Length; i++)
+                    if (!parentColliders[i].isTrigger)
+                        for(int z = 0; z < finalColliders.Length; z++)
+                            Physics.IgnoreCollision(finalColliders[i], parentColliders[i], false);
+            }
+            */
+            // ignore collision w/ collided
+            //Physics.IgnoreCollision(collider, GetComponent<Collider>());
+            Collider[] parentColliders = parentModel.GetComponents<Collider>();
+            for (int i = 0; i < parentColliders.Length; i++)
+                if (!parentColliders[i].isTrigger)
+                {
+                    //colliderStack.Push(collider);
+                    colliderQueue.Enqueue(collider);
+                    Physics.IgnoreCollision(collider, parentColliders[i]);
+                }
+
+            // set parent   
+            parentModel.parent = collider.transform;
+
+            // stop checking for OnCollisionEnter
+            IsActive = false;
+            //Debug.Log(transform.parent.name + " is active: " + IsActive);
+            // go kinematic and stop detecting collision
+            //rigidbody.isKinematic = true;
+            parentRigidBody.isKinematic = true;
+            //rigidbody.detectCollisions = false;
+            //parentRigidBody.detectCollisions = false;
+
+            // set impale state to currently impaling
+            impaleState = ImpaleState.Impaling;
+
+            // set final collision
+            //finalCollision = collider;
+
+            // see if collided object has a rigibody attachement.
+            Rigidbody collidedRigidbody;
+            if ((collidedRigidbody = LastCollision.GetComponent<Rigidbody>()) != null)
+                collidedMass = collidedRigidbody.mass;
+            else
+                collidedMass = 50f;
+
+            // call on impale event
+            if (OnImpale != null)
+                OnImpale(LastCollision);
+        }
     }
 
     // reset and set active.
     public void Reset()
     {
-        if (impaleState != ImpaleState.Impaling)
-        {
+        //if (impaleState != ImpaleState.Impaling)
+        //{
             // reset state info
             IsActive = true;
             impaleState = ImpaleState.None;
-            rigidbody.isKinematic = true;
             parentRigidBody.isKinematic = true;
             currentLerpTime = 0;
-
+            
             // set last velocity back
             lastVelocity = parentModel.right * currSpeed;
             parentRigidBody.velocity = lastVelocity;
             currSpeed = 0;
-        }
+        //}
     }
 
     public void SetActive()
     {
-        if (impaleState != ImpaleState.Impaling)
-        {
+        //if (impaleState != ImpaleState.Impaling)
+        //{
             //Debug.Log("SetActive called on " + transform.parent.name);
 
             // if collision info is stored, detection collision again with that object
-            if (finalCollision != null)
+            if (LastCollision != null)
             {
-                Physics.IgnoreCollision(finalCollision.collider, GetComponent<Collider>(), false);
-                Physics.IgnoreCollision(finalCollision.collider, parentModel.GetComponent<Collider>(), false);
+                //Physics.IgnoreCollision(finalCollision.collider, GetComponent<Collider>(), false);
+                Collider[] parentColliders = parentModel.GetComponents<Collider>();
+                while (colliderQueue.Count != 0)
+                {
+                    Collider currCollider = colliderQueue.Dequeue();
+                    for (int i = 0; i < parentColliders.Length; i++)
+                        if (!parentColliders[i].isTrigger)
+                            Physics.IgnoreCollision(currCollider, parentColliders[i], false);
+                }
             }
 
             // set final collision null
-            finalCollision = null;
+            //finalCollision = null;
 
             // unparent
             parentModel.parent = null;
 
             // enable physics
-            rigidbody.isKinematic = false;
             parentRigidBody.isKinematic = false;
-        }
+        //}
     }
 }

@@ -17,9 +17,10 @@ public class Grap : MonoBehaviour {
 
     void OnCollisionEnter(Collision col)
     {
-        //Debug.Log(col.collider.name);
+        //
         if (col.gameObject.name.Contains("Villager") && hookScript.Shoot == true)
         {
+            Debug.Log(col.collider.name);
             col.gameObject.transform.parent = this.transform;
             ColliderObject = col.gameObject;
             if (ColliderObject.GetComponent<Enemy>())
@@ -29,7 +30,7 @@ public class Grap : MonoBehaviour {
         }
         else if (col.gameObject.name == "GrapplingLocation")
         {
-
+            Debug.Log(col.collider.name);
             this.transform.parent = col.gameObject.transform.parent;
             ColliderObject = col.gameObject;
         }

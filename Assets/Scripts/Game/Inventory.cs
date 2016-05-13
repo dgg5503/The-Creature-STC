@@ -606,7 +606,7 @@ public class Inventory : MonoBehaviour
             }
         }
 
-        Debug.Log("Converted Value Should be here: " + convertedValue);
+        //Debug.Log("Converted Value Should be here: " + convertedValue);
         return convertedValue;
     }
 

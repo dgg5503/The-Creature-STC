@@ -10,7 +10,7 @@ public class Spear : Weapon {
     // Fields
     [SerializeField]
     private ImpalePoint impalePoint = null;
-    private List<GameObject> currColls;
+    //private List<Collider> currColls;
     private CapsuleCollider passThroughTrigger;
     private CapsuleCollider capsuleCollider;
 
@@ -54,21 +54,21 @@ public class Spear : Weapon {
         impalePoint.OnImpale += ImpalePoint_OnImpale;
         impalePoint.AfterImpale += ImpalePoint_AfterImpale;
         
-        currColls = new List<GameObject>();
+        //currColls = new List<Collider>();
     }
 
-    private void ImpalePoint_OnImpale(Collision expectedObject)
+    private void ImpalePoint_OnImpale(Collider expectedObject)
     {
         // enable pass through trigger check
         passThroughTrigger.enabled = true;
 
         // add the last collision to current collisions
-        currColls.Clear();
-        currColls.Add(expectedObject.gameObject);
+        //currColls.Clear();
+        //currColls.Add(expectedObject);
 
         // make sure what we hit was an ATTACHED body part.
         BodyPart collidedBodyPart;
-        if ((collidedBodyPart = expectedObject.collider.GetComponent<BodyPart>()) != null &&
+        if ((collidedBodyPart = expectedObject.GetComponent<BodyPart>()) != null &&
             collidedBodyPart.Joint != null)
         {
             // remove health based on damage
@@ -76,7 +76,7 @@ public class Spear : Weapon {
         }
     }
 
-    private void ImpalePoint_AfterImpale(Collision expectedObject)
+    private void ImpalePoint_AfterImpale(Collider expectedObject)
     {
         // disable pass through collision check.
         passThroughTrigger.enabled = false;
@@ -114,28 +114,48 @@ public class Spear : Weapon {
     {
         // check to see if the impale point original target
         // is no longer currently colliding
+        /*
         if (impalePoint.LastCollision != null &&
-            !currColls.Contains(impalePoint.LastCollision.gameObject))
+            !currColls.Contains(impalePoint.LastCollision))
         {
+            Debug.Log("going out of " + impalePoint.LastCollision.name);
             // if no longer colliding, disable trigger and reset!
             impalePoint.Reset();
             impalePoint.SetActive();
             passThroughTrigger.enabled = false;
             currColls.Clear();
-        }
+        }*/
     }
 
+    /*
     public void OnTriggerEnter(Collider collider)
     {
-        if(collider.gameObject.GetComponent<ImpalePoint>() == null &&
-            !currColls.Contains(collider.gameObject))
-            currColls.Add(collider.gameObject);
+
+        if (!currColls.Contains(collider))
+        {
+            Debug.Log("Entered " + collider.name);
+            currColls.Add(collider);
+            if (collider.GetComponent<Renderer>() != null)
+                collider.GetComponent<Renderer>().material.SetColor("_Color", Color.black);
+        }
+        
+        
     }
+    */
 
     public void OnTriggerExit(Collider collider)
     {
-        if (currColls.Contains(collider.gameObject))
-            currColls.Remove(collider.gameObject);
+        /*
+        if (currColls.Contains(collider))
+        {
+            Debug.Log("Exited " + collider.name);
+            currColls.Remove(collider);
+            if (collider.GetComponent<Renderer>() != null)
+                collider.GetComponent<Renderer>().material.SetColor("_Color", Color.blue);
+        }
+        */
+        Debug.Log("exited " + collider.name);
+        
     }
 
     protected override bool MountCheck()

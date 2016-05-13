@@ -32,6 +32,7 @@ public class Player : Character
 
     // Camera casts
     private Ray mouseToCamRay;
+    private int[] emptyJoints;
 
     // TMP INVENTORY
     private GameObject characterInventory;
@@ -78,14 +79,43 @@ public class Player : Character
         GameManager.InputManager.BindKey(ToggleInventory, KeyCode.I);
 
 
-        //Debug.Log("made " + name);
         root.bodyPartHitCallbacks += Root_bodyPartHitCallbacks;
         joints[CreatureBodyBones.Head].BodyPart.bodyPartHitCallbacks += Root_bodyPartHitCallbacks;
         foreach (KeyValuePair<int, CustomJoint> kvp in joints)
-            if (kvp.Value.BodyPart != null)
+            if (kvp.Value.BodyPart != null &&
+                kvp.Value.BodyPart.IsDetachable)
+            {
                 kvp.Value.BodyPart.bodyPartHitCallbacks += CheatWayBodyPart;
+                //kvp.Value.BodyPart.bodyPartAttachCallback += BodyPart_bodyPartAttachCallback;
+                kvp.Value.BodyPart.bodyPartDeatchCallback += BodyPart_bodyPartDeatchCallback;
+            }
 
-        ItemUseOffset = new Vector3(0, -.2f, 0);
+        //ItemUseOffset = new Vector3(0, -.2f, 0);
+    }
+
+    private void BodyPart_bodyPartDeatchCallback(BodyPart detachedBodyPart)
+    {
+        //charInventory.toggleBodyPartsIcons(); // <--- cant call this, null ref in inventory
+        CheatWay();
+        CrawlCheck();
+        DeathTest();
+        RecalculateCollisionBounds();
+    }
+
+    /*
+    private void BodyPart_bodyPartAttachCallback(BodyPart attachedBodyPart)
+    {
+        charInventory.toggleBodyPartsIcons();
+        CheatWay();
+        DeathTest();
+    }
+    */
+
+    private void CheatWayBodyPart(int health)
+    {
+        charInventory.toggleBodyPartsIcons();
+        CheatWay();
+        DeathTest();
     }
 
     private void Root_bodyPartHitCallbacks(int health)
@@ -97,12 +127,6 @@ public class Player : Character
                 kvp.Value.BodyPart.Health -= 5;
     }
 
-    private void CheatWayBodyPart(int health)
-    {
-        charInventory.toggleBodyPartsIcons();
-        CheatWay();
-        DeathTest();
-    }
 
     private void DeathTest()
     {
@@ -164,8 +188,9 @@ public class Player : Character
                 {
                     if (hit.transform.gameObject.GetComponent<BodyPart>())
                     {
-                        //BodyPart bodyPart = (hit.transform.gameObject.GetComponent<BodyPart>()).GetRootBodyPart();
-                        BodyPart bodyPart = hit.transform.gameObject.GetComponent<BodyPart>();
+                        //emptyJoints = joints.Where(x => (x.Value.BodyPart == null)).Select(x => x.Key).ToArray();
+                        BodyPart bodyPart = (hit.transform.gameObject.GetComponent<BodyPart>());
+                        //BodyPart bodyPart = hit.transform.gameObject.GetComponent<BodyPart>();
                         // make sure we're at parent
                         path = "Prefabs/BodyParts/";
                         if (joints[bodyPart.BodyPartType].BodyPart != null)
@@ -174,7 +199,11 @@ public class Player : Character
                         if (bodyPart.IsControlledByJoint == false)
                             Detach(bodyPart.BodyPartType);
 
-                        if (attachSuccess = Attach(bodyPart))
+                        //Debug.Log("Trying: " + bodyPart.name);
+                        while (!(attachSuccess = Attach(bodyPart)) && bodyPart.transform.parent != null)
+                            bodyPart = bodyPart.transform.parent.GetComponent<BodyPart>();
+
+                        if (attachSuccess)
                         {
                             charInventory.toggleBodyPartsIcons();
                             charInventory.reduceHealthImproved(bodyPart.BodyPartType, bodyPart.Health);
@@ -210,6 +239,7 @@ public class Player : Character
                         if (hit.transform.gameObject.GetComponent<RegularItem>().CurrentMountPoint == null)
                         {
                             GameObject itemToAdd = Resources.Load(path + newItemName) as GameObject;
+                            // NULL REF HERE
                             Item itemToAddNew = itemToAdd.GetComponent<Item>() as Item;
                             charInventory.AddItem(itemToAddNew);
                         }
@@ -229,6 +259,16 @@ public class Player : Character
         base.Update();
     }
 
+    public override bool Attach(BodyPart bodyPartToAttach)
+    {
+        if (base.Attach(bodyPartToAttach))
+        {
+            bodyPartToAttach.bodyPartDeatchCallback += BodyPart_bodyPartDeatchCallback;
+            return true;
+        }
+        return false;
+    }
+
     public void OnTriggerEnter(Collider collider)
     {
         if (collider.tag == "Kill" &&
@@ -238,6 +278,12 @@ public class Player : Character
 
     public override void CalculateAimPoint()
     {
+        RaycastHit hitInfo;
+        Physics.Raycast(mouseToCamRay, out hitInfo);
+        AimingAt = hitInfo.point - transform.position;
+        //Debug.DrawLine(transform.position, hitInfo.point, Color.black);
+        //Debug.Break();
+        /*
         aimPlane.SetNormalAndPosition(aimPlane.normal, transform.position);
 
         // get plane cast
@@ -254,7 +300,7 @@ public class Player : Character
             //Debug.DrawLine(transform.position, AimingAt);
 
             //transform.forward = AimingAt.normalized;
-        }
+        }*/
     }
 
     /// <summary>
