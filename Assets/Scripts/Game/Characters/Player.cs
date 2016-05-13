@@ -27,6 +27,7 @@ public class Player : Character
     private float pickupDistance = 4f;
 
     // Aiming from plane
+    private RaycastHit aimHit;
     private Plane aimPlane;
     private float rayDistance;
 
@@ -95,10 +96,11 @@ public class Player : Character
 
     private void BodyPart_bodyPartDeatchCallback(BodyPart detachedBodyPart)
     {
-        //charInventory.toggleBodyPartsIcons(); // <--- cant call this, null ref in inventory
+        charInventory.toggleBodyPartsIcons(); // <--- cant call this, null ref in inventory
+        charInventory.toggleHealthBars();
         CheatWay();
         CrawlCheck();
-        DeathTest();
+        //DeathTest();
         RecalculateCollisionBounds();
     }
 
@@ -278,9 +280,15 @@ public class Player : Character
 
     public override void CalculateAimPoint()
     {
-        RaycastHit hitInfo;
-        Physics.Raycast(mouseToCamRay, out hitInfo);
-        AimingAt = hitInfo.point - transform.position;
+
+        if (Physics.Raycast(mouseToCamRay, out aimHit))
+        {
+            //Debug.Log(aimHit.transform.position);
+            AimingAt = (aimHit.point - transform.position);
+             
+            AimingAt.Normalize();
+            transform.forward = Vector3.MoveTowards(transform.forward, new Vector3(AimingAt.x, 0, AimingAt.z), Time.deltaTime * 20);
+        }
         //Debug.DrawLine(transform.position, hitInfo.point, Color.black);
         //Debug.Break();
         /*
@@ -313,49 +321,10 @@ public class Player : Character
         cameraForward = playerCamera.transform.forward;
         cameraRight = playerCamera.transform.right;
 
-        #region movement
-        /*
-        // get direction relative to camera
-        if (Input.GetKey(KeyCode.W))
-        {
-            //acceleration += cameraForward * -1;
-
-            acceleration.x += cameraForward.x;
-            acceleration.z += cameraForward.z;
-        }
-        
-
-        if (Input.GetKey(KeyCode.A))
-        {
-            //acceleration += cameraRight * -1;
-
-            acceleration.x += cameraRight.x * -1;
-            acceleration.z += cameraRight.z * -1;
-        }
-
-        if (Input.GetKey(KeyCode.S))
-        {
-            //acceleration += cameraForward * -1;
-
-            acceleration.x += cameraForward.x * -1;
-            acceleration.z += cameraForward.z * -1;
-        }
-
-        if (Input.GetKey(KeyCode.D))
-        {
-            //acceleration += cameraRight;
-
-            acceleration.x += cameraRight.x;
-            acceleration.z += cameraRight.z;
-
-        }
-        */
         // apply accel scalar AFTER getting direction
         // this is so we dont add two times the accel scalar 
         // when holding down two direction at the same time.
         acceleration *= accelerationScalar;
-        
-        #endregion
     }
 
     private void CheatWay()
@@ -397,13 +366,15 @@ public class Player : Character
 
     private void UseItemLeft(KeyState keyState)
     {
-        //SetAimPoint();
+        CalculateAimPoint();
+        Debug.DrawLine(transform.position, aimHit.point, Color.black);
         UseItem(CreatureBodyBones.Left_Arm_Part_2, keyState);
     }
 
     private void UseItemRight(KeyState keyState)
     {
-        //SetAimPoint();
+        CalculateAimPoint();
+        Debug.DrawLine(transform.position, aimHit.point, Color.black);
         UseItem(CreatureBodyBones.Right_Arm_Part_2, keyState);
     }
 
