@@ -54,7 +54,7 @@ public class playerInventory : Inventory {
 
                 }
 
-                moveFromSlot.clearItemSlot();
+                //moveFromSlot.clearItemSlot();
                 moveFromSlot = null;
                 moveToSlot = null;
                 emptySlot++;

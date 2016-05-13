@@ -96,7 +96,7 @@ public class Player : Character
 
     private void BodyPart_bodyPartDeatchCallback(BodyPart detachedBodyPart)
     {
-        charInventory.toggleBodyPartsIcons(); // <--- cant call this, null ref in inventory
+        //charInventory.toggleBodyPartsIcons(); // <--- cant call this, null ref in inventory
         charInventory.toggleHealthBars();
         CheatWay();
         CrawlCheck();
