@@ -176,7 +176,7 @@ public abstract class Projectile : Weapon {
                 */
 
                 // set parent   
-                Debug.Log("IN: " + collider.name);
+                //Debug.Log("IN: " + collider.name);
                 transform.parent = collider.transform;
 
                 // stop checking for OnCollisionEnter
@@ -221,7 +221,7 @@ public abstract class Projectile : Weapon {
         if (colliderMap.Count == 0 &&
             ImpaleState == ImpaleState.Impaling)
         {
-            Debug.Log("RESET");
+            //Debug.Log("RESET");
             Reset();
             SetActive();
         }
