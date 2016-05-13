@@ -98,7 +98,7 @@ public class Player : Character
         //charInventory.toggleBodyPartsIcons(); // <--- cant call this, null ref in inventory
         CheatWay();
         CrawlCheck();
-        DeathTest();
+        //DeathTest();
         RecalculateCollisionBounds();
     }
 
