@@ -114,21 +114,14 @@ public class Enemy : Character {
             case EnemyState.Idle:
                 // update internal timer, dont move for a little while
                 stateTimer -= Time.deltaTime;
-
-                //Debug.Log(targetedCharacter);
+                
+                //animator.Play("idle");
+                if (stateTimer <= 0)
+                    ChangeStateTo(EnemyState.Wonder);
 
                 // scan for the enemy
                 if (targetedCharacter == null)
                     ScanForPlayer();
-                else
-                {
-                    ChangeStateTo(EnemyState.Equipping);
-                    break;
-                }
-
-                //animator.Play("idle");
-                if (stateTimer <= 0)
-                    ChangeStateTo(EnemyState.Wonder);
                 break;
 
             case EnemyState.Wonder:
@@ -163,12 +156,11 @@ public class Enemy : Character {
                     targetedCharacter = null;
                     break;    
                 }
-                //Debug.Log("ATTACKING");
 
                 stateTimer -= Time.deltaTime;
 
                 // draw line
-                //Debug.DrawLine(headPoint.position, targetedCharacter.transform.position, Color.red);
+                Debug.DrawLine(headPoint.position, targetedCharacter.transform.position, Color.red);
 
                 // look at target and use item.
                 Vector3 targetVector = targetedCharacter.transform.position - headPoint.transform.position;
@@ -185,13 +177,12 @@ public class Enemy : Character {
                 else
                 {
                     // calculate angle from forward up or down for target
+                    
                     UseItem(CreatureBodyBones.Right_Arm_Part_2, KeyState.KEY_DOWN);
                 }
                 break;
 
             case EnemyState.Equipping:
-
-
                 if (Vector3.Distance(transform.position, targetedCharacter.transform.position) > maxDistance)
                 {
                     ChangeStateTo(EnemyState.Wonder);
@@ -203,8 +194,8 @@ public class Enemy : Character {
                 stateTimer -= Time.deltaTime;
                 if (stateTimer <= 0)
                 {
-                    EquipItem();
                     ChangeStateTo(EnemyState.Attack);
+                    EquipItem();
                 }
                 break;
 
@@ -239,7 +230,7 @@ public class Enemy : Character {
         // if already set, just return
         if (state == enemyState)
             return;
-        Debug.Log("GOING TO " + state);
+
         // set state
         enemyState = state;
         
@@ -249,7 +240,6 @@ public class Enemy : Character {
             case EnemyState.Idle:
                 // set state timer to idle time random
                 stateTimer = Random.Range(minIdleTime, maxIdleTime);
-                
                 //animator.speed = 1;
                 //animator.Play("idle");
                 //Debug.Log("IDLE!!");
@@ -288,9 +278,7 @@ public class Enemy : Character {
                 break;
 
             case EnemyState.Grappled:
-                UseItem(CreatureBodyBones.Right_Arm_Part_2, KeyState.KEY_UP);
                 stateTimer = 0;
-                //targetedCharacter = null;
                 navMeshAgent.Stop();
                 break;
 
@@ -307,8 +295,7 @@ public class Enemy : Character {
     private void EquipItem()
     {
         RegularItem tmpItem = (Instantiate(GameManager.PrefabDictionary["spear"]) as GameObject).GetComponent<RegularItem>();
-        if (!MountItem(tmpItem, CreatureBodyBones.Right_Arm_Part_2))
-            DestroyImmediate(tmpItem.gameObject);
+        MountItem(tmpItem, CreatureBodyBones.Right_Arm_Part_2);
     }
 
     private void ScanForPlayer()
@@ -358,17 +345,7 @@ public class Enemy : Character {
         // if no weapon, get one.
         EquipItem();
 
-        Debug.Log("RESPONSE");
-
-        // if already equipped, move to attack
-        if (joints[CreatureBodyBones.Right_Arm_Part_2].BodyPart.MountPoint.MountedItem != null)
-        {
-            ChangeStateTo(EnemyState.Attack);
-        }
-        else
-        {
-            ChangeStateTo(EnemyState.Equipping);
-        }
+        ChangeStateTo(EnemyState.Attack);
         // set state based on current stats
         // have a weapon? try to attack
         // if hasWeapon
@@ -411,14 +388,9 @@ public class Enemy : Character {
     public void IsHitWithGrapple(bool status)
     {
         if (status)
-        {
             ChangeStateTo(EnemyState.Grappled);
-
-        }
         else
-        {
             ChangeStateTo(EnemyState.Idle);
-        }
     }
 
     protected override void ProcessMovement()
