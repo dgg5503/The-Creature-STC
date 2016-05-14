@@ -39,6 +39,7 @@ public class Slot : MonoBehaviour
             numberOfItems.text = items.Count.ToString();
         }
 
+        Debug.Log("AddItem from the Slot Class " + item.itemIcon.name);
         SwapIcon(item.itemIcon);
     }
 

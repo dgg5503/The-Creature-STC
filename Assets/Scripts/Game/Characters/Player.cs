@@ -254,8 +254,10 @@ public class Player : Character
                         {
                             GameObject itemToAdd = Resources.Load(path + hit.transform.gameObject.name) as GameObject;
                             Item itemToAddNew = itemToAdd.GetComponent<Item>() as Item;
+                            Debug.Log("Item to add from the Player Class:" + itemToAddNew);
                             charInventory.AddItem(itemToAddNew);
                             charInventory.toggleBodyPartsIcons();
+                           // CheatWay();
                         }
                     }
                 }

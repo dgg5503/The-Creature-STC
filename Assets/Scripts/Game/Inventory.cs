@@ -243,6 +243,7 @@ public class Inventory : MonoBehaviour
         }
         else if (item.GetComponent<BodyPart>())
         {
+            Debug.Log("AddItem From the inventory Class:" + item.name);
             findEmptyAndAdd(item);
             return true;
         }
