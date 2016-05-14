@@ -136,7 +136,7 @@ public class Hook : MonoBehaviour {
 	}
 
 
-    public void DetachChain()
+    private void DetachChain()
     {
         GameObject grapple = GameObject.FindGameObjectWithTag("Grapper");
         grapple.transform.parent = this.transform;

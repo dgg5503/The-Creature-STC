@@ -70,30 +70,32 @@ public class Inventory : MonoBehaviour
         {
             if (moveFromSlot != null)
             {
+                Debug.Log("update: " + moveFromSlot.Items.Count);
                 foreach (Item item in moveFromSlot.Items)
                 {
+
                     if (item.GetComponent<RegularItem>())
                     {
                         Vector3 position = new Vector3(1, 0, 1);
                         string pathToTheFile = "Prefabs/Items/" + item.name;
                         GameObject test = Resources.Load(pathToTheFile) as GameObject;
-                       GameObject itemToInstantiate =  (GameObject)GameObject.Instantiate(test, playerPosition.transform.position - position, Quaternion.identity);
-                       itemToInstantiate.name = item.name;
-       
-                       playerRef.MountItem(itemToInstantiate.GetComponent<RegularItem>());
+                        GameObject itemToInstantiate = (GameObject)GameObject.Instantiate(test, playerPosition.transform.position - position, Quaternion.identity);
+                        itemToInstantiate.name = item.name;
+
+                        playerRef.MountItem(itemToInstantiate.GetComponent<RegularItem>());
                     }
                     else
                     {
                         DetachBodyParts(moveFromSlot.name);
                         toggleHealthBars();
-                        break;
                     }
 
                 }
                 if (moveFromSlot.name != "Head")
                 {
-                   moveFromSlot.clearItemSlot();
+                    moveFromSlot.clearItemSlot();
                 }
+                
                 moveFromSlot = null;
                 moveToSlot = null;
                 emptySlot++;
@@ -628,10 +630,11 @@ public class Inventory : MonoBehaviour
 
     public void toggleBodyPartsIcons() { 
         // Have to call Slotname .clearItemSlot
-        bool leftHand = (playerRef.IsJointOccupied(1) || playerRef.IsJointOccupied(2)) ? true : false;
-        bool rightHand= (playerRef.IsJointOccupied(5) || playerRef.IsJointOccupied(6)) ? true : false;
-        bool leftLeg = (playerRef.IsJointOccupied(3) || playerRef.IsJointOccupied(4)) ? true : false;
-        bool rightLeg = (playerRef.IsJointOccupied(7) || playerRef.IsJointOccupied(8)) ? true : false;
+        bool leftHand = (playerRef.IsJointOccupied(CreatureBodyBones.Left_Arm)) ? true : false;
+        bool rightHand= (playerRef.IsJointOccupied(CreatureBodyBones.Right_Arm)) ? true : false;
+        bool leftLeg = (playerRef.IsJointOccupied(CreatureBodyBones.Left_Leg)) ? true : false;
+        bool rightLeg = (playerRef.IsJointOccupied(CreatureBodyBones.Right_Leg)) ? true : false;
+        //Debug.Log("toggle: " + moveFromSlot.Items.Count);
         foreach (GameObject slot in allSlots)
         {
             if (slot.name == "LeftHand" && leftHand == false)

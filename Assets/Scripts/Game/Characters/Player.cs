@@ -44,6 +44,7 @@ public class Player : Character
     private BodyPart testingBodyPart;
     private string newItemName = "";
     private Canvas deathMenuScreen;
+
     //TEst
     // private Canvas getCanvas;
     //  private Camera passCamera;
@@ -95,16 +96,12 @@ public class Player : Character
 
     private void BodyPart_bodyPartDeatchCallback(BodyPart detachedBodyPart)
     {
-        
+        //charInventory.toggleBodyPartsIcons(); // <--- cant call this, null ref in inventory
         charInventory.toggleHealthBars();
         CheatWay();
         CrawlCheck();
         //DeathTest();
         RecalculateCollisionBounds();
-
-        Debug.Log("DEATACH STUFF HERE");
-        charInventory.toggleBodyPartsIcons(); // <--- cant call this, null ref in inventory
-
     }
 
     /*
@@ -118,7 +115,7 @@ public class Player : Character
 
     private void CheatWayBodyPart(int health)
     {
-      //  charInventory.toggleBodyPartsIcons();
+        charInventory.toggleBodyPartsIcons();
         CheatWay();
         DeathTest();
     }
@@ -179,8 +176,8 @@ public class Player : Character
             CheatWay();
             cheatIWay++;
         }
+        
 
-        //charInventory.toggleBodyPartsIcons();
         RaycastHit hit;
         mouseToCamRay = playerCamera.ScreenPointToRay(Input.mousePosition);
         
@@ -210,6 +207,7 @@ public class Player : Character
 
                         if (attachSuccess)
                         {
+                            charInventory.toggleBodyPartsIcons();
                             charInventory.reduceHealthImproved(bodyPart.BodyPartType, bodyPart.Health);
                             charInventory.toggleHealthBars();
                         }
@@ -255,7 +253,6 @@ public class Player : Character
                             GameObject itemToAdd = Resources.Load(path + hit.transform.gameObject.name) as GameObject;
                             Item itemToAddNew = itemToAdd.GetComponent<Item>() as Item;
                             charInventory.AddItem(itemToAddNew);
-                            charInventory.toggleBodyPartsIcons();
                         }
                     }
                 }
@@ -336,7 +333,6 @@ public class Player : Character
         {
             charInventory.AddItem(this.BodyParts[i]);
         }
-    //    charInventory.toggleBodyPartsIcons();
      //   displayCharacterInventory = !displayCharacterInventory;
       //  Debug.Log("Status of the inventory: " + displayCharacterInventory);
       //  characterInventory.SetActive(displayCharacterInventory);

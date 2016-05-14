@@ -529,7 +529,6 @@ public class BodyPart : Item, ISerializationCallbackReceiver
     }*/
 
     // --- EDITOR ONLY ---
-#if UNITY_EDITOR
     [ExecuteInEditMode]
     public void OnBeforeSerialize()
     {
@@ -550,7 +549,6 @@ public class BodyPart : Item, ISerializationCallbackReceiver
         for (int i = 0; i != Math.Min(_keys.Count, _values.Count); i++)
             endPoints.Add(_keys[i], _values[i]);
     }
-#endif
 
     //John's Halo effect
     /*public void haloEffect()
