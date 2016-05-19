@@ -26,6 +26,16 @@ public class Inventory : MonoBehaviour
 
     // Use this for initialization
     public List<GameObject> AllSlots { get { return allSlots; } }
+    public int EmptySlot
+    {
+        get { return emptySlot; }
+        set
+        {
+            Debug.Log("Slots left:  " + emptySlot);
+            emptySlot = value;
+        }
+    }
+
 
     protected virtual void Awake()
     {
@@ -50,14 +60,18 @@ public class Inventory : MonoBehaviour
 
     void Start()
     {
-       
-        foreach (Transform child in transform)
+        if (transform.name == "CharacterInventory")
         {
-            GameObject slot = child.gameObject;
-            allSlots.Add(slot);
+            foreach (Transform child in transform)
+            {
+                GameObject slot = child.gameObject;
+                allSlots.Add(slot);
+            }
+
+            emptySlot = allSlots.Count;
+            Debug.Log("Amount of empty slots are:" + emptySlot);
         }
-        
-        emptySlot = allSlots.Count;
+
         playerPosition = GameObject.FindGameObjectWithTag("Player");
         //headHealthBar.SetActive(true);
         //headHealthBar.SetActive(false);
@@ -70,10 +84,8 @@ public class Inventory : MonoBehaviour
         {
             if (moveFromSlot != null)
             {
-                Debug.Log("update: " + moveFromSlot.Items.Count);
                 foreach (Item item in moveFromSlot.Items)
                 {
-
                     if (item.GetComponent<RegularItem>())
                     {
                         Vector3 position = new Vector3(1, 0, 1);
@@ -88,6 +100,7 @@ public class Inventory : MonoBehaviour
                     {
                         DetachBodyParts(moveFromSlot.name);
                         toggleHealthBars();
+                        break;
                     }
 
                 }
@@ -95,10 +108,10 @@ public class Inventory : MonoBehaviour
                 {
                     moveFromSlot.clearItemSlot();
                 }
-                
                 moveFromSlot = null;
                 moveToSlot = null;
                 emptySlot++;
+                //  Debug.Log("Empty Slots are: " + emptySlot);
             }
         }
     }
@@ -669,7 +682,7 @@ public class Inventory : MonoBehaviour
                 }
             }
         }
-        return numberOfEmptySlots-1;
+        return numberOfEmptySlots;
     }
 
     //Helper

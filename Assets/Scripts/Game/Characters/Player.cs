@@ -96,12 +96,13 @@ public class Player : Character
 
     private void BodyPart_bodyPartDeatchCallback(BodyPart detachedBodyPart)
     {
-        //charInventory.toggleBodyPartsIcons(); // <--- cant call this, null ref in inventory
         charInventory.toggleHealthBars();
         CheatWay();
         CrawlCheck();
-        //DeathTest();
+        // DeathTest();
         RecalculateCollisionBounds();
+        charInventory.toggleBodyPartsIcons(); // <--- cant call this, null ref in inventory
+        charInventory.EmptySlot++;
     }
 
     /*
@@ -218,6 +219,7 @@ public class Player : Character
                         path = "Prefabs/Items/";
                         if (charInventory.getNumberOfEmptyRegularItemSlots() >= 0)
                         {
+                            Debug.Log("Number of empty Regular ItemSlots: " + charInventory.getNumberOfEmptyRegularItemSlots());
                             if (hit.transform.gameObject.GetComponent<RegularItem>().CurrentMountPoint == null)
                             Destroy(hit.transform.gameObject);
                         }   
@@ -240,8 +242,8 @@ public class Player : Character
                     {
                         if (hit.transform.gameObject.GetComponent<RegularItem>().CurrentMountPoint == null)
                         {
+                             Debug.Log("Adding Spear: " + path + newItemName);
                             GameObject itemToAdd = Resources.Load(path + newItemName) as GameObject;
-                            // NULL REF HERE
                             Item itemToAddNew = itemToAdd.GetComponent<Item>() as Item;
                             charInventory.AddItem(itemToAddNew);
                         }
@@ -250,15 +252,10 @@ public class Player : Character
                     {
                         if (attachSuccess)
                         {
+                            Debug.Log(path + hit.transform.gameObject.name);
                             GameObject itemToAdd = Resources.Load(path + hit.transform.gameObject.name) as GameObject;
                             Item itemToAddNew = itemToAdd.GetComponent<Item>() as Item;
-                            Debug.Log("Item to add from the Player Class:" + itemToAddNew);
                             charInventory.AddItem(itemToAddNew);
-<<<<<<< HEAD
-                            charInventory.toggleBodyPartsIcons();
-                           // CheatWay();
-=======
->>>>>>> 05b02250276e7ab7e072c5912f58612003c26877
                         }
                     }
                 }
