@@ -96,14 +96,7 @@ public abstract class Projectile : Weapon {
 
                 // below float value is dependent on the density of the penetrating object.
                 currSpeed = Mathf.Lerp(lastVelocity.magnitude, 0, (currentLerpTime / lerpTime) * collidedMass);
-
-                /*if (transform.parent == null)
-                {
-                    GetComponent<Renderer>().material.SetColor("_Color", Color.black);
-                    name = "FUCK";
-                    Debug.Break();
-                }
-                else*/
+                
                 //transform.parent.InverseTransformDirection(
                 if (transform.parent != null)
                     transform.localPosition += (transform.parent.InverseTransformDirection(transform.right) * currSpeed) * Time.fixedDeltaTime;
