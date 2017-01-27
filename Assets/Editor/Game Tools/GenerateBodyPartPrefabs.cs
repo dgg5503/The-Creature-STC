@@ -1,4 +1,11 @@
-﻿using UnityEngine;
+﻿/*
+    GenerateBodyPartPrefabs
+    ------------------------
+    AUTHS Douglas Gliner
+    
+*/
+
+using UnityEngine;
 using UnityEditor;
 using System.Linq;
 using System.IO;

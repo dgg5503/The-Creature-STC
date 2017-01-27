@@ -1,4 +1,11 @@
-﻿using UnityEngine;
+﻿/*
+    Spear
+    ------------------------
+    AUTHS Douglas Gliner
+    
+*/
+
+using UnityEngine;
 using System.Collections.Generic;
 using System;
 

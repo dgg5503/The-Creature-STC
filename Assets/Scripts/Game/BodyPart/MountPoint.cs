@@ -1,4 +1,11 @@
-﻿using UnityEngine;
+﻿/*
+    MountPoint
+    ------------------------
+    AUTHS Douglas Gliner
+    
+*/
+
+using UnityEngine;
 using System.Collections;
 
 /// <summary>

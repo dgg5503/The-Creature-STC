@@ -1,4 +1,11 @@
-﻿using UnityEngine;
+﻿/*
+    Clothing
+    ------------------------
+    AUTHS Douglas Gliner
+    
+*/
+
+using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 /// <summary>

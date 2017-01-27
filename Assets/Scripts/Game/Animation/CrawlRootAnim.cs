@@ -1,4 +1,11 @@
-﻿using UnityEngine;
+﻿/*
+    CrawlRootAnim
+    ------------------------
+    AUTHS Douglas Gliner
+    
+*/
+
+using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(Animator))]

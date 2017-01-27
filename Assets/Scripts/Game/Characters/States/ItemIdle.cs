@@ -1,4 +1,11 @@
-﻿using UnityEngine;
+﻿/*
+    ItemIdle
+    ------------------------
+    AUTHS Douglas Gliner
+    
+*/
+
+using UnityEngine;
 using System.Collections;
 using System;
 

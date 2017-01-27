@@ -1,4 +1,11 @@
-﻿using UnityEngine;
+﻿/*
+    Projectile
+    ------------------------
+    AUTHS Douglas Gliner
+    
+*/
+
+using UnityEngine;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(Rigidbody))]

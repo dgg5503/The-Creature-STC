@@ -1,4 +1,11 @@
-﻿using UnityEngine;
+﻿/*
+    ItemStates
+    ------------------------
+    AUTHS Douglas Gliner
+    
+*/
+
+using UnityEngine;
 using System.Collections;
 
 public abstract class ItemStates : ScriptableObject {

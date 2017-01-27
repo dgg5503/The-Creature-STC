@@ -1,4 +1,11 @@
-﻿using UnityEngine;
+﻿/*
+    RegularItem
+    ------------------------
+    AUTHS Douglas Gliner, Alex Shumski
+    
+*/
+
+using UnityEngine;
 using System.Collections.Generic;
 
 

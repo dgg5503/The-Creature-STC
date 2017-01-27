@@ -1,4 +1,11 @@
-﻿using UnityEngine;
+﻿/*
+    ImpalePoint
+    ------------------------
+    AUTHS Douglas Gliner
+    
+*/
+
+using UnityEngine;
 using System.Collections.Generic;
 using System;
 

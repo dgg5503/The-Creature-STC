@@ -1,4 +1,11 @@
-﻿public static class CreatureBodyBones
+﻿/*
+    BodyPartTemplate
+    ------------------------
+    AUTHS Douglas Gliner
+    
+*/
+
+public static class CreatureBodyBones
 {
 	public const int Head = 0;
 	public const int Left_Arm = 1;

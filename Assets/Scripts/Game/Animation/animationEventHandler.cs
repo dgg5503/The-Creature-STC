@@ -1,4 +1,11 @@
-﻿using UnityEngine;
+﻿/*
+    AnimationEventHandler
+    ------------------------
+    AUTHS Douglas Gliner
+    
+*/
+
+using UnityEngine;
 using System.Collections.Generic;
 
 public enum AnimationState

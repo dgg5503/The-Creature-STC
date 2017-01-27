@@ -1,4 +1,11 @@
-﻿using UnityEngine;
+﻿/*
+    Enemy
+    ------------------------
+    AUTHS Douglas Gliner
+    
+*/
+
+using UnityEngine;
 using System.Collections.Generic;
 
 /*

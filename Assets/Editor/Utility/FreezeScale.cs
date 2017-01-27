@@ -1,4 +1,11 @@
-﻿using UnityEngine;
+﻿/*
+    FreezeScale
+    ------------------------
+    AUTHS Douglas Gliner
+    
+*/
+
+using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
